@@ -4,26 +4,26 @@ venv/
 
 # dependencies
 
-/react-app/.pnp
-/react-app/.pnp.js
+react-app/.pnp
+react-app/.pnp.js
 
 # testing
-/react-app/coverage
+react-app/coverage
 
 # production
-/react-app/build
+react-app/build
 
 # misc
-/react-app/.DS_Store
-/react-app/.env.local
-/react-app/.env.development.local
-/react-app/.env.test.local
-/react-app/.env.production.local
+react-app/.DS_Store
+react-app/.env.local
+react-app/.env.development.local
+react-app/.env.test.local
+react-app/.env.production.local
 
-/react-app/npm-debug.log*
-/react-app/yarn-debug.log*
-/react-app/yarn-error.log*
+react-app/npm-debug.log*
+react-app/yarn-debug.log*
+react-app/yarn-error.log*
 
-/glitch/game/__pycache__
-/glitch/main/__pycache__
+glitch/game/__pycache__
+glitch/main/__pycache__
 
