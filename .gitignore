@@ -26,4 +26,4 @@ venv/
 
 /glitch/game/__pycache__
 /glitch/main/__pycache__
-*.pyc
+
