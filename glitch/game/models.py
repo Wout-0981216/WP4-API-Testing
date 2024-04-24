@@ -43,7 +43,7 @@ class Niveaus(models.Model):
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=64)
+    username = models.CharField(max_length=64, unique=True)
     password = models.CharField(max_length=64)
     is_teacher = models.BooleanField(default=False)
     ingschr_cursus = models.ManyToManyField(
