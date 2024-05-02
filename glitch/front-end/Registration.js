@@ -5,17 +5,31 @@ const RegistrationForm = () => {
     const[email, setEmail] = useState('');
     const[password, setPassword] = useState('');
 
+    const submitForm = async (username, email, password) => {
+        try {
+            const response = await fetch('/api/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, email, password }),
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error('Er is een fout opgetreden bij het registreren van de gebruiker:', error);
+        }
+    };
+    
     const handleSubmit = (e) => {
         e.preventDefault();
-
-       // console.log("Username", username);
-        //console.log("Email", email);
-        //console.log("Password", password);
-
+    
+        submitForm(username, email, password);
         setUsername('');
         setEmail('');
         setPassword('');
     };
+
     return (
         <div>
           <h2>Registratieformulier</h2>
