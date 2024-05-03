@@ -1,15 +1,38 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 const RegistrationForm = () => {
     const[username, setUsername] = useState('');
     const[email, setEmail] = useState('');
     const[password, setPassword] = useState('');
+    const [csrftoken, setCsrfToken] = useState('');
+
+    useEffect(() => {
+        const getCsrfToken = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/authentication/api/csrf/', {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+                const data = await response.json();
+                setCsrfToken(data.csrfToken);
+            } catch (error) {
+                console.error('Er is een fout opgetreden bij het ophalen van de CSRF-token:', error);
+            }
+        };
+
+        getCsrfToken();
+    }, []);
 
     const submitForm = async (username, email, password) => {
         try {
+            console.log('CSRF-token:', csrftoken);
             const response = await fetch('http://127.0.0.1:8000/authentication/api/register/', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json', },
+                headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+                },
+                credentials: 'include',
                 body: JSON.stringify({ username, email, password }),
             });
             const data = await response.json();
