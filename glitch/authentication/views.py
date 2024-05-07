@@ -10,15 +10,20 @@ from rest_framework.permissions import IsAuthenticated
 @api_view(['POST'])
 def register_user(request):
     if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name') 
         username = request.data.get('username', '')
         email = request.data.get('email', '')
         password = request.data.get('password', '')
 
-        # Maak het responsbericht
-        message = f"Hallo {username}, jouw email is: {email} en wachtwoord is: {password}"
+        sql = """ INSERT INTO game_user (first_name, last_name, email, username, password) VALUES (%s, %s, %s, %s, %s)"""
+
+    
+    with connection.cursor() as cursor:
+            cursor.execute(sql, [first_name, last_name, email, username, password])
 
         # Stuur het responsbericht terug
-        return Response({'message': message})
+    return Response({'message': 'Succesvol geregistreerd'})
 
     # Stuur een fout als het verzoek geen POST is
     return Response({'error': 'Only POST requests are allowed'}, status=400)
