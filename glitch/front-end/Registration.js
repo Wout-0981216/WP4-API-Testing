@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 
 const RegistrationForm = () => {
+    const[first_name, setFirst_name] = useState('');
+    const[last_name, setLast_name] = useState('')
     const[username, setUsername] = useState('');
     const[email, setEmail] = useState('');
     const[password, setPassword] = useState('');
@@ -23,7 +25,7 @@ const RegistrationForm = () => {
         getCsrfToken();
     }, []);
 
-    const submitForm = async (username, email, password) => {
+    const submitForm = async (first_name,last_name,username, email, password) => {
         try {
             console.log('CSRF-token:', csrftoken);
             const response = await fetch('http://127.0.0.1:8000/authentication/api/register/', {
@@ -33,7 +35,7 @@ const RegistrationForm = () => {
                 'X-CSRFToken': csrftoken,
                 },
                 credentials: 'include',
-                body: JSON.stringify({ username, email, password }),
+                body: JSON.stringify({ first_name,last_name,username, email, password }),
             });
             const data = await response.json();
             console.log(data);
@@ -45,7 +47,7 @@ const RegistrationForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
     
-        submitForm(username, email, password);
+        submitForm(first_name,last_name,username, email, password);
         setUsername('');
         setEmail('');
         setPassword('');
@@ -54,6 +56,22 @@ const RegistrationForm = () => {
     return (
         <div>
           <h2>Registratieformulier</h2>
+          <div>
+              <label>Voornaam:</label>
+              <input
+                type="first_name"
+                value={first_name}
+                onChange={(e) => setFirst_name(e.target.value)}
+              />
+            </div>
+          <div>
+              <label>Achternaam:</label>
+              <input
+                type="last_name"
+                value={last_name}
+                onChange={(e) => setLast_name(e.target.value)}
+              />
+            </div>
           <form onSubmit={handleSubmit}>
             <div>
               <label>Gebruikersnaam:</label>
