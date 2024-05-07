@@ -63,17 +63,18 @@ const ProfilePage = () => {
     } catch (error) {
         console.error('Er is een fout opgetreden bij het aanpassen van het profiel:', error);
     }
-};
+  };
 
-const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (e) => {
+      e.preventDefault();
 
-    submitForm(first_name,last_name,username, email, password);
-};
+      submitForm(first_name,last_name,username, email, password);
+  };
+
   return (
     <div>
       <h2>Profiel pagina</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} id="edit_profile">
         <div>
           <label>Voornaam:</label>
           <input
