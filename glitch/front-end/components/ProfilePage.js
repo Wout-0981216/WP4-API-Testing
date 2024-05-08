@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Input, Icon, Button } from '@rneui/themed';
 
 const ProfilePage = () => {
   const[first_name, setFirst_name] = useState('');
@@ -8,6 +10,8 @@ const ProfilePage = () => {
   const[password, setPassword] = useState('');
   const[date_joined, setDate_joined] = useState('');
   const[csrftoken, setCsrfToken] = useState('');
+  const[update_page, setUpdate] = useState(true);
+  const style = styles;
 
 
   useEffect(() => {
@@ -37,14 +41,14 @@ const ProfilePage = () => {
             setEmail(data.email);
             setPassword(data.password);
             setDate_joined(data.date_joined);
+            console.log(data.message)
         } catch (error) {
           console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
         }
     };
-    
     getCsrfToken();
     getUserInfo();
-  }, []);
+  }, [update_page]);
 
   const submitForm = async (first_name,last_name,username, email, password) => {
     try {
@@ -59,7 +63,9 @@ const ProfilePage = () => {
             body: JSON.stringify({ first_name,last_name,username, email, password }),
         });
         const data = await response.json();
-        console.log(data);
+        console.log(data.message)
+        alert(data.message)
+        setUpdate(!update_page)
     } catch (error) {
         console.error('Er is een fout opgetreden bij het aanpassen van het profiel:', error);
     }
@@ -71,13 +77,35 @@ const ProfilePage = () => {
       submitForm(first_name,last_name,username, email, password);
   };
 
+  const changePage = () => {
+    var x = document.getElementById("show_profile");
+    var y = document.getElementById("edit_profile");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+      y.style.display = "none";
+    } else {
+      x.style.display = "none";
+      y.style.display = "block";
+    }
+    setUpdate(!update_page)
+  };
+
   return (
     <div>
       <h2>Profiel pagina</h2>
-      <form onSubmit={handleSubmit} id="edit_profile">
+      <div id="show_profile">
+        <div><Text style={style.Text}>Voornaam: {first_name}</Text></div>
+        <div><Text style={style.Text}>Achternaam: {last_name}</Text></div>
+        <div><Text style={style.Text}>Gebruikersnaam: {username}</Text></div>
+        <div><Text style={style.Text}>Email: {email}</Text></div>
+        <div><Text style={style.Text}>Wachtwoord: {password}</Text></div>
+        <div><Text style={style.Text}>Gebruiker sinds: {date_joined}</Text></div>
+      </div>
+      <form id="edit_profile" hidden="hidden">
+        <Button onPress={changePage}>Profiel aanpassen</Button>
         <div>
           <label>Voornaam:</label>
-          <input
+          <Input
             type="text"
             value={first_name}
             onChange={(e) => setFirst_name(e.target.value)}
@@ -85,7 +113,7 @@ const ProfilePage = () => {
         </div>
         <div>
           <label>Achternaam:</label>
-            <input
+            <Input
               type="text"
               value={last_name}
               onChange={(e) => setLast_name(e.target.value)}
@@ -93,7 +121,7 @@ const ProfilePage = () => {
         </div>
         <div>
           <label>Gebruikersnaam:</label>
-            <input
+            <Input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -101,7 +129,7 @@ const ProfilePage = () => {
         </div>
         <div>
           <label>Email:</label>
-            <input
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -109,19 +137,25 @@ const ProfilePage = () => {
         </div>
         <div>
           <label>Wachtwoord:</label>
-            <input
+            <Input
               type="text"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
         </div>
-        <div>
-          Gebruiker sinds: {date_joined}
-        </div>
-        <button type="submit">Gegevens aanpassen</button>
+        <Button onPress={handleSubmit}>Gegevens aanpassen</Button>
       </form>
+      <div id="show_profile"><Button onPress={changePage}>Profiel aanpassen</Button></div>
     </div>
   );
 };
 
 export default ProfilePage;
+
+const styles = StyleSheet.create({
+  Text: {
+    fontSize: 20,
+    marginTop: 10,
+    padding: 10,
+  }
+})

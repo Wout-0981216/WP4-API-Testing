@@ -14,12 +14,14 @@ from rest_framework.permissions import IsAuthenticated
 def user_profile(request):
     if request.method == 'GET':
         user = User.objects.get(id=1)
+        date = str(user.date_joined).split(" ")[0]
         return JsonResponse({'first_name' : user.first_name,
                                 'last_name' : user.last_name,
                                 'username' : user.username,
                                 'email' : user.email,
                                 'password' : user.password,
-                                'date_joined' : user.date_joined,
+                                'date_joined' : date,
+                                'message' : 'Profiel info opgehaald'
                                 }, status=200)
 
     if request.method == 'POST':
@@ -35,7 +37,7 @@ def user_profile(request):
             user.password = request.data.get('password', '')
             user.save()
             return JsonResponse({'message': 'Profiel succesvol aangepast'}, status=200)
-        
+
         except Exception as e:
             return JsonResponse({'message': 'error {e}'}, status=400)
 
