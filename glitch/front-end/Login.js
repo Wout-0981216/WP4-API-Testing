@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
-import { Input, Button, Text } from 'react-native-elements';
-
-import bannerimage from './src/images/image1.jpg';
-
 import './src/css/styles.css';
+import axios from "axios";
+import React, { useState } from "react";
+import { View, StyleSheet, Image }   from "react-native";
+import { Input, Button, Text } from "react-native-elements";
+import bannerimage from "./src/images/image1.jpg";
 
 function LoginForm() {
   const [username, setUsername] = useState('');
@@ -14,16 +13,24 @@ function LoginForm() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      const user = {
+        username: username,
+        password: password
+      };
+
+      const response = await axios.post(
+        'http://localhost:8000/token/',
+        user,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
 
       if (response.status >= 200 && response.status < 300) {
         setSuccessMessage('Login successful');
+        localStorage.clear();
+        localStorage.setItem('access_token', response.data.access);
+        localStorage.setItem('refresh_token', response.data.refresh);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+        window.location.href = '/';
       } else {
         throw new Error('Network response was not ok');
       }
@@ -114,7 +121,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#CA591A',
     marginTop: 10,
     width: '100%',
-
   },
   image: {
     width: '50%', 
