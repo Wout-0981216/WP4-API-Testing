@@ -6,6 +6,8 @@ const RegistrationForm = () => {
     const[username, setUsername] = useState('');
     const[email, setEmail] = useState('');
     const[password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [csrftoken, setCsrfToken] = useState('');
 
     useEffect(() => {
@@ -27,7 +29,6 @@ const RegistrationForm = () => {
 
     const submitForm = async (first_name,last_name,username, email, password) => {
         try {
-            console.log('CSRF-token:', csrftoken);
             const response = await fetch('http://127.0.0.1:8000/authentication/api/register/', {
                 method: 'POST',
                 headers: {
@@ -38,8 +39,16 @@ const RegistrationForm = () => {
                 body: JSON.stringify({ first_name,last_name,username, email, password }),
             });
             const data = await response.json();
+          if  (response.ok) {
+            setTimeout(() => {
+                setSuccessMessage('Succesvol geregistreerd');
+                window.location.href = 'http://127.0.0.1:8000/';
+            }, 1000);} else {
+              throw new Error('Network not OK');
+            }
         } catch (error) {
             console.error('Er is een fout opgetreden bij het registreren van de gebruiker:', error);
+            setError('fout');
         }
     };
     
@@ -54,6 +63,9 @@ const RegistrationForm = () => {
 
     return (
         <div>
+          {error || successMessage ? (
+          <p>{error ? error : successMessage}</p>) : null}
+
           <h2>Registratieformulier</h2>
           <div>
               <label>Voornaam:</label>

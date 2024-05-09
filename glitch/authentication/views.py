@@ -28,15 +28,16 @@ def register_user(request):
            sql = """ INSERT INTO game_user (is_active, is_staff, is_superuser, first_name, last_name, email, username, password, date_joined, is_teacher)
            VALUES (%s,%s,%s,%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, %s)"""
 
-       
-           with connection.cursor() as cursor:
-               cursor.execute(sql, [is_active, is_staff, is_superuser, first_name, last_name, email, username, password, is_teacher])
+           try:
+               with connection.cursor() as cursor:
+                    cursor.execute(sql, [is_active, is_staff, is_superuser, first_name, last_name, email, username, password, is_teacher])
 
-           return JsonResponse({'message': 'Succesvol geregistreerd'}, status=200)
-   
-      return JsonResponse({'error': 'Only POST requests are allowed'}, status=400)
+               return JsonResponse({'message': 'Succesvol geregistreerd'}, status=200)
+           except Exception as e:  
+            
+               return JsonResponse({'error': 'Only POST requests are allowed'}, status=500)
 
 
 def get_csrf_token(request):
     csrf_token = get_token(request)
-    return JsonResponse({})
+    return JsonResponse({'csrf_token': csrf_token})
