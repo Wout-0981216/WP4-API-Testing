@@ -38,7 +38,6 @@ const RegistrationForm = () => {
                 body: JSON.stringify({ first_name,last_name,username, email, password }),
             });
             const data = await response.json();
-            console.log(data);
         } catch (error) {
             console.error('Er is een fout opgetreden bij het registreren van de gebruiker:', error);
         }

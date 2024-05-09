@@ -10,29 +10,33 @@ from rest_framework.permissions import IsAuthenticated
 
 @api_view(['POST'])
 def register_user(request):
-        if request.method == 'POST':
-            is_superuser = 0
-            is_staff = 0
-            is_active = 1
-            first_name = request.data.get('first_name', '')
-            last_name = request.data.get('last_name', '')
-            username = request.data.get('username', '')
-            email = request.data.get('email', '')
-            password = request.data.get('password', '')
-            is_teacher = GameUser().is_teacher
+      if request.method == 'POST':
+           # getting data from request
+           first_name = request.data.get('first_name', '')
+           last_name = request.data.get('last_name', '')
+           username = request.data.get('username', '')
+           email = request.data.get('email', '')
+           password = request.data.get('password', '')
+            
+           if not (first_name and last_name and username and email and password):
+               return JsonResponse({'error': 'Missing required fields'}, status=400)
+           is_superuser = 0
+           is_staff = 0
+           is_active = 1
+           is_teacher = GameUser().is_teacher
 
-            sql = """ INSERT INTO game_user (is_active, is_staff, is_superuser, first_name, last_name, email, username, password, date_joined, is_teacher)
-            VALUES (%s,%s,%s,%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, %s)"""
+           sql = """ INSERT INTO game_user (is_active, is_staff, is_superuser, first_name, last_name, email, username, password, date_joined, is_teacher)
+           VALUES (%s,%s,%s,%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, %s)"""
 
-        
-        with connection.cursor() as cursor:
-                cursor.execute(sql, [is_active, is_staff, is_superuser, first_name, last_name, email, username, password, is_teacher])
+       
+           with connection.cursor() as cursor:
+               cursor.execute(sql, [is_active, is_staff, is_superuser, first_name, last_name, email, username, password, is_teacher])
 
-        return JsonResponse({'message': 'Succesvol geregistreerd'}, status=200)
- 
-        return JsonResponse({'error': 'Only POST requests are allowed'}, status=400)
+           return JsonResponse({'message': 'Succesvol geregistreerd'}, status=200)
+   
+      return JsonResponse({'error': 'Only POST requests are allowed'}, status=400)
 
 
 def get_csrf_token(request):
     csrf_token = get_token(request)
-    return JsonResponse({'csrfToken': csrf_token})
+    return JsonResponse({})
