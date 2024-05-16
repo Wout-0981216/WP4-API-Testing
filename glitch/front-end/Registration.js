@@ -42,7 +42,7 @@ const RegistrationForm = () => {
           if  (response.ok) {
             setTimeout(() => {
                 setSuccessMessage('Succesvol geregistreerd');
-                window.location.href = 'http://127.0.0.1:8000/';
+                window.location.href = '/';
             }, 1000);} else {
               throw new Error('Network not OK');
             }
