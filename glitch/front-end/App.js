@@ -1,14 +1,19 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import Registration from './Registration';
+import RegistrationForm from './Registration';
+import Assignment from './assignment';
+
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Registreer hier!</Text>
-      <StatusBar style="auto" />
-      <Registration style={styles.register}/>
-    </View>
+    <BrowserRouter>
+      <Routes>
+      <Route path="/register" element={<RegistrationForm />} />
+      <Route path="/concept-opdracht" element={<Assignment />} />
+      </Routes>
+  </BrowserRouter>
   );
 }
 
