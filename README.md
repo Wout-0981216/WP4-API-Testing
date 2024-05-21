@@ -15,6 +15,7 @@ Ai (chatgpt) prompts:
 - "Hoe validate ik jwt tokens voordat een pagina wordt geladen?"
 - "Zorg ervoor dat ik na 5 minuten niet wordt uitgelogd, gebruik de refreshtokens, dit is mijn code {mijn code op 5/21/2024}"
 
+
 Youtube:
 - https://www.youtube.com/watch?v=GnhbZbPb6uo
 - https://www.youtube.com/watch?v=eXrwF4LXF5c&t=952s
