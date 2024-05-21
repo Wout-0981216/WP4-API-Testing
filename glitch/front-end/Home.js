@@ -1,52 +1,119 @@
-import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
-import { useAuth } from './AuthProvider';
-import axios from 'axios';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Grid, Typography, LinearProgress } from '@mui/material';
+import { AuthContext } from './AuthProvider';
+import Layout from './Layout';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function HomePage() {
-  const { authenticated, loading, logout } = useAuth();
+const HomePage = () => {
+  const authContext = useContext(AuthContext);
+  const { authenticated, loading, logout } = authContext;
   const [message, setMessage] = useState('');
+  const [courseNames, setCourseNames] = useState([]);
 
-  const fetchData = async () => {
-    try {
-      if (authenticated) {
-        const token = localStorage.getItem('access_token');
-        const response = await axios.get(
-          'http://localhost:8000/login/home/',
-          {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (authenticated) {
+          setMessage('Welkom bij je startpagina!');
+          const token = await AsyncStorage.getItem('access_token');
+          const response = await fetch('http://127.0.0.1:8000/game/HomeCourses', {
             headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
           }
-        );
-        setMessage(response.data.message);
+          const data = await response.json();
+          setCourseNames(data.courses || []);
+        }
+      } catch (error) {
+        console.log('Error fetching data:', error);
+        logout();
       }
-    } catch (error) {
-      console.log('Fout bij het ophalen van de gegevens:', error);
-      logout();
+    };
+
+    if (authenticated) {
+      fetchData();
     }
-  };
-
-
-  if (authenticated) {
-    fetchData();
-  }
+  }, [authenticated, logout]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   }
 
   if (!authenticated) {
-    return <Redirect to="/login" />;
+    return null;
   }
 
   return (
-    <div>
-      <h1>Welkom op mijn React Homepage!</h1>
-      <p>{message}</p>
-    </div>
+    <Layout>
+      <View style={styles.container}>
+        <Grid container spacing={2}>
+          <Grid item xs={8} sm={8}>
+            <View style={styles.orangeblock}>
+              <Typography variant="h1">Welkom Niels!</Typography>
+              <Typography>{message}</Typography>
+            </View>
+            <View style={styles.coursesContainer}>
+              {Array.isArray(courseNames) && courseNames.map((courseName, index) => (
+                <View key={index} style={styles.courseBlock}>
+                  <Typography variant="h4">{courseName}</Typography>
+                  <LinearProgress variant="determinate" value={Math.random() * 100} style={styles.progressBar} />
+                </View>
+              ))}
+            </View>
+          </Grid>
+          <Grid item xs={4} sm={4}>
+            <View style={styles.greyblock}>
+              <Typography variant="h6">Zijbalk</Typography>
+              <Typography>Deadlines, vrienden & contact</Typography>
+            </View>
+          </Grid>
+        </Grid>
+      </View>
+    </Layout>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  orangeblock: {
+    backgroundColor: '#CA591A',
+    padding: 20,
+    color: '#FFFFFF',
+    textAlign: 'center',
+    width: '100%',
+    marginBottom: 20,
+  },
+  coursesContainer: {
+    width: '100%',
+    padding: 10,
+  },
+  courseBlock: {
+    padding: 10,
+    marginBottom: 20,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+  },
+  progressBar: {
+    marginTop: 10,
+  },
+  greyblock: {
+    backgroundColor: 'lightgrey',
+    padding: 20,
+    height: '100%',
+  },
+});
 
 export default HomePage;

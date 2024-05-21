@@ -1,18 +1,46 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './AuthProvider';
+import React, { useContext, useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { AuthProvider, AuthContext } from './AuthProvider';
 import LoginForm from './LoginForm';
 import HomePage from './Home';
 
-export default function App() {
+const Stack = createStackNavigator();
+
+const AuthStack = () => (
+  <Stack.Navigator initialRouteName="Login">
+    <Stack.Screen
+      name="Login"
+      component={LoginForm}
+      options={{ headerShown: false }}
+    />
+  </Stack.Navigator>
+);
+
+const AppStack = () => (
+  <Stack.Navigator initialRouteName="Home">
+    <Stack.Screen
+      name="Home"
+      component={HomePage}
+      options={{ headerShown: false }}
+    />
+  </Stack.Navigator>
+);
+
+const App = () => {
+  const { authenticated } = useContext(AuthContext);
+
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginForm />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+    <NavigationContainer>
+      {authenticated ? <AppStack /> : <AuthStack />}
+    </NavigationContainer>
+  );
+};
+
+export default function MainApp() {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   );
 }

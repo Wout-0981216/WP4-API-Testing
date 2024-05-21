@@ -1,8 +1,9 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axiosInstance from './axiosInstance';
+import { ActivityIndicator, View } from 'react-native';
 
-const AuthContext = createContext();
-
-export const useAuth = () => useContext(AuthContext);
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
@@ -10,29 +11,37 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('access_token');
-        if (token) {
-
-          setAuthenticated(true);
+      const token = await AsyncStorage.getItem('access_token');
+      if (token) {
+        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        try {
+          const response = await axiosInstance.get('/login/validate-token/');
+          if (response.status === 200) {
+            setAuthenticated(true);
+          } else {
+            setAuthenticated(false);
+          }
+        } catch (error) {
+          setAuthenticated(false);
         }
-      } catch (error) {
-        console.log('Error checking authentication:', error);
-      } finally {
-        setLoading(false);
+      } else {
+        setAuthenticated(false);
       }
+      setLoading(false);
     };
-
     checkAuth();
   }, []);
 
-  const logout = () => {
-    localStorage.removeItem('access_token');
-    setAuthenticated(false);
-  };
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
-    <AuthContext.Provider value={{ authenticated, loading, logout }}>
+    <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

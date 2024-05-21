@@ -48,7 +48,8 @@ class User(AbstractUser):
     is_teacher = models.BooleanField(default=False)
     ingschr_cursus = models.ManyToManyField(
         Cursussen,
-        verbose_name='ingeschreven cursussen student',
+        through='IngschrCursus',
+        blank=True
     )
     voortgang_hoofd_opdracht = models.ManyToManyField(
         HoofdOpdrachten,
@@ -82,6 +83,7 @@ class User(AbstractUser):
         related_name="user_user_permissions",
         blank=True,
     )
+
 
 
 # class StuInschijvingCursus(models.Model):
@@ -122,3 +124,13 @@ class VoortgangActiviteitenNiveaus(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     niveau = models.ForeignKey(Niveaus, on_delete=models.DO_NOTHING, null=True)
     voortgang = models.IntegerField(default=0)
+
+
+class IngschrCursus(models.Model):
+    student = models.ForeignKey('User', models.DO_NOTHING, db_column='user_id')
+    cursus = models.ForeignKey('Cursussen', models.DO_NOTHING, db_column='cursussen_id')
+
+    class Meta:
+        managed = False
+        db_table = 'game_user_ingschr_cursus'
+        unique_together = (('student', 'cursus'),)
