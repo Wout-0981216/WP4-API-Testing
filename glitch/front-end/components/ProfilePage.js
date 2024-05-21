@@ -101,8 +101,8 @@ const ProfilePage = () => {
         <div><Text style={style.Text}>Wachtwoord: {password}</Text></div>
         <div><Text style={style.Text}>Gebruiker sinds: {date_joined}</Text></div>
       </div>
+      <Button onPress={changePage}>Profiel aanpassen</Button>
       <form id="edit_profile" hidden="hidden">
-        <Button onPress={changePage}>Profiel aanpassen</Button>
         <div>
           <label>Voornaam:</label>
           <Input
@@ -145,7 +145,6 @@ const ProfilePage = () => {
         </div>
         <Button onPress={handleSubmit}>Gegevens aanpassen</Button>
       </form>
-      <div id="show_profile"><Button onPress={changePage}>Profiel aanpassen</Button></div>
     </div>
   );
 };

@@ -3,10 +3,11 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from django.db import connection
-from .models import User
+from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+import json
 
 # Create your views here.
 
@@ -42,6 +43,32 @@ def user_profile(request):
             return JsonResponse({'message': 'error {e}'}, status=400)
 
 
+def get_modules(request):
+    if request.method == 'GET':
+        course = Cursussen.objects.get(id=0)
+        modules = Modules.objects.filter(cursus_id=0)
+        module_list = {"course_name" : course.naam}
+        j = 1
+        for module in modules:
+            modulenr = "module"+str(j)
+            i = 1
+            module_list[modulenr] = {"module_name" : module.naam}
+            activity = Activiteiten.objects.filter(module_id=module.id)
+            for activity in activity:
+                module_list[modulenr]["activity"+str(i)] = activity.naam
+                i+=1
+            points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
+            module_list[modulenr]["points_challenge_points"] = points_challenge.benodige_punten
+            context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
+            module_list[modulenr]["context_challenge_name"] = context_challenge.naam
+            core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
+            module_list[modulenr]["core_assignment_name"] = core_assignment.naam
+            j+=1
+
+        print(module_list)
+        return JsonResponse({
+                                "module_list" : module_list
+                            }, status=200, safe=False)
 
 def get_csrf_token(request):
     csrf_token = get_token(request)

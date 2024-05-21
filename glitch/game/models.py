@@ -9,6 +9,7 @@ class Cursussen(models.Model):
 
 
 class Modules(models.Model):
+    id = models.CharField(editable=False, primary_key=True, max_length=640)
     cursus = models.ForeignKey(Cursussen, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
