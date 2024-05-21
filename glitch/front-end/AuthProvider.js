@@ -19,10 +19,27 @@ export const AuthProvider = ({ children }) => {
           if (response.status === 200) {
             setAuthenticated(true);
           } else {
-            setAuthenticated(false);
+            throw new Error('Token validation failed');
           }
         } catch (error) {
-          setAuthenticated(false);
+          try {
+            const refreshToken = await AsyncStorage.getItem('refresh_token');
+            if (refreshToken) {
+              const refreshResponse = await axiosInstance.post('/login/refresh-token/', { refresh_token: refreshToken });
+              if (refreshResponse.status === 200) {
+                const newAccessToken = refreshResponse.data.access_token;
+                await AsyncStorage.setItem('access_token', newAccessToken);
+                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+                setAuthenticated(true);
+              } else {
+                throw new Error('Token refresh failed');
+              }
+            } else {
+              throw new Error('No refresh token available');
+            }
+          } catch (refreshError) {
+            setAuthenticated(false);
+          }
         }
       } else {
         setAuthenticated(false);

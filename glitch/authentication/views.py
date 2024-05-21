@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.views import TokenRefreshView
 
 @csrf_exempt
 @api_view(['POST'])
@@ -57,3 +58,17 @@ class LogoutView(APIView):
         except Exception as e:
             print("Error:", e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        try:
+            refresh_token = request.data.get("refresh_token")
+            if not refresh_token:
+                return Response({"detail": "Refresh token not provided"}, status=status.HTTP_400_BAD_REQUEST)
+            token = RefreshToken(refresh_token)
+            access_token = str(token.access_token)
+            return JsonResponse({'access_token': access_token}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print("Error:", e)
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)

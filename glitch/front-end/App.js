@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthProvider, AuthContext } from './AuthProvider';
@@ -28,7 +28,11 @@ const AppStack = () => (
 );
 
 const App = () => {
-  const { authenticated } = useContext(AuthContext);
+  const { authenticated, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <NavigationContainer>
