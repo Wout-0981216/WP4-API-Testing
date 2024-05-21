@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from game.models import ConceptOpdracht
+from game.models import ConceptOpdracht, Activiteiten
 from . import models
 from rest_framework.decorators import api_view
 
@@ -18,3 +18,18 @@ def concept_opdracht_list(request):
         ]
         print(opdrachten_list)
         return JsonResponse(opdrachten_list, safe=False)
+    
+
+@api_view(['GET'])
+def activities_module(request):
+    if request.method == 'GET':
+        activities_module = Activiteiten.objects.all()
+        activities_list = [
+            {
+                'id': activities.id,
+                'module_id': activities.module.id,
+                'naam': activities.naam,
+                'beschrijving': activities.beschrijving
+            } for activities in activities_module
+        ]
+        return JsonResponse(activities_list, safe=False)
