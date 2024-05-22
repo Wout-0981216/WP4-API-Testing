@@ -43,19 +43,23 @@ def user_profile(request):
             return JsonResponse({'message': 'error {e}'}, status=400)
 
 
-def get_modules(request):
+def get_modules(request, course_id):
     if request.method == 'GET':
-        course = Cursussen.objects.get(id=0)
-        modules = Modules.objects.filter(cursus_id=0)
-        module_list = {"course_name" : course.naam}
-        j = 1
+        course = Cursussen.objects.get(id=course_id)
+        modules = Modules.objects.filter(cursus_id=course_id)
+        module_list = {}
+        j = 0
         for module in modules:
+            j+=1
             modulenr = "module"+str(j)
-            i = 1
             module_list[modulenr] = {"module_name" : module.naam}
             activity = Activiteiten.objects.filter(module_id=module.id)
+            i = 1
+            module_list[modulenr]["activities"] = {}
+            
             for activity in activity:
-                module_list[modulenr]["activity"+str(i)] = activity.naam
+                module_list[modulenr]["activities"]["activity"+str(i)] = activity.naam
+                module_list[modulenr]["nr_of_activities"] = i
                 i+=1
             points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
             module_list[modulenr]["points_challenge_points"] = points_challenge.benodige_punten
@@ -63,10 +67,11 @@ def get_modules(request):
             module_list[modulenr]["context_challenge_name"] = context_challenge.naam
             core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
             module_list[modulenr]["core_assignment_name"] = core_assignment.naam
-            j+=1
 
         print(module_list)
         return JsonResponse({
+                                "course_name" : course.naam,
+                                "nr_of_modules" : j,
                                 "module_list" : module_list
                             }, status=200, safe=False)
 

@@ -8,7 +8,7 @@ import ModulePage from './components/ModulePage'
 export default function App() {
   return (
     <View style={styles.container}>
-      <ModulePage />
+      <ModulePage course_id={"0"}/>
       <StatusBar style="auto" />
     </View>
   );
