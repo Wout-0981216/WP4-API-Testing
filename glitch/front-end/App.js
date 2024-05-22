@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { AuthProvider, AuthContext } from './AuthProvider';
 import LoginForm from './LoginForm';
 import HomePage from './Home';
+import RegistrationForm from './Registration';
 
 const Stack = createStackNavigator();
 
@@ -14,7 +15,13 @@ const AuthStack = () => (
       component={LoginForm}
       options={{ headerShown: false }}
     />
+    <Stack.Screen
+      name="Register"
+      component={RegistrationForm}
+      options={{ headerShown: false }}
+    />
   </Stack.Navigator>
+
 );
 
 const AppStack = () => (
