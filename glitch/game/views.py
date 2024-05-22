@@ -1,8 +1,11 @@
+<<<<<<< HEAD
 from django.shortcuts import render
 from django.http import JsonResponse
-from game.models import ConceptOpdracht, Activiteiten
+from game.models import ConceptOpdracht, Activiteiten, User, Cursussen
 from . import models
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from django.http import JsonResponse
+from rest_framework.permissions import IsAuthenticated
 
 @api_view(['GET'])
 def concept_opdracht_list(request):
@@ -33,3 +36,16 @@ def activities_module(request):
             } for activities in activities_module
         ]
         return JsonResponse(activities_list, safe=False)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def HomeCourses(request):
+    if request.method == 'GET':
+        user_id = request.user.id
+        course_ids = User.objects.filter(id=user_id).values_list('ingschr_cursus__id', flat=True)
+        courses = Cursussen.objects.filter(id__in=course_ids)
+        course_names = [course.naam for course in courses]
+        if course_names:
+            return JsonResponse({'courses': course_names, 'message': 'Cursussen gevonden'})
+        else:
+            return JsonResponse({'message': 'Geen cursussen gevonden voor deze gebruiker'})
