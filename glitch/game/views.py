@@ -41,10 +41,11 @@ def activities_module(request):
 def HomeCourses(request):
     if request.method == 'GET':
         user_id = request.user.id
+        user_name = request.user.username
         course_ids = User.objects.filter(id=user_id).values_list('ingschr_cursus__id', flat=True)
         courses = Cursussen.objects.filter(id__in=course_ids)
-        course_names = [course.naam for course in courses]
-        if course_names:
-            return JsonResponse({'courses': course_names, 'message': 'Cursussen gevonden'})
+        courses_data = [{'naam': course.naam, 'beschrijving': course.beschrijving} for course in courses]
+        if courses_data:
+            return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
             return JsonResponse({'message': 'Geen cursussen gevonden voor deze gebruiker'})

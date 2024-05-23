@@ -50,7 +50,7 @@ export default function Layout({ children }) {
           </List>
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: 'white', minHeight: '100%' }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: 'white', minHeight: '100vh', overflow: 'auto' }}>
         {children}
       </Box>
     </Box>
