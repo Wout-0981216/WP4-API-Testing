@@ -11,10 +11,10 @@ from django.contrib.auth import login as auth_login, authenticate
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_simplejwt.views import TokenRefreshView
 
 @api_view(['POST'])
 def register_user(request):

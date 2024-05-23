@@ -1,9 +1,6 @@
 from pathlib import Path
-<<<<<<< HEAD
 import os
-=======
 from datetime import timedelta
->>>>>>> main
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,7 +32,6 @@ INSTALLED_APPS = [
     'teachers',
     'authentication',
     'game',
-    'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
 ]

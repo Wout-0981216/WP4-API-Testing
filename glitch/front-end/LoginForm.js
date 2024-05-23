@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, Dimensions, ActivityIndicator, Image } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, ActivityIndicator,TouchableOpacity, Image } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import axiosInstance from './axiosInstance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -93,6 +93,12 @@ const LoginForm = () => {
             />
           </View>
           {error ? <Text style={styles.error}>{error}</Text> : null}
+          <Text style={styles.registerText}>
+            Nog geen account? 
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <Text style={styles.registerLink}> Registreer hier</Text>
+            </TouchableOpacity>
+          </Text>
         </View>
       </View>
       <View style={styles.imageContainer}>
@@ -162,6 +168,10 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     marginTop: 20,
     borderRadius: 10,
+  },
+  registerLink: {
+    color: '#0000ff',
+    textDecorationLine: 'underline',
   },
 });
 
