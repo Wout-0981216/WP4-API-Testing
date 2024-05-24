@@ -15,35 +15,42 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.hashers import make_password
 
+@csrf_exempt
 @api_view(['POST'])
 def register_user(request):
-      if request.method == 'POST':
-           # getting data from request
-           first_name = request.data.get('first_name', '')
-           last_name = request.data.get('last_name', '')
-           username = request.data.get('username', '')
-           email = request.data.get('email', '')
-           password = request.data.get('password', '')
-            
-           if not (first_name and last_name and username and email and password):
-               return JsonResponse({'error': 'Missing required fields'}, status=400)
-           is_superuser = 0
-           is_staff = 0
-           is_active = 1
-           is_teacher = GameUser().is_teacher
+    if request.method == 'POST':
+        # getting data from request
+        first_name = request.data.get('first_name', '')
+        last_name = request.data.get('last_name', '')
+        username = request.data.get('username', '')
+        email = request.data.get('email', '')
+        password = request.data.get('password', '')
 
-           sql = """ INSERT INTO game_user (is_active, is_staff, is_superuser, first_name, last_name, email, username, password, date_joined, is_teacher)
-           VALUES (%s,%s,%s,%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, %s)"""
+        if not (first_name and last_name and username and email and password):
+            return JsonResponse({'error': 'Missing required fields'}, status=400)
 
-           try:
-               with connection.cursor() as cursor:
-                    cursor.execute(sql, [is_active, is_staff, is_superuser, first_name, last_name, email, username, password, is_teacher])
+        hashed_password = make_password(password)
+        is_superuser = 0
+        is_staff = 0
+        is_active = 1
+        is_teacher = GameUser().is_teacher
 
-               return JsonResponse({'message': 'Succesvol geregistreerd'}, status=200)
-           except Exception as e:  
-            
-               return JsonResponse({'error': 'Only POST requests are allowed'}, status=500)
+        sql = """ INSERT INTO game_user (is_active, is_staff, is_superuser, first_name, last_name, email, username, password, date_joined, is_teacher)
+        VALUES (%s,%s,%s,%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, %s)"""
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(sql, [is_active, is_staff, is_superuser, first_name, last_name, email, username, hashed_password, is_teacher])
+                
+                user = username
+                refresh = RefreshToken.for_user(user)
+
+            return JsonResponse({'message': 'Succesvol geregistreerd'},status=200)
+        except Exception as e:  
+        
+            return JsonResponse({'error': 'Only POST requests are allowed'}, status=500)
 
 
 def get_csrf_token(request):

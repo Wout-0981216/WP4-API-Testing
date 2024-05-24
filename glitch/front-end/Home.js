@@ -56,6 +56,8 @@ const HomePage = () => {
     return null;
   }
 
+  console.log('Rendered User Name:', userName);
+
   return (
     <Layout>
         <View style={styles.container}>
