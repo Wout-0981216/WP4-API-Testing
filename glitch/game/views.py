@@ -1,3 +1,4 @@
+
 from django.shortcuts import render
 from django.http import JsonResponse
 from game.models import ConceptOpdracht, Activiteiten, User, Cursussen
@@ -48,4 +49,4 @@ def HomeCourses(request):
         if courses_data:
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
-            return JsonResponse({'message': 'Geen cursussen gevonden voor deze gebruiker'})
+            return JsonResponse({'name': user_name, 'message': 'Geen cursussen gevonden voor deze gebruiker'})

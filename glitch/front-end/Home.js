@@ -29,9 +29,10 @@ const HomePage = () => {
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          setCourseNames(data.courses.map(course => course.naam) || []);
-          setCourseDescriptions(data.courses.map(course => course.beschrijving) || []);
-          setUserName(data.name || '');
+          console.log(data)
+          setCourseNames(data.courses ? data.courses.map(course => course.naam) : []);
+          setCourseDescriptions(data.courses ? data.courses.map(course => course.beschrijving) : []);
+          setUserName(data.name || '');  
         }
       } catch (error) {
         console.log('Error fetching data:', error);
@@ -56,7 +57,7 @@ const HomePage = () => {
     return null;
   }
 
-  console.log('Rendered User Name:', userName);
+
 
   return (
     <Layout>
