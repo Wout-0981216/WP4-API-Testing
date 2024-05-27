@@ -85,12 +85,6 @@ class User(AbstractUser):
     )
 
 
-
-# class StuInschijvingCursus(models.Model):
-#     student = models.ForeignKey(User, on_delete=models.CASCADE)
-#     cursus = models.ForeignKey(Cursussen, on_delete=models.SET_NULL, null=True)
-
-
 class VoortgangHoofdOpdrachten(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     hoofd_opdracht = models.ForeignKey(

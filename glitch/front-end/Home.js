@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator} from 'react-native';
 import { Grid, Typography, LinearProgress } from '@mui/material';
 import { AuthContext } from './AuthProvider';
 import Layout from './Layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SchoolIcon from '@mui/icons-material/School';
+import { Button } from '@rneui/themed'
 
 const HomePage = () => {
   const authContext = useContext(AuthContext);
@@ -77,26 +78,33 @@ const HomePage = () => {
                     <View style={styles.courseHeader}>
                       {index % 2 === 0 ? (
                         <>
-                          <SchoolIcon style={styles.icon}/>
+                          <View style={styles.iconWrapper}>
+                          <SchoolIcon style={styles.icon} />
+                        </View>
                           <Typography variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
                         </>
                       ) : (
                         <>
                           <Typography variant="h4" style={styles.courseTitleRight}>{courseName}</Typography>
-                          <SchoolIcon style={styles.icon}/>
+                          <View style={styles.iconWrapper}>
+                          <SchoolIcon style={styles.icon} />
+                        </View>
+
                         </>
                       )}
                     </View>
-                    <Typography>{courseDescriptions[index]}</Typography>
-                    <LinearProgress variant="determinate" value={Math.random() * 100} style={styles.progressBar} />
+                    <Typography> Beschrijving cursus: {courseDescriptions[index]}</Typography>
+                    <Typography>Voortgang:</Typography>
+                    <LinearProgress  style={styles.progressBar} variant="determinate" value={Math.random() * 100} style={styles.progressBar} />
+                    <Button title={"Bekijk cursus"} />
                   </View>
                 ))}
               </View>
             </Grid>
             <Grid item xs={4} sm={4}>
               <View style={styles.greyblock}>
-                <Typography variant="h6">Zijbalk</Typography>
-                <Typography>Deadlines, vrienden & contact</Typography>
+                <Typography variant="h3">Deadlines</Typography>
+                <Typography>Hier komen de aankomende deadlines...</Typography>
               </View>
             </Grid>
           </Grid>
@@ -137,6 +145,16 @@ const styles = StyleSheet.create({
   },
   icon: {
     margin: 10,
+    width: 50,
+    height: 50,
+    color: "white",
+    width: 50,
+    height: 50,
+    color: 'white',
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
   },
   courseTitleLeft: {
     textAlign: 'left',
@@ -149,16 +167,30 @@ const styles = StyleSheet.create({
   progressBar: {
     marginTop: 10,
   },
+  iconWrapper: {
+    backgroundColor: '#D9D9D9',
+    borderRadius: 50,
+    padding: 10,
+    margin: 20,
+    
+  },
   greyblock: {
-    backgroundColor: 'lightgrey',
+    backgroundColor: 'white',
     padding: 20,
     height: '100%',
+    border: '5px solid lightgrey', 
+    boxSizing: 'border-box', 
   },
   leftAlign: {
     alignSelf: 'flex-start',
   },
   rightAlign: {
     alignSelf: 'flex-end',
+  },
+  progressBar: {
+    height: 10,
+    marginTop: 20,
+    marginBottom: 20, 
   },
 });
 
