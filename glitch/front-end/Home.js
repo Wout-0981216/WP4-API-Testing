@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, ActivityIndicator} from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Grid, Typography, LinearProgress } from '@mui/material';
 import { AuthContext } from './AuthProvider';
 import Layout from './Layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SchoolIcon from '@mui/icons-material/School';
-import { Button } from '@rneui/themed'
+import { Button } from '@rneui/themed';
 
 const HomePage = () => {
   const authContext = useContext(AuthContext);
@@ -43,7 +43,7 @@ const HomePage = () => {
     if (authenticated) {
       fetchData();
     }
-  }, [authenticated, logout]);  
+  }, [authenticated, logout]);
 
   if (loading) {
     return (
@@ -59,56 +59,58 @@ const HomePage = () => {
 
   return (
     <Layout>
-        <View style={styles.container}>
-          <Grid container spacing={2}>
-            <Grid item xs={8} sm={8}>
-              <View style={styles.orangeblock}>
-                <Typography variant="h1">Welkom {userName}!</Typography>
-                <Typography>{message}</Typography>
-              </View>
-              <View style={styles.coursesContainer}>
-                {Array.isArray(courseNames) && courseNames.map((courseName, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      styles.courseBlock,
-                      index % 2 === 0 ? styles.leftAlign : styles.rightAlign
-                    ]}
-                  >
-                    <View style={styles.courseHeader}>
-                      {index % 2 === 0 ? (
-                        <>
-                          <View style={styles.iconWrapper}>
+      <View style={styles.container}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={8}>
+            <View style={styles.orangeblock}>
+              <Typography variant="h1">Welkom {userName}!</Typography>
+              <Typography>{message}</Typography>
+            </View>
+            <View style={styles.coursesContainer}>
+              {Array.isArray(courseNames) && courseNames.map((courseName, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.courseBlock,
+                    index % 2 === 0 ? styles.leftAlign : styles.rightAlign
+                  ]}
+                >
+                  <View style={styles.courseHeader}>
+                    {index % 2 === 0 ? (
+                      <>
+                        <View style={styles.iconWrapper}>
                           <SchoolIcon style={styles.icon} />
                         </View>
-                          <Typography variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
-                        </>
-                      ) : (
-                        <>
-                          <Typography variant="h4" style={styles.courseTitleRight}>{courseName}</Typography>
-                          <View style={styles.iconWrapper}>
+                        <Typography variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
+                      </>
+                    ) : (
+                      <>
+                        <Typography variant="h4" style={styles.courseTitleRight}>{courseName}</Typography>
+                        <View style={styles.iconWrapper}>
                           <SchoolIcon style={styles.icon} />
                         </View>
-
-                        </>
-                      )}
-                    </View>
-                    <Typography> Beschrijving cursus: {courseDescriptions[index]}</Typography>
-                    <Typography>Voortgang:</Typography>
-                    <LinearProgress  style={styles.progressBar} variant="determinate" value={Math.random() * 100} style={styles.progressBar} />
-                    <Button title={"Bekijk cursus"} />
+                      </>
+                    )}
                   </View>
-                ))}
-              </View>
-            </Grid>
-            <Grid item xs={4} sm={4}>
-              <View style={styles.greyblock}>
-                <Typography variant="h3">Deadlines</Typography>
-                <Typography>Hier komen de aankomende deadlines...</Typography>
-              </View>
-            </Grid>
+                  <Typography> Beschrijving cursus: {courseDescriptions[index]}</Typography>
+                  <Typography>Voortgang:</Typography>
+                  <LinearProgress style={styles.progressBar} variant="determinate" value={Math.random() * 100} />
+                  <Button title={"Bekijk cursus"} />
+                </View>
+              ))}
+            </View>
           </Grid>
-        </View>
+          <Grid item xs={12} sm={4}>
+            <View style={styles.greyblock}>
+              <Typography variant="h3">Deadlines</Typography>
+              <Typography>Hier komen de aankomende deadlines...</Typography>
+              <Typography>Hier komen de aankomende deadlines...</Typography>
+              <Typography>Hier komen de aankomende deadlines...</Typography>
+              <Typography>Hier komen de aankomende deadlines...</Typography>
+            </View>
+          </Grid>
+        </Grid>
+      </View>
     </Layout>
   );
 };
@@ -118,6 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 75,
   },
   orangeblock: {
     backgroundColor: '#CA591A',
@@ -135,19 +138,15 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
     borderRadius: 8,
-    width: '500px'
+    width: '100%',
   },
   courseHeader: {
-
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   icon: {
     margin: 10,
-    width: 50,
-    height: 50,
-    color: "white",
     width: 50,
     height: 50,
     color: 'white',
@@ -172,14 +171,13 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 10,
     margin: 20,
-    
   },
   greyblock: {
     backgroundColor: 'white',
     padding: 20,
     height: '100%',
-    border: '5px solid lightgrey', 
-    boxSizing: 'border-box', 
+    border: '5px solid lightgrey',
+    boxSizing: 'border-box',
   },
   leftAlign: {
     alignSelf: 'flex-start',
@@ -190,7 +188,20 @@ const styles = StyleSheet.create({
   progressBar: {
     height: 10,
     marginTop: 20,
-    marginBottom: 20, 
+    marginBottom: 20,
+  },
+  '@media (max-width: 600px)': {
+    coursesContainer: {
+      flexDirection: 'column',
+    },
+    courseBlock: {
+      alignSelf: 'center',
+    },
+    greyblock: {
+      marginTop: 20,
+      marginBottom: 20,
+      height: 100
+    },
   },
 });
 
