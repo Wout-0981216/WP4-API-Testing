@@ -39,6 +39,7 @@ const ModulePage = ({course_id}) => {
     getCsrfToken();
     get_module_info();
   }, []);
+
   function Activities(activities) {
     const activities_array = []
     console.log(activities)

@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'teachers',
     'authentication',
     'game',
-    'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
 ]

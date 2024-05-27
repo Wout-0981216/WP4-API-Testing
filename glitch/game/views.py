@@ -63,7 +63,7 @@ def get_modules(request, course_id):
             activity = Activiteiten.objects.filter(module_id=module.id)
             i = 1
             module_list[modulenr]["activities"] = {}
-            
+
             for activity in activity:
                 module_list[modulenr]["activities"]["activity"+str(i)] = activity.naam
                 module_list[modulenr]["nr_of_activities"] = i
