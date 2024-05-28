@@ -81,10 +81,10 @@ const ModulePage = ({course_id}) => {
   }
 
   return(
-    <div>
+    <View>
       <h2>{course_name} Modules</h2>
         <ModuleCards/>
-    </div>
+    </View>
   )
 }
 

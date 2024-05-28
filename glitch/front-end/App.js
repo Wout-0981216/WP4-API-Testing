@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthProvider, AuthContext } from './AuthProvider';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
@@ -9,7 +9,7 @@ import HomePage from './Home';
 import ProfilePage from './components/ProfilePage';
 import ModulePage from './components/ModulePage'
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const AuthStack = () => (
   <Stack.Navigator initialRouteName="Login">
@@ -27,6 +27,16 @@ const AppStack = () => (
       name="Home"
       component={HomePage}
       options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Profiel"
+      component={ProfilePage}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Module"
+      component={ModulePage}
+      options={{ headerShown: false}}
     />
   </Stack.Navigator>
 );

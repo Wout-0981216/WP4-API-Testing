@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Input, Icon, Button } from '@rneui/themed';
+import Layout from '../Layout'
 
 const ProfilePage = () => {
   const[first_name, setFirst_name] = useState('');
@@ -15,24 +16,24 @@ const ProfilePage = () => {
 
 
   useEffect(() => {
-    const getCsrfToken = async () => {
-      try {
-          const response = await fetch('http://127.0.0.1:8000/game/api/csrf/', {
-              method: 'GET',
-              credentials: 'include',
-          });
-          const data = await response.json();
-          setCsrfToken(data.csrfToken);
-      } catch (error) {
-          console.error('Er is een fout opgetreden bij het ophalen van de CSRF-token:', error);
-      }
-    };
+  //   const getCsrfToken = async () => {
+  //     try {
+  //         const response = await fetch('http://127.0.0.1:8000/game/api/csrf/', {
+  //             method: 'GET',
+  //             credentials: 'include',
+  //         });
+  //         const data = await response.json();
+  //         setCsrfToken(data.csrfToken);
+  //     } catch (error) {
+  //         console.error('Er is een fout opgetreden bij het ophalen van de CSRF-token:', error);
+  //     }
+  //   };
 
     const getUserInfo = async () => {
       try{
         const response = await fetch('http://127.0.0.1:8000/game/api/profile/', {
                 method: 'GET',
-                credentials: 'include',
+                //credentials: 'include',
             });
             const data = await response.json();
             setFirst_name(data.first_name);
@@ -46,20 +47,20 @@ const ProfilePage = () => {
           console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
         }
     };
-    getCsrfToken();
+    //getCsrfToken();
     getUserInfo();
   }, [update_page]);
 
   const submitForm = async (first_name,last_name,username, email, password) => {
     try {
-        console.log('CSRF-token:', csrftoken);
+        //console.log('CSRF-token:', csrftoken);
         const response = await fetch('http://127.0.0.1:8000/game/api/profile/', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken,
+            //'X-CSRFToken': csrftoken,
             },
-            credentials: 'include',
+            //credentials: 'include',
             body: JSON.stringify({ first_name,last_name,username, email, password }),
         });
         const data = await response.json();
@@ -91,6 +92,7 @@ const ProfilePage = () => {
   };
 
   return (
+    <Layout>
     <div>
       <h2>Profiel pagina</h2>
       <div id="show_profile">
@@ -146,6 +148,7 @@ const ProfilePage = () => {
         <Button onPress={handleSubmit}>Gegevens aanpassen</Button>
       </form>
     </div>
+    </Layout>
   );
 };
 
