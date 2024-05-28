@@ -14,16 +14,19 @@ def HomeCourses(request):
         user_name = request.user.username
         course_ids = User.objects.filter(id=user_id).values_list('ingschr_cursus__id', flat=True)
         courses = Cursussen.objects.filter(id__in=course_ids)
-        courses_data = [{'naam': course.naam, 'beschrijving': course.beschrijving} for course in courses]
+        courses_data = [{'naam': course.naam, 'beschrijving': course.beschrijving, 'course_id': course.id} for course in courses]
+        print(courses_data[1])
         if courses_data:
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
             return JsonResponse({'message': 'Geen cursussen gevonden voor deze gebruiker'})
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def user_profile(request):
     if request.method == 'GET':
-        user = User.objects.get(id=1)
+        print(request.user.id)
+        user = User.objects.get(id=request.user.id)
         date = str(user.date_joined).split(" ")[0]
         return JsonResponse({'first_name' : user.first_name,
                                 'last_name' : user.last_name,
@@ -36,10 +39,7 @@ def user_profile(request):
 
     if request.method == 'POST':
         try:
-            user = User.objects.get(id=1)
-            user.is_superuser = 0
-            user.is_staff = 0
-            user.is_active = 1
+            user = User.objects.get(id=request.user.id)
             user.first_name = request.data.get('first_name', '')
             user.last_name = request.data.get('last_name', '')
             user.username = request.data.get('username', '')

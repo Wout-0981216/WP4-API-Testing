@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 
 # Create your models here.
 class Cursussen(models.Model):
+    id = models.CharField(editable=False, primary_key=True, max_length=640)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
 

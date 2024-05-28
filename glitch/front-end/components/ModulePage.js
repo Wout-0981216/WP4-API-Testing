@@ -1,32 +1,35 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Input, Icon, Button } from '@rneui/themed';
+import Layout from '../Layout'
 
-const ModulePage = ({course_id}) => {
+const ModulePage = ({route, navigation}) => {
+  const {course_id} = route.params;
   const[course_name, setCourse_name] = useState('');
   const[moduledict, setModule_dict] = useState({})
   const[nr_of_modules, setNr_of_modules] = useState('')
   const[csrftoken, setCsrfToken] = useState('');
 
   useEffect(() => {
-    const getCsrfToken = async () => {
-      try {
-          const response = await fetch('http://127.0.0.1:8000/game/api/csrf/', {
-              method: 'GET',
-              credentials: 'include',
-          });
-          const data = await response.json();
-          setCsrfToken(data.csrfToken);
-      } catch (error) {
-          console.error('Er is een fout opgetreden bij het ophalen van de CSRF-token:', error);
-      }
-    };
-
+    // const getCsrfToken = async () => {
+    //   try {
+    //       const response = await fetch('http://127.0.0.1:8000/game/api/csrf/', {
+    //           method: 'GET',
+    //           credentials: 'include',
+    //       });
+    //       const data = await response.json();
+    //       setCsrfToken(data.csrfToken);
+    //   } catch (error) {
+    //       console.error('Er is een fout opgetreden bij het ophalen van de CSRF-token:', error);
+    //   }
+    // };
+    console.log(course_id)
     const get_module_info = async () => {
       try{
+        console.log(course_id)
         const response = await fetch(`http://127.0.0.1:8000/game/api/module/${course_id}/`, {
                 method: 'GET',
-                credentials: 'include',
+                //credentials: 'include',
             });
             const data = await response.json();
             setCourse_name(data.course_name);
@@ -36,7 +39,7 @@ const ModulePage = ({course_id}) => {
           console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
         }
     };
-    getCsrfToken();
+    //getCsrfToken();
     get_module_info();
   }, []);
 
@@ -72,7 +75,7 @@ const ModulePage = ({course_id}) => {
       </div>);
     }
       return(
-        <ul style={{listStyle: "none", display: "grid", "grid-template-columns": "auto auto auto", gap: "40px"}}>
+        <ul style={{listStyle: "none", display: "grid", gridTemplateColumns: "auto auto auto", gap: "40px"}}>
           {module_array.map((module, index) => (
             <li key={index}>{module}</li>
           ))}
@@ -81,10 +84,10 @@ const ModulePage = ({course_id}) => {
   }
 
   return(
-    <View>
+    <Layout>
       <h2>{course_name} Modules</h2>
         <ModuleCards/>
-    </View>
+    </Layout>
   )
 }
 

@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Input, Icon, Button } from '@rneui/themed';
 import Layout from '../Layout'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfilePage = () => {
   const[first_name, setFirst_name] = useState('');
@@ -31,9 +32,13 @@ const ProfilePage = () => {
 
     const getUserInfo = async () => {
       try{
+        const token = await AsyncStorage.getItem('access_token');
         const response = await fetch('http://127.0.0.1:8000/game/api/profile/', {
                 method: 'GET',
-                //credentials: 'include',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                },
+                               //credentials: 'include',
             });
             const data = await response.json();
             setFirst_name(data.first_name);
@@ -53,11 +58,12 @@ const ProfilePage = () => {
 
   const submitForm = async (first_name,last_name,username, email, password) => {
     try {
-        //console.log('CSRF-token:', csrftoken);
+        const token = await AsyncStorage.getItem('access_token');
         const response = await fetch('http://127.0.0.1:8000/game/api/profile/', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
             //'X-CSRFToken': csrftoken,
             },
             //credentials: 'include',
