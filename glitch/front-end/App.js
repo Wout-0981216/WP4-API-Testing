@@ -5,11 +5,12 @@ import { AuthProvider, AuthContext } from './AuthProvider';
 import LoginForm from './LoginForm';
 import HomePage from './Home';
 import RegistrationForm from './Registration';
+import Assignment from './assignment';
 
 const Stack = createStackNavigator();
 
 const AuthStack = () => (
-  <Stack.Navigator initialRouteName="Login">
+  <Stack.Navigator initialRouteName="Auth">
     <Stack.Screen
       name="Login"
       component={LoginForm}
@@ -18,6 +19,11 @@ const AuthStack = () => (
     <Stack.Screen
       name="Register"
       component={RegistrationForm}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="ConceptAssignment"
+      component={Assignment}
       options={{ headerShown: false }}
     />
   </Stack.Navigator>

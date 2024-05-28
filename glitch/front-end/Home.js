@@ -29,7 +29,6 @@ const HomePage = () => {
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          console.log(data)
           setCourseNames(data.courses ? data.courses.map(course => course.naam) : []);
           setCourseDescriptions(data.courses ? data.courses.map(course => course.beschrijving) : []);
           setUserName(data.name || '');  

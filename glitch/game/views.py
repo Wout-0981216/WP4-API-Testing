@@ -14,7 +14,6 @@ def concept_opdracht_list(request):
         opdrachten_list = [
             {
                 'id': opdracht.id,
-                'module_id': opdracht.module.id,
                 'naam': opdracht.naam,
                 'beschrijving': opdracht.beschrijving
             } for opdracht in opdrachten

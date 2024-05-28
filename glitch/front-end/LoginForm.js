@@ -98,6 +98,10 @@ const LoginForm = () => {
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
               <Text style={styles.registerLink}> Registreer hier</Text>
             </TouchableOpacity>
+            voor devs: 
+            <TouchableOpacity onPress={() => navigation.navigate('ConceptAssignment')}>
+              <Text style={styles.registerLink}> concept</Text>
+            </TouchableOpacity>
           </Text>
         </View>
       </View>

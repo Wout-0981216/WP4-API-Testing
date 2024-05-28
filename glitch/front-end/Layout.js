@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import HomeIcon from '@mui/icons-material/Home';
 import SchoolIcon from '@mui/icons-material/School';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { useNavigation } from '@react-navigation/native';
 
 const drawerWidth = 240;
 
@@ -18,8 +19,12 @@ export default function Layout({ children }) {
   const menuItems = [
     { text: 'Home', icon: <HomeIcon /> },
     { text: 'Cursussen', icon: <SchoolIcon /> },
-    { text: 'Profiel', icon: <AccountCircleIcon /> }
+    { text: 'Profiel', icon: <AccountCircleIcon /> },
   ];
+
+  const handleMenuItemPress = (path) => {
+    navigation.navigate(path);
+  };
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', backgroundColor: 'white' }}>
