@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { Grid, Typography, LinearProgress } from '@mui/material';
 import { AuthContext } from './AuthProvider';
 import Layout from './Layout';
@@ -35,7 +35,6 @@ const HomePage = () => {
           setCourseNames(data.courses.map(course => course.naam) || []);
           setCourseDescriptions(data.courses.map(course => course.beschrijving) || []);
           setCourseIds(data.courses.map(course => course.course_id) || []);
-          console.log(courseIDs)
           setUserName(data.name || '');
         }
       } catch (error) {
@@ -83,7 +82,7 @@ const HomePage = () => {
                       {index % 2 === 0 ? (
                         <>
                           <SchoolIcon style={styles.icon}/>
-                          <Typography onClick={() => navigation.navigate("Module", {screen: "Module", course_id: courseIDs[index]})} variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
+                          <Typography onClick={() => navigation.navigate("Module", {screen: "Module", course_id: courseIDs[index], styles: styles})} variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
                         </>
                       ) : (
                         <>
@@ -135,7 +134,6 @@ const styles = StyleSheet.create({
     width: '500px'
   },
   courseHeader: {
-
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -164,6 +162,9 @@ const styles = StyleSheet.create({
   },
   rightAlign: {
     alignSelf: 'flex-end',
+  },
+  FlatList: {
+    flexWrap: 'wrap'
   },
 });
 

@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Input, Icon, Button } from '@rneui/themed';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { Input, Icon, Button, Card } from '@rneui/themed';
+import { Grid, Typography, LinearProgress } from '@mui/material';
+import { FlatGrid } from 'react-native-super-grid';
 import Layout from '../Layout'
 
 const ModulePage = ({route, navigation}) => {
-  const {course_id} = route.params;
+  const {course_id, styles} = route.params;
   const[course_name, setCourse_name] = useState('');
   const[moduledict, setModule_dict] = useState({})
   const[nr_of_modules, setNr_of_modules] = useState('')
@@ -23,10 +25,9 @@ const ModulePage = ({route, navigation}) => {
     //       console.error('Er is een fout opgetreden bij het ophalen van de CSRF-token:', error);
     //   }
     // };
-    console.log(course_id)
+
     const get_module_info = async () => {
       try{
-        console.log(course_id)
         const response = await fetch(`http://127.0.0.1:8000/game/api/module/${course_id}/`, {
                 method: 'GET',
                 //credentials: 'include',
@@ -45,12 +46,10 @@ const ModulePage = ({route, navigation}) => {
 
   function Activities(activities) {
     const activities_array = []
-    console.log(activities)
     for(let i=1; i <= nr_of_modules; i++){
       const activitynr = "activity"+i;
-      console.log(activities["activities"][activitynr])
       activities_array.push(
-        <p>{activities["activities"][activitynr]}</p>
+        <Text>{activities["activities"][activitynr]}</Text>
       )
     }
     return(
@@ -62,30 +61,32 @@ const ModulePage = ({route, navigation}) => {
     const module_array = [];
     for(let i=1; i <= nr_of_modules; i++) {
       const modulenr = "module"+i;
-      console.log(moduledict[modulenr])
       module_array.push(
-      <div class="card" style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)"}}>
-        <div class="container" style={{padding: "2px 16px"}}>
-          <h4><b>{moduledict[modulenr]["module_name"]}</b></h4>
+      {key :<Card style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)"}}>
+        <View style={styles}>
+          <Typography variant="h4" style={{fontWeight: 'bold'}}>{moduledict[modulenr]["module_name"]}</Typography>
           <Activities activities={moduledict[modulenr]["activities"]}/>
-          <p>Points Challenge     benodigde punten: {moduledict[modulenr]["points_challenge_points"]}</p>
-          <p>{moduledict[modulenr]["context_challenge_name"]}</p>
-          <p>{moduledict[modulenr]["core_assignment_name"]}</p>
-        </div>
-      </div>);
+          <Text>Points Challenge  benodigde punten: {moduledict[modulenr]["points_challenge_points"]}</Text>
+          <LinearProgress variant="determinate" value={moduledict[modulenr]["points_challenge_points"]} style={styles.progressBar} />
+          <Text>{moduledict[modulenr]["context_challenge_name"]}</Text>
+          <Text>{moduledict[modulenr]["core_assignment_name"]}</Text>
+        </View>
+      </Card>});
     }
-      return(
-        <ul style={{listStyle: "none", display: "grid", gridTemplateColumns: "auto auto auto", gap: "40px"}}>
-          {module_array.map((module, index) => (
-            <li key={index}>{module}</li>
-          ))}
-        </ul>
-      )
+    return(
+      <View style={styles.container}>
+        <FlatList 
+          numColumns={3}
+          data={module_array}
+          renderItem={({item}) => item.key}
+        />
+      </View>
+    )
   }
 
   return(
     <Layout>
-      <h2>{course_name} Modules</h2>
+      <Typography variant="h2" style={{fontWeight: 'bold'}}>{course_name} Modules</Typography>
         <ModuleCards/>
     </Layout>
   )
