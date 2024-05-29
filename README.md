@@ -14,6 +14,7 @@ Ai (chatgpt) prompts:
 - "Zorg ervoor dat als ik niet ingelogd ben ik een andere app zie dan de normale app, ik zie namelijk nu elke keer als ik de app opstart heel kort mijn inlogscherm"
 - "Hoe validate ik jwt tokens voordat een pagina wordt geladen?"
 - "Zorg ervoor dat ik na 5 minuten niet wordt uitgelogd, gebruik de refreshtokens, dit is mijn code {mijn code op 5/21/2024}"
+- "Ik wil mijn courseheader om de keer links of rechts uigelijnd worden en het icoontje dan daar afhankelijk van links of rechts hebben staan"
 
 
 Youtube:

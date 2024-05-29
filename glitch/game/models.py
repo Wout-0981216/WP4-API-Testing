@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 
 
-# Create your models here.
 class Cursussen(models.Model):
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
@@ -97,12 +96,6 @@ class User(AbstractUser):
     )
 
 
-
-# class StuInschijvingCursus(models.Model):
-#     student = models.ForeignKey(User, on_delete=models.CASCADE)
-#     cursus = models.ForeignKey(Cursussen, on_delete=models.SET_NULL, null=True)
-
-
 class VoortgangHoofdOpdrachten(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     hoofd_opdracht = models.ForeignKey(
@@ -139,10 +132,11 @@ class VoortgangActiviteitenNiveaus(models.Model):
 
 
 class IngschrCursus(models.Model):
-    student = models.ForeignKey('User', models.DO_NOTHING, db_column='user_id')
-    cursus = models.ForeignKey('Cursussen', models.DO_NOTHING, db_column='cursussen_id')
+    student = models.ForeignKey(User, models.DO_NOTHING, db_column='user_id')
+    cursus = models.ForeignKey(Cursussen, models.DO_NOTHING, db_column='cursussen_id')
+    voortgang = models.IntegerField(default=0)
 
-    class Meta:
+    class Meta: 
         managed = False
         db_table = 'game_user_ingschr_cursus'
         unique_together = (('student', 'cursus'),)

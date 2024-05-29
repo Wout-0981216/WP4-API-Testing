@@ -5,6 +5,7 @@ import { AuthContext } from './AuthProvider';
 import Layout from './Layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SchoolIcon from '@mui/icons-material/School';
+import { Button } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 
 const HomePage = () => {
@@ -16,6 +17,7 @@ const HomePage = () => {
   const [courseDescriptions, setCourseDescriptions] = useState([]);
   const [courseIDs, setCourseIds] = useState([]);
   const [userName, setUserName] = useState('');
+  const [progress, setProgress] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,20 +34,23 @@ const HomePage = () => {
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          setCourseNames(data.courses ? data.courses.map(course => course.naam) : []);
-          setCourseDescriptions(data.courses ? data.courses.map(course => course.beschrijving) : []);
-          setUserName(data.name || '');  
+          setCourseNames(data.courses.map(course => course.naam) || []);
+          setCourseDescriptions(data.courses.map(course => course.beschrijving) || []);
+          setCourseIds(data.courses.map(course => course.course_id) || []);
+          setProgress(data.courses.map(course => course.voortgang) || []);
+          setUserName(data.name || '');
         }
       } catch (error) {
         console.log('Error fetching data:', error);
         logout();
+        
       }
     };
   
     if (authenticated) {
       fetchData();
     }
-  }, [authenticated, logout]);  
+  }, [authenticated, logout]);
 
   if (loading) {
     return (
@@ -63,49 +68,59 @@ const HomePage = () => {
 
   return (
     <Layout>
-        <View style={styles.container}>
-          <Grid container spacing={2}>
-            <Grid item xs={8} sm={8}>
-              <View style={styles.orangeblock}>
-                <Typography variant="h1">Welkom {userName}!</Typography>
-                <Typography>{message}</Typography>
-              </View>
-              <View style={styles.coursesContainer}>
-                {Array.isArray(courseNames) && courseNames.map((courseName, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      styles.courseBlock,
-                      index % 2 === 0 ? styles.leftAlign : styles.rightAlign
-                    ]}
-                  >
-                    <View style={styles.courseHeader}>
-                      {index % 2 === 0 ? (
-                        <>
-                          <SchoolIcon style={styles.icon}/>
-                          <Typography onClick={() => navigation.navigate("Module", {screen: "Module", course_id: courseIDs[index], styles: styles})} variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
-                        </>
-                      ) : (
-                        <>
-                          <Typography variant="h4" style={styles.courseTitleRight}>{courseName}</Typography>
-                          <SchoolIcon style={styles.icon}/>
-                        </>
-                      )}
-                    </View>
-                    <Typography>{courseDescriptions[index]}</Typography>
-                    <LinearProgress variant="determinate" value={Math.random() * 100} style={styles.progressBar} />
+      <View style={styles.container}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={8}>
+            <View style={styles.orangeblock}>
+              <Typography variant="h1">Welkom {userName}!</Typography>
+              <Typography>{message}</Typography>
+            </View>
+            <View style={styles.coursesContainer}>
+              {Array.isArray(courseNames) && courseNames.map((courseName, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.courseBlock,
+                    index % 2 === 0 ? styles.leftAlign : styles.rightAlign
+                  ]}
+                >
+                  <View style={styles.courseHeader}>
+                    {index % 2 === 0 ? (
+                      <>
+                        <View style={styles.iconWrapper}>
+                          <SchoolIcon style={styles.icon} />
+                        </View>
+                        <Typography variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
+                      </>
+                    ) : (
+                      <>
+                         <Typography variant="h4" style={styles.courseTitleRight}>{courseName}</Typography>
+                        <View style={styles.iconWrapper}>
+                          <SchoolIcon style={styles.icon} />
+                        </View>
+                      </>
+                    )}
                   </View>
-                ))}
-              </View>
-            </Grid>
-            <Grid item xs={4} sm={4}>
-              <View style={styles.greyblock}>
-                <Typography variant="h6">Zijbalk</Typography>
-                <Typography>Deadlines, vrienden & contact</Typography>
-              </View>
-            </Grid>
+                  <Typography> Beschrijving cursus: {courseDescriptions[index]}</Typography>
+                  <Typography>Voortgang:</Typography>
+                  <LinearProgress style={styles.progressBar} variant="determinate" value={progress[index]} />
+                  <Button onPress={() => navigation.navigate("Module", { screen: "Module", course_id: courseIDs[index], styles: styles })} title={"Bekijk cursus"} />
+
+                </View>
+              ))}
+            </View>
           </Grid>
-        </View>
+          <Grid item xs={12} sm={4}>
+            <View style={styles.greyblock}>
+              <Typography variant="h3">Deadlines</Typography>
+              <Typography>Hier komen de aankomende deadlines...</Typography>
+              <Typography>Hier komen de aankomende deadlines...</Typography>
+              <Typography>Hier komen de aankomende deadlines...</Typography>
+              <Typography>Hier komen de aankomende deadlines...</Typography>
+            </View>
+          </Grid>
+        </Grid>
+      </View>
     </Layout>
   );
 };
@@ -115,6 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 75,
   },
   orangeblock: {
     backgroundColor: '#CA591A',
@@ -132,7 +148,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
     borderRadius: 8,
-    width: '500px'
+    width: '100%',
   },
   courseHeader: {
     flexDirection: 'row',
@@ -141,6 +157,13 @@ const styles = StyleSheet.create({
   },
   icon: {
     margin: 10,
+    width: 50,
+    height: 50,
+    color: 'white',
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
   },
   courseTitleLeft: {
     textAlign: 'left',
@@ -153,10 +176,18 @@ const styles = StyleSheet.create({
   progressBar: {
     marginTop: 10,
   },
+  iconWrapper: {
+    backgroundColor: '#D9D9D9',
+    borderRadius: 50,
+    padding: 10,
+    margin: 20,
+  },
   greyblock: {
-    backgroundColor: 'lightgrey',
+    backgroundColor: 'white',
     padding: 20,
     height: '100%',
+    border: '5px solid lightgrey',
+    boxSizing: 'border-box',
   },
   leftAlign: {
     alignSelf: 'flex-start',
@@ -164,9 +195,26 @@ const styles = StyleSheet.create({
   rightAlign: {
     alignSelf: 'flex-end',
   },
+  progressBar: {
+    height: 10,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  '@media (max-width: 600px)': {
+    coursesContainer: {
+      flexDirection: 'column',
+    },
+    courseBlock: {
+      alignSelf: 'center',
+    },
+    greyblock: {
+      marginTop: 20,
+      marginBottom: 20,
+      height: 100
+    },
   FlatList: {
     flexWrap: 'wrap'
-  },
+  }},
 });
 
 export default HomePage;

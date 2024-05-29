@@ -72,11 +72,21 @@ def login(request):
             auth_login(request, user)
             refresh = RefreshToken.for_user(user)
             print("login succesvol")
-            return JsonResponse({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'message': 'Login successful'
-            })
+            if request.user.is_staff == 1:
+                return JsonResponse({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                    'teacher': 'True',
+                    'message':  'Login successful'
+                })
+
+            if request.user.is_staff == 0:
+                return JsonResponse({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                    'teacher': 'False',
+                    'message': 'Login successful'
+                })
 
         else:
             return HttpResponseBadRequest('Invalid credentials')
