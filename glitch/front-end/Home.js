@@ -9,7 +9,7 @@ import { Button } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 
 const HomePage = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const authContext = useContext(AuthContext);
   const { authenticated, loading, logout } = authContext;
   const [message, setMessage] = useState('');
@@ -18,11 +18,14 @@ const HomePage = () => {
   const [courseIDs, setCourseIds] = useState([]);
   const [userName, setUserName] = useState('');
   const [progress, setProgress] = useState('');
+  const [teacher, setTeacher] = useState('');
+  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (authenticated) {
+
           setMessage('Welkom bij de glitch startpagina!');
           const token = await AsyncStorage.getItem('access_token');
           const response = await fetch('http://127.0.0.1:8000/game/HomeCourses', {
@@ -34,23 +37,30 @@ const HomePage = () => {
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          setCourseNames(data.courses.map(course => course.naam) || []);
-          setCourseDescriptions(data.courses.map(course => course.beschrijving) || []);
-          setCourseIds(data.courses.map(course => course.course_id) || []);
-          setProgress(data.courses.map(course => course.voortgang) || []);
-          setUserName(data.name || '');
+
+          setTeacher(data.teacher);
+          console.log(teacher);
+          if (teacher === "true") {
+            console.log('Is leraar');
+            navigation.navigate('TeacherHome'); }
+          
+          setCourseNames(data.courses?.map(course => course.naam) || []);
+          setCourseDescriptions(data.courses?.map(course => course.beschrijving) || []);
+          setCourseIds(data.courses?.map(course => course.course_id) || []);
+          setProgress(data.courses?.map(course => course.voortgang) || []);
+          setUserName(data.name ?? '');
+
         }
       } catch (error) {
         console.log('Error fetching data:', error);
         logout();
-        
       }
     };
   
     if (authenticated) {
       fetchData();
     }
-  }, [authenticated, logout]);
+  }, [authenticated, logout, navigation, teacher]);
 
   if (loading) {
     return (

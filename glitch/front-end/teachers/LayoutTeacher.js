@@ -25,9 +25,9 @@ export default function LayoutTeacher({ children }) {
 
   const navigation = useNavigation()
   const menuItems = [
-    { text: 'Home', icon: <HomeIcon />, location: "Home" },
-    { text: 'Leerlingen', icon: <SchoolIcon />, location: "Home" },
-    { text: 'Profiel', icon: <AccountCircleIcon />, location: "Profiel" }
+    { text: 'Home', icon: <HomeIcon />, location: "TeacherHome" },
+    { text: 'Leerlingen', icon: <SchoolIcon />, location: "TeacherHome" },
+    { text: 'Profiel', icon: <AccountCircleIcon />, location: "TeacherProfiel" }
   ];
 
   const handleMenuItemPress = (path) => {

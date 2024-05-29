@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Input, Icon, Button } from '@rneui/themed';
-import Layout from '../Layout'
+import LayoutTeacher from './LayoutTeacher'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfilePageTeacher = () => {
@@ -98,7 +98,7 @@ const ProfilePageTeacher = () => {
   };
 
   return (
-    <Layout>
+    <LayoutTeacher>
     <div>
       <h2>Profiel pagina</h2>
       <div id="show_profile">
@@ -154,7 +154,7 @@ const ProfilePageTeacher = () => {
         <Button onPress={handleSubmit}>Gegevens aanpassen</Button>
       </form>
     </div>
-    </Layout>
+    </LayoutTeacher>
   );
 };
 

@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 from game.models import ConceptOpdracht, Activiteiten, User, Cursussen
 from . import models
@@ -44,6 +43,7 @@ def HomepageStudent(request):
     if request.method == 'GET':
         # for the courses
         user_id = request.user.id
+        teacher = request.user.is_teacher
         user_name = request.user.username
         ingschr_cursussen = IngschrCursus.objects.filter(student_id=user_id)
         courses_data = []
@@ -59,10 +59,14 @@ def HomepageStudent(request):
             print(ingschr_cursus.voortgang)
             courses_data.append(course_data)
 
+        if teacher:
+            print(teacher)
+            return JsonResponse({'teacher': "true"})
         if courses_data:
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
             return JsonResponse({'name': user_name, 'message': 'Geen cursussen gevonden voor deze gebruiker'})
+
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
