@@ -7,8 +7,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import LoginForm from './LoginForm';
 import HomePage from './Home';
 import RegistrationForm from './Registration';
-import Assignment from './assignment';
-import ActivitiesPage from './activities-module';
+import Assignment from './components/assignment';
+import ActivitiesPage from './components/activities-module';
 import ProfilePage from './components/ProfilePage';
 import ModulePage from './components/ModulePage'
 
@@ -24,16 +24,6 @@ const AuthStack = () => (
     <Stack.Screen
       name="Register"
       component={RegistrationForm}
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      name="ConceptAssignment"
-      component={Assignment}
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      name="ActivitiesModule"
-      component={ActivitiesPage}
       options={{ headerShown: false }}
     />
   </Stack.Navigator>
@@ -56,6 +46,16 @@ const AppStack = () => (
       name="Module"
       component={ModulePage}
       options={{ headerShown: false}}
+    />
+    <Stack.Screen
+      name="ConceptAssignment"
+      component={Assignment}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="ActivitiesModule"
+      component={ActivitiesPage}
+      options={{ headerShown: false }}
     />
   </Stack.Navigator>
 );

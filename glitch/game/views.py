@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 from game.models import ConceptOpdracht, Activiteiten, User, Cursussen
 from . import models
@@ -9,7 +8,6 @@ from django.middleware.csrf import get_token
 from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
 @api_view(['GET'])
 def concept_opdracht_list(request):
     if request.method == 'GET':
