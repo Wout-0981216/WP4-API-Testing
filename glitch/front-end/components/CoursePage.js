@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ScrollView, Pressable} from 'react-native';
 import { Input, Icon, Button, Card } from '@rneui/themed';
 import { Grid, Typography, LinearProgress } from '@mui/material';
-import { FlatGrid } from 'react-native-super-grid';
 import Layout from '../Layout'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ModulePage = ({route, navigation}) => {
+const CoursePage = ({route, navigation}) => {
   const {course_id, styles} = route.params;
   const[course_name, setCourse_name] = useState('');
   const[moduledict, setModule_dict] = useState({})
@@ -26,10 +26,14 @@ const ModulePage = ({route, navigation}) => {
     //   }
     // };
 
-    const get_module_info = async () => {
+    const get_course_module_info = async () => {
       try{
-        const response = await fetch(`http://127.0.0.1:8000/game/api/module/${course_id}/`, {
+        const token = await AsyncStorage.getItem('access_token');
+        const response = await fetch(`http://127.0.0.1:8000/game/api/modules/${course_id}/`, {
                 method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                },
                 //credentials: 'include',
             });
             const data = await response.json();
@@ -41,7 +45,7 @@ const ModulePage = ({route, navigation}) => {
         }
     };
     //getCsrfToken();
-    get_module_info();
+    get_course_module_info();
   }, []);
 
   function Activities(activities) {
@@ -49,7 +53,7 @@ const ModulePage = ({route, navigation}) => {
     for(let i=1; i <= nr_of_modules; i++){
       const activitynr = "activity"+i;
       activities_array.push(
-        <Text>{activities["activities"][activitynr]}</Text>
+        <Text key={i}>{activities["activities"][activitynr]}</Text>
       )
     }
     return(
@@ -59,28 +63,50 @@ const ModulePage = ({route, navigation}) => {
 
   function ModuleCards() {
     const module_array = [];
+    const cardGap = 16;
+    const cardWidth = (window.innerWidth - cardGap * 3) / 2;
     for(let i=1; i <= nr_of_modules; i++) {
       const modulenr = "module"+i;
       module_array.push(
-      {key :<Card style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)"}}>
-        <View style={styles}>
+        {key:
+        <Card style={{
+          marginTop: cardGap,
+          marginLeft: i % 2 !== 0 ? cardGap : 0,
+          width: cardWidth,
+          height: 180,
+          backgroundColor: 'white',
+          borderRadius: 16,
+          shadowOpacity: 0.2,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
           <Typography variant="h4" style={{fontWeight: 'bold'}}>{moduledict[modulenr]["module_name"]}</Typography>
           <Activities activities={moduledict[modulenr]["activities"]}/>
           <Text>Points Challenge  benodigde punten: {moduledict[modulenr]["points_challenge_points"]}</Text>
           <LinearProgress variant="determinate" value={moduledict[modulenr]["points_challenge_points"]} style={styles.progressBar} />
           <Text>{moduledict[modulenr]["context_challenge_name"]}</Text>
           <Text>{moduledict[modulenr]["core_assignment_name"]}</Text>
-        </View>
-      </Card>});
+        </Card>, id: moduledict[modulenr]["module_id"]});
     }
     return(
-      <View style={styles.container}>
-        <FlatList 
-          numColumns={3}
-          data={module_array}
-          renderItem={({item}) => item.key}
-        />
-      </View>
+      <ScrollView>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+          }}>
+          {module_array.map((module, i) => {
+            return (
+              <View key={module.id}>
+                <Pressable onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.id, styles: styles})}>
+                  {module.key}
+                </Pressable>
+              </View>
+            );
+          })}
+        </View>
+      </ScrollView>
     )
   }
 
@@ -92,5 +118,5 @@ const ModulePage = ({route, navigation}) => {
   )
 }
 
-export default ModulePage;
+export default CoursePage;
 

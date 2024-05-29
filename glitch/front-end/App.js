@@ -7,7 +7,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import LoginForm from './LoginForm';
 import HomePage from './Home';
 import ProfilePage from './components/ProfilePage';
-import ModulePage from './components/ModulePage'
+import CoursePage from './components/CoursePage'
 
 const Stack = createNativeStackNavigator();
 
@@ -34,8 +34,8 @@ const AppStack = () => (
       options={{ headerShown: false }}
     />
     <Stack.Screen
-      name="Module"
-      component={ModulePage}
+      name="Cursus"
+      component={CoursePage}
       options={{ headerShown: false}}
     />
   </Stack.Navigator>

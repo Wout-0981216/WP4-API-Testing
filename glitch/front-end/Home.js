@@ -82,7 +82,7 @@ const HomePage = () => {
                       {index % 2 === 0 ? (
                         <>
                           <SchoolIcon style={styles.icon}/>
-                          <Typography onClick={() => navigation.navigate("Module", {screen: "Module", course_id: courseIDs[index], styles: styles})} variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
+                          <Typography onClick={() => navigation.navigate("Cursus", {screen: "Cursus", course_id: courseIDs[index], styles: styles})} variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
                         </>
                       ) : (
                         <>
@@ -162,9 +162,6 @@ const styles = StyleSheet.create({
   },
   rightAlign: {
     alignSelf: 'flex-end',
-  },
-  FlatList: {
-    flexWrap: 'wrap'
   },
 });
 
