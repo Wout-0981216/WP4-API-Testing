@@ -2,13 +2,14 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 
 
-# Create your models here.
 class Cursussen(models.Model):
+    id = models.CharField(editable=False, primary_key=True, max_length=640)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
 
 
 class Modules(models.Model):
+    id = models.CharField(editable=False, primary_key=True, max_length=640)
     cursus = models.ForeignKey(Cursussen, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
@@ -43,9 +44,16 @@ class Niveaus(models.Model):
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=64, unique=True)
-    password = models.CharField(max_length=64)
-    is_teacher = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    is_teacher = models.BooleanField(default=0)
     ingschr_cursus = models.ManyToManyField(
         Cursussen,
         through='IngschrCursus',

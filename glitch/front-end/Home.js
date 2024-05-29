@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { Grid, Typography, LinearProgress } from '@mui/material';
 import { AuthContext } from './AuthProvider';
 import Layout from './Layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SchoolIcon from '@mui/icons-material/School';
 import { Button } from '@rneui/themed';
+import { useNavigation } from '@react-navigation/native';
 
 const HomePage = () => {
+  const navigation = useNavigation()
   const authContext = useContext(AuthContext);
   const { authenticated, loading, logout } = authContext;
   const [message, setMessage] = useState('');
   const [courseNames, setCourseNames] = useState([]);
   const [courseDescriptions, setCourseDescriptions] = useState([]);
+  const [courseIDs, setCourseIds] = useState([]);
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
@@ -32,6 +35,7 @@ const HomePage = () => {
           const data = await response.json();
           setCourseNames(data.courses.map(course => course.naam) || []);
           setCourseDescriptions(data.courses.map(course => course.beschrijving) || []);
+          setCourseIds(data.courses.map(course => course.course_id) || []);
           setUserName(data.name || '');
         }
       } catch (error) {
@@ -85,7 +89,7 @@ const HomePage = () => {
                       </>
                     ) : (
                       <>
-                        <Typography variant="h4" style={styles.courseTitleRight}>{courseName}</Typography>
+                         <Typography variant="h4" style={styles.courseTitleRight}>{courseName}</Typography>
                         <View style={styles.iconWrapper}>
                           <SchoolIcon style={styles.icon} />
                         </View>
@@ -95,7 +99,8 @@ const HomePage = () => {
                   <Typography> Beschrijving cursus: {courseDescriptions[index]}</Typography>
                   <Typography>Voortgang:</Typography>
                   <LinearProgress style={styles.progressBar} variant="determinate" value={Math.random() * 100} />
-                  <Button title={"Bekijk cursus"} />
+                  <Button onPress={() => navigation.navigate("Module", { screen: "Module", course_id: courseIDs[index], styles: styles })} title={"Bekijk cursus"} />
+
                 </View>
               ))}
             </View>
@@ -202,7 +207,9 @@ const styles = StyleSheet.create({
       marginBottom: 20,
       height: 100
     },
-  },
+  FlatList: {
+    flexWrap: 'wrap'
+  }},
 });
 
 export default HomePage;

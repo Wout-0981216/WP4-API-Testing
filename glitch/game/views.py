@@ -1,8 +1,11 @@
-from .models import User, Cursussen
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.middleware.csrf import get_token
+from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def HomeCourses(request):
@@ -11,8 +14,76 @@ def HomeCourses(request):
         user_name = request.user.username
         course_ids = User.objects.filter(id=user_id).values_list('ingschr_cursus__id', flat=True)
         courses = Cursussen.objects.filter(id__in=course_ids)
-        courses_data = [{'naam': course.naam, 'beschrijving': course.beschrijving} for course in courses]
+        courses_data = [{'naam': course.naam, 'beschrijving': course.beschrijving, 'course_id': course.id} for course in courses]
+        print(courses_data[1])
         if courses_data:
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
             return JsonResponse({'message': 'Geen cursussen gevonden voor deze gebruiker'})
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+    if request.method == 'GET':
+        print(request.user.id)
+        user = User.objects.get(id=request.user.id)
+        date = str(user.date_joined).split(" ")[0]
+        return JsonResponse({'first_name' : user.first_name,
+                                'last_name' : user.last_name,
+                                'username' : user.username,
+                                'email' : user.email,
+                                'password' : user.password,
+                                'date_joined' : date,
+                                'message' : 'Profiel info opgehaald'
+                                }, status=200)
+
+    if request.method == 'POST':
+        try:
+            user = User.objects.get(id=request.user.id)
+            user.first_name = request.data.get('first_name', '')
+            user.last_name = request.data.get('last_name', '')
+            user.username = request.data.get('username', '')
+            user.email = request.data.get('email', '')
+            user.password = request.data.get('password', '')
+            user.save()
+            return JsonResponse({'message': 'Profiel succesvol aangepast'}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'message': 'error {e}'}, status=400)
+
+
+def get_modules(request, course_id):
+    if request.method == 'GET':
+        course = Cursussen.objects.get(id=course_id)
+        modules = Modules.objects.filter(cursus_id=course_id)
+        module_list = {}
+        j = 0
+        for module in modules:
+            j+=1
+            modulenr = "module"+str(j)
+            module_list[modulenr] = {"module_name" : module.naam}
+            activity = Activiteiten.objects.filter(module_id=module.id)
+            i = 1
+            module_list[modulenr]["activities"] = {}
+
+            for activity in activity:
+                module_list[modulenr]["activities"]["activity"+str(i)] = activity.naam
+                module_list[modulenr]["nr_of_activities"] = i
+                i+=1
+            points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
+            module_list[modulenr]["points_challenge_points"] = points_challenge.benodige_punten
+            context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
+            module_list[modulenr]["context_challenge_name"] = context_challenge.naam
+            core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
+            module_list[modulenr]["core_assignment_name"] = core_assignment.naam
+
+        print(module_list)
+        return JsonResponse({
+                                "course_name" : course.naam,
+                                "nr_of_modules" : j,
+                                "module_list" : module_list
+                            }, status=200, safe=False)
+
+def get_csrf_token(request):
+    csrf_token = get_token(request)
+    return JsonResponse({'csrfToken': csrf_token})
