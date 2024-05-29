@@ -13,26 +13,26 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='ingschr_cursus',
-            field=models.ManyToManyField(blank=True, to='game.cursussen'),
+            field=models.ManyToManyField(to='Cursussen', through='IngschrCursus', blank=True),
         ),
         migrations.AlterField(
             model_name='user',
             name='voortgang_activiteit_niveaus',
-            field=models.ManyToManyField(blank=True, to='game.niveaus'),
+            field=models.ManyToManyField(to='game.niveaus', through='VoortgangHoofdOpdrachten', blank=True),
         ),
         migrations.AlterField(
             model_name='user',
             name='voortgang_concept_opdracht',
-            field=models.ManyToManyField(blank=True, to='game.conceptopdracht'),
+            field=models.ManyToManyField(to='game.conceptopdracht', through='VoortgangConceptOpdrachten', blank=True),
         ),
         migrations.AlterField(
             model_name='user',
             name='voortgang_hoofd_opdracht',
-            field=models.ManyToManyField(blank=True, to='game.hoofdopdrachten'),
+            field=models.ManyToManyField(to='HoofdOpdrachten', through='VoortgangHoofdOpdrachten', blank=True,),
         ),
         migrations.AlterField(
             model_name='user',
             name='voortgang_punten_uitdaging',
-            field=models.ManyToManyField(blank=True, to='game.puntenuitdagingen'),
+            field=models.ManyToManyField(to='PuntenUitdagingen', through='VoortgangPuntenUitdaging', blank=True,),
         ),
     ]

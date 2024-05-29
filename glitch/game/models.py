@@ -136,13 +136,13 @@ class VoortgangPuntenUitdaging(models.Model):
         on_delete=models.DO_NOTHING,
         null=True
     )
-    voortgang = models.BooleanField(default=False)
+    voortgang = models.IntegerField(default=0)
 
 
 class VoortgangActiviteitenNiveaus(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     niveau = models.ForeignKey(Niveaus, on_delete=models.DO_NOTHING, null=True)
-    voortgang = models.IntegerField(default=0)
+    voortgang = models.BooleanField(default=False)
 
 
 class IngschrCursus(models.Model):

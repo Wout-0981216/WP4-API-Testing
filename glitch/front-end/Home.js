@@ -34,6 +34,7 @@ const HomePage = () => {
           const data = await response.json();
           setCourseNames(data.courses ? data.courses.map(course => course.naam) : []);
           setCourseDescriptions(data.courses ? data.courses.map(course => course.beschrijving) : []);
+          setCourseIds(data.courses.map(course => course.course_id) || []);
           setUserName(data.name || '');  
         }
       } catch (error) {
