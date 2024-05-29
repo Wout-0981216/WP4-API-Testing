@@ -2,20 +2,31 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
-from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten
+from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def HomeCourses(request):
+def HomepageStudent(request):
     if request.method == 'GET':
+        # for the courses
         user_id = request.user.id
         user_name = request.user.username
-        course_ids = User.objects.filter(id=user_id).values_list('ingschr_cursus__id', flat=True)
-        courses = Cursussen.objects.filter(id__in=course_ids)
-        courses_data = [{'naam': course.naam, 'beschrijving': course.beschrijving, 'course_id': course.id} for course in courses]
-        print(courses_data[1])
+        ingschr_cursussen = IngschrCursus.objects.filter(student_id=user_id)
+        courses_data = []
+
+        for ingschr_cursus in ingschr_cursussen:
+            course = ingschr_cursus.cursus
+            course_data = {
+                'naam': course.naam,
+                'beschrijving': course.beschrijving,
+                'course_id': course.id,
+                'voortgang': ingschr_cursus.voortgang
+            }
+            print(ingschr_cursus.voortgang)
+            courses_data.append(course_data)
+
         if courses_data:
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
@@ -49,7 +60,8 @@ def user_profile(request):
             return JsonResponse({'message': 'Profiel succesvol aangepast'}, status=200)
 
         except Exception as e:
-            return JsonResponse({'message': 'error {e}'}, status=400)
+            return JsonResponse({'message': f'error {e}'}, status=400)
+
 
 
 def get_modules(request, course_id):

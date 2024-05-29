@@ -129,10 +129,11 @@ class VoortgangActiviteitenNiveaus(models.Model):
 
 
 class IngschrCursus(models.Model):
-    student = models.ForeignKey('User', models.DO_NOTHING, db_column='user_id')
-    cursus = models.ForeignKey('Cursussen', models.DO_NOTHING, db_column='cursussen_id')
+    student = models.ForeignKey(User, models.DO_NOTHING, db_column='user_id')
+    cursus = models.ForeignKey(Cursussen, models.DO_NOTHING, db_column='cursussen_id')
+    voortgang = models.IntegerField(default=0)
 
-    class Meta:
+    class Meta: 
         managed = False
         db_table = 'game_user_ingschr_cursus'
         unique_together = (('student', 'cursus'),)

@@ -17,6 +17,7 @@ const HomePage = () => {
   const [courseDescriptions, setCourseDescriptions] = useState([]);
   const [courseIDs, setCourseIds] = useState([]);
   const [userName, setUserName] = useState('');
+  const [progress, setProgress] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,11 +37,13 @@ const HomePage = () => {
           setCourseNames(data.courses.map(course => course.naam) || []);
           setCourseDescriptions(data.courses.map(course => course.beschrijving) || []);
           setCourseIds(data.courses.map(course => course.course_id) || []);
+          setProgress(data.courses.map(course => course.voortgang) || []);
           setUserName(data.name || '');
         }
       } catch (error) {
         console.log('Error fetching data:', error);
         logout();
+        
       }
     };
   
@@ -98,7 +101,7 @@ const HomePage = () => {
                   </View>
                   <Typography> Beschrijving cursus: {courseDescriptions[index]}</Typography>
                   <Typography>Voortgang:</Typography>
-                  <LinearProgress style={styles.progressBar} variant="determinate" value={Math.random() * 100} />
+                  <LinearProgress style={styles.progressBar} variant="determinate" value={progress[index]} />
                   <Button onPress={() => navigation.navigate("Module", { screen: "Module", course_id: courseIDs[index], styles: styles })} title={"Bekijk cursus"} />
 
                 </View>
