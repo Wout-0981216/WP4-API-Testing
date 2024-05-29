@@ -11,6 +11,8 @@ import Assignment from './assignment';
 import ActivitiesPage from './activities-module';
 import ProfilePage from './components/ProfilePage';
 import ModulePage from './components/ModulePage'
+import TeacherHome from './teachers/HomeTeacher';
+import ProfilePageTeacher from './teachers/ProfilePageTeacher';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,11 +39,13 @@ const AuthStack = () => (
       options={{ headerShown: false }}
     />
   </Stack.Navigator>
-
 );
 
 const AppStack = () => (
   <Stack.Navigator initialRouteName="Home">
+
+    {/* Leerlingen */}
+
     <Stack.Screen
       name="Home"
       component={HomePage}
@@ -57,8 +61,23 @@ const AppStack = () => (
       component={ModulePage}
       options={{ headerShown: false}}
     />
+
+
+    {/* Teachers: */}
+
+    <Stack.Screen
+      name="TeacherHome"
+      component={TeacherHome}  
+      options={{ headerShown: false }}
+    />
+        <Stack.Screen
+      name="TeacherProfiel"
+      component={ProfilePageTeacher}
+      options={{ headerShown: false }}
+    />
   </Stack.Navigator>
 );
+
 
 const App = () => {
   const { authenticated, loading } = useContext(AuthContext);
@@ -73,8 +92,6 @@ const App = () => {
     </NavigationContainer>
   );
 };
-
-
 
 
 export default function MainApp() {

@@ -16,7 +16,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation()
   const { setAuthenticated } = useContext(AuthContext);
 
   const handleSubmit = async () => {
@@ -24,18 +24,17 @@ const LoginForm = () => {
     try {
       const user = { username, password };
       const response = await axiosInstance.post('/login/login/', user);
-
+  
       if (response.status >= 200 && response.status < 300) {
         await AsyncStorage.setItem('access_token', response.data.access);
         await AsyncStorage.setItem('refresh_token', response.data.refresh);
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
         setAuthenticated(true);
-        if (response.data.teacher == "True") {
-          console.log('True');
+        if (response.data.teacher === "True") {
+          console.log('Is leraar');
           navigation.navigate('TeacherHome'); 
-        }
-        if (response.data.teacher == "False") {
-          console.log('False');
+        } else {
+          console.log('Is geen leraar');
           navigation.navigate('Home');
         }
       } else {
@@ -47,7 +46,7 @@ const LoginForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   useEffect(() => {
     const checkAuth = async () => {
