@@ -23,6 +23,10 @@ export default function Layout({ children }) {
     { text: 'Profiel', icon: <AccountCircleIcon />, location: "Profiel" }
   ];
 
+  const handleMenuItemPress = (path) => {
+    navigation.navigate(path);
+  };
+
   return (
     <Box sx={{ display: 'flex', height: '100vh', backgroundColor: 'white' }}>
       <CssBaseline />

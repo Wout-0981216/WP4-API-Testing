@@ -1,11 +1,43 @@
+
 from django.http import JsonResponse
+from game.models import ConceptOpdracht, Activiteiten, User, Cursussen
+from . import models
 from rest_framework.decorators import api_view, permission_classes
+from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
 from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, VoortgangPuntenUitdaging
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
+@api_view(['GET'])
+def concept_opdracht_list(request):
+    if request.method == 'GET':
+        opdrachten = ConceptOpdracht.objects.all()
+        opdrachten_list = [
+            {
+                'id': opdracht.id,
+                'naam': opdracht.naam,
+                'beschrijving': opdracht.beschrijving
+            } for opdracht in opdrachten
+        ]
+        print(opdrachten_list)
+        return JsonResponse(opdrachten_list, safe=False)
+    
+
+@api_view(['GET'])
+def activities_module(request):
+    if request.method == 'GET':
+        activities_module = Activiteiten.objects.all()
+        activities_list = [
+            {
+                'id': activities.id,
+                'naam': activities.naam,
+                'beschrijving': activities.beschrijving
+            } for activities in activities_module
+        ]
+        return JsonResponse(activities_list, safe=False)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def HomeCourses(request):
@@ -18,7 +50,7 @@ def HomeCourses(request):
         if courses_data:
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
-            return JsonResponse({'message': 'Geen cursussen gevonden voor deze gebruiker'})
+            return JsonResponse({'name': user_name, 'message': 'Geen cursussen gevonden voor deze gebruiker'})
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
