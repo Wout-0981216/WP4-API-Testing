@@ -22,6 +22,12 @@ const ActivitiesPage = () => {
     return (
         <div>
             <h1>Activiteiten</h1>
+            {activiteiten.map(activiteit => (
+                <li key={activiteit.id}>
+                  <h2>{activiteit.naam}</h2>
+                  <p>{activiteit.beschrijving}</p>
+                </li>
+                ))}
         </div>
     )
 };

@@ -6,6 +6,7 @@ import LoginForm from './LoginForm';
 import HomePage from './Home';
 import RegistrationForm from './Registration';
 import Assignment from './assignment';
+import ActivitiesPage from './activities-module';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,11 @@ const AuthStack = () => (
     <Stack.Screen
       name="ConceptAssignment"
       component={Assignment}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="ActivitiesModule"
+      component={ActivitiesPage}
       options={{ headerShown: false }}
     />
   </Stack.Navigator>

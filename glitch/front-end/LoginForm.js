@@ -102,6 +102,9 @@ const LoginForm = () => {
             <TouchableOpacity onPress={() => navigation.navigate('ConceptAssignment')}>
               <Text style={styles.registerLink}> concept</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('ActivitiesModule')}>
+              <Text style={styles.registerLink}> Activiteiten modules</Text>
+            </TouchableOpacity>
           </Text>
         </View>
       </View>

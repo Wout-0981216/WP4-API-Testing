@@ -29,7 +29,6 @@ def activities_module(request):
         activities_list = [
             {
                 'id': activities.id,
-                'module_id': activities.module.id,
                 'naam': activities.naam,
                 'beschrijving': activities.beschrijving
             } for activities in activities_module
