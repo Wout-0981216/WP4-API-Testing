@@ -16,10 +16,11 @@ import { useNavigation } from '@react-navigation/native';
 const drawerWidth = 240;
 
 export default function Layout({ children }) {
+  const navigation = useNavigation()
   const menuItems = [
-    { text: 'Home', icon: <HomeIcon /> },
-    { text: 'Cursussen', icon: <SchoolIcon /> },
-    { text: 'Profiel', icon: <AccountCircleIcon /> },
+    { text: 'Home', icon: <HomeIcon />, location: "Profiel" },
+    { text: 'Cursussen', icon: <SchoolIcon />, location: "Profiel" },
+    { text: 'Profiel', icon: <AccountCircleIcon />, location: "Profiel" }
   ];
 
   const handleMenuItemPress = (path) => {
@@ -44,7 +45,7 @@ export default function Layout({ children }) {
           <List>
             {menuItems.map((item) => (
               <ListItem key={item.text} disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => navigation.navigate(item.location, {screen: "Profiel"})}>
                   <ListItemIcon>
                     {item.icon}
                   </ListItemIcon>

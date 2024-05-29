@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { Grid, Typography, LinearProgress } from '@mui/material';
 import { AuthContext } from './AuthProvider';
 import Layout from './Layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SchoolIcon from '@mui/icons-material/School';
+import { useNavigation } from '@react-navigation/native';
 
 const HomePage = () => {
+  const navigation = useNavigation()
   const authContext = useContext(AuthContext);
   const { authenticated, loading, logout } = authContext;
   const [message, setMessage] = useState('');
   const [courseNames, setCourseNames] = useState([]);
   const [courseDescriptions, setCourseDescriptions] = useState([]);
+  const [courseIDs, setCourseIds] = useState([]);
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
@@ -80,7 +83,7 @@ const HomePage = () => {
                       {index % 2 === 0 ? (
                         <>
                           <SchoolIcon style={styles.icon}/>
-                          <Typography variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
+                          <Typography onClick={() => navigation.navigate("Module", {screen: "Module", course_id: courseIDs[index], styles: styles})} variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
                         </>
                       ) : (
                         <>
@@ -132,7 +135,6 @@ const styles = StyleSheet.create({
     width: '500px'
   },
   courseHeader: {
-
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -161,6 +163,9 @@ const styles = StyleSheet.create({
   },
   rightAlign: {
     alignSelf: 'flex-end',
+  },
+  FlatList: {
+    flexWrap: 'wrap'
   },
 });
 

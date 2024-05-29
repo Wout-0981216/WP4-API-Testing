@@ -29,7 +29,7 @@ class ConceptOpdracht(models.Model):
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
-    
+
     class Meta:
         db_table = 'game_conceptopdracht'
 
