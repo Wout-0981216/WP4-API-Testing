@@ -64,6 +64,8 @@ const HomePage = () => {
     return null;
   }
 
+
+
   return (
     <Layout>
       <View style={styles.container}>

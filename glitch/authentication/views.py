@@ -1,14 +1,65 @@
+from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.contrib.auth import login as auth_login, authenticate
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
+from django.middleware.csrf import get_token
+from django.db import connection
+from game.models import User
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import login as auth_login, authenticate
+from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_simplejwt.views import TokenRefreshView
+from django.contrib.auth.hashers import make_password
+import logging
+
+logger = logging.getLogger(__name__)
+
+@csrf_exempt
+@api_view(['POST'])
+def register_user(request):
+        if request.method == 'POST':
+            # getting data from request
+            first_name = request.data.get('first_name', '')
+            last_name = request.data.get('last_name', '')
+            username = request.data.get('username', '')
+            email = request.data.get('email', '')
+            password = request.data.get('password', '')
+
+            if not (first_name and last_name and username and email and password):
+                return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+            hashed_password = make_password(password)   
+            user = User.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                username=username,
+                email=email,
+                password=hashed_password,
+                is_active=True,
+                is_teacher=False
+            )
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+
+            return JsonResponse({
+                'message': 'Succesvol geregistreerd',
+                'access_token': access_token,
+                'refresh_token': refresh_token,
+            }, status=200)
+            
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+
+def get_csrf_token(request):
+    csrf_token = get_token(request)
+    return JsonResponse({'csrf_token': csrf_token})
 
 @csrf_exempt
 @api_view(['POST'])
