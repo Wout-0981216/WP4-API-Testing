@@ -25,8 +25,8 @@ export default function Layout({ children }) {
 
   const navigation = useNavigation()
   const menuItems = [
-    { text: 'Home', icon: <HomeIcon />, location: "Profiel" },
-    { text: 'Cursussen', icon: <SchoolIcon />, location: "Profiel" },
+    { text: 'Home', icon: <HomeIcon />, location: "Home" },
+    { text: 'Cursussen', icon: <SchoolIcon />, location: "Home" },
     { text: 'Profiel', icon: <AccountCircleIcon />, location: "Profiel" }
   ];
 
@@ -51,6 +51,7 @@ export default function Layout({ children }) {
               key={item.text}
               label={item.text}
               icon={item.icon}
+              onClick={() => navigation.navigate(item.location, {screen: "Profiel"})}
             />
           ))}
         </BottomNavigation>
