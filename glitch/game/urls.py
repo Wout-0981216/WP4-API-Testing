@@ -3,7 +3,7 @@ from django.urls import path
 from game.views import concept_opdracht_list, activities_module, HomepageStudent, get_modules, user_profile, get_csrf_token
 
 urlpatterns = [
-    path('api/concept-opdrachten/', concept_opdracht_list, name='concept-opdracht-list'),
+    path('api/concept-opdrachten/<int:module_id>/', concept_opdracht_list, name='concept-opdracht-list'),
     path('api/activiteiten/', activities_module, name='activities_module'),
     path('HomeCourses', HomepageStudent, name='HomeCourses'),
     path('api/profile/', user_profile, name='user_profile_view'),

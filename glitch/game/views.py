@@ -9,18 +9,16 @@ from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen
 from django.views.decorators.csrf import csrf_exempt
 
 @api_view(['GET'])
-def concept_opdracht_list(request):
-    if request.method == 'GET':
-        opdrachten = ConceptOpdracht.objects.all()
-        opdrachten_list = [
-            {
-                'id': opdracht.id,
-                'naam': opdracht.naam,
-                'beschrijving': opdracht.beschrijving
-            } for opdracht in opdrachten
-        ]
-        print(opdrachten_list)
-        return JsonResponse(opdrachten_list, safe=False)
+def concept_opdracht_list(request, module_id):
+    opdrachten = ConceptOpdracht.objects.filter(module_id=module_id)
+    opdrachten_list = [
+        {
+            'id': opdracht.id,
+            'naam': opdracht.naam,
+            'beschrijving': opdracht.beschrijving
+        } for opdracht in opdrachten
+    ]
+    return JsonResponse(opdrachten_list, safe=False)
     
 
 @api_view(['GET'])
