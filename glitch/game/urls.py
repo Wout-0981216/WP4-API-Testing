@@ -4,7 +4,7 @@ from game.views import concept_opdracht_list, activities_module, HomepageStudent
 
 urlpatterns = [
     path('api/concept-opdrachten/<int:module_id>/', concept_opdracht_list, name='concept-opdracht-list'),
-    path('api/activiteiten/', activities_module, name='activities_module'),
+    path('api/activiteiten/<int:module_id>/', activities_module, name='activities_module'),
     path('HomeCourses', HomepageStudent, name='HomeCourses'),
     path('api/profile/', user_profile, name='user_profile_view'),
     path('api/module/<int:course_id>/', get_modules, name='get_modules'),

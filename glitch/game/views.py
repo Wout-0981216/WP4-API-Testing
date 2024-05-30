@@ -22,9 +22,8 @@ def concept_opdracht_list(request, module_id):
     
 
 @api_view(['GET'])
-def activities_module(request):
-    if request.method == 'GET':
-        activities_module = Activiteiten.objects.all()
+def activities_module(request, module_id):
+        activities_module = Activiteiten.objects.filter(module_id=module_id)
         activities_list = [
             {
                 'id': activities.id,
