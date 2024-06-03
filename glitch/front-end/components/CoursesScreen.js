@@ -65,15 +65,19 @@ const CoursesScreen = () => {
               <Text style={styles.title}>Cursus: {item.naam}</Text>
               <Text>Beschrijving: {item.beschrijving}</Text>
               {expandedCourses[item.id] && (
-                <View>
-                  <Text style={styles.subtitle}>Studenten:</Text>
+                <View style={styles.table}>
+                  <View style={styles.tableHeader}>
+                    <Text style={styles.tableHeaderCell}>Voornaam</Text>
+                    <Text style={styles.tableHeaderCell}>Achternaam</Text>
+                    <Text style={styles.tableHeaderCell}>Email</Text>
+                  </View>
                   {Array.isArray(expandedCourses[item.id]) && expandedCourses[item.id].length > 0 ? (
                     expandedCourses[item.id].map(student => (
-                      <Text key={student.id} style={styles.student}>
-                        {student.first_name}
-                        {student.last_name}
-                        {student.email}
-                      </Text>
+                      <View key={student.id} style={styles.tableRow}>
+                        <Text style={styles.tableCell}>{student.first_name}</Text>
+                        <Text style={styles.tableCell}>{student.last_name}</Text>
+                        <Text style={styles.tableCell}>{student.email}</Text>
+                      </View>
                     ))
                   ) : (
                     <Text style={styles.student}>Geen studenten gevonden</Text>
@@ -89,28 +93,47 @@ const CoursesScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  item: {
-    padding: 20,
-    marginVertical: 8,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 5,
-  },
-  title: {
-    fontSize: 18,
-  },
-  subtitle: {
-    fontSize: 16,
-    marginTop: 10,
-  },
-  student: {
-    fontSize: 14,
-    marginTop: 5,
-  },
-});
+    container: {
+      flex: 1,
+      padding: 20,
+      backgroundColor: '#fff',
+    },
+    item: {
+      padding: 20,
+      marginVertical: 8,
+      backgroundColor: '#f9f9f9',
+      borderRadius: 5,
+    },
+    title: {
+      fontSize: 18,
+    },
+    table: {
+      marginTop: 10,
+    },
+    tableHeader: {
+      flexDirection: 'row',
+      borderBottomWidth: 1,
+      borderBottomColor: '#000',
+      paddingBottom: 5,
+    },
+    tableHeaderCell: {
+      flex: 1,
+      fontWeight: 'bold',
+    },
+    tableRow: {
+      flexDirection: 'row',
+      borderBottomWidth: 1,
+      borderBottomColor: '#ddd',
+      paddingVertical: 5,
+    },
+    tableCell: {
+      flex: 1,
+    },
+    student: {
+      fontSize: 14,
+      marginTop: 5,
+    },
+  });
+  
 
 export default CoursesScreen;
