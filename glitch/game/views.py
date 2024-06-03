@@ -23,15 +23,15 @@ def concept_opdracht_list(request, module_id):
 
 @api_view(['GET'])
 def activities_module(request, module_id):
-        activities_module = Activiteiten.objects.filter(module_id=module_id)
-        activities_list = [
-            {
-                'id': activities.id,
-                'naam': activities.naam,
-                'beschrijving': activities.beschrijving
-            } for activities in activities_module
-        ]
-        return JsonResponse(activities_list, safe=False)
+    activities_module = Activiteiten.objects.filter(module_id=module_id)
+    activities_list = [
+        {
+            'id': activities.id,
+            'naam': activities.naam,
+            'beschrijving': activities.beschrijving
+        } for activities in activities_module
+    ]
+    return JsonResponse(activities_list, safe=False)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
