@@ -3,8 +3,9 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const CoursesScreen = ({ navigation }) => {
+const CoursesScreen = () => {
   const [courses, setCourses] = useState([]);
+  const [expandedCourses, setExpandedCourses] = useState({});
 
   useEffect(() => {
     fetchCourses();
@@ -13,7 +14,6 @@ const CoursesScreen = ({ navigation }) => {
   const fetchCourses = async () => {
     try {
       const token = await AsyncStorage.getItem('access_token');
-      
       const response = await axios.get('http://127.0.0.1:8000/teachers/api/courses/', {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -27,18 +27,30 @@ const CoursesScreen = ({ navigation }) => {
 
   const fetchStudentsForCourse = async (courseId) => {
     try {
-      // Haal het authenticatietoken op uit de lokale opslag (bijv. AsyncStorage)
       const token = await AsyncStorage.getItem('access_token');
-
       const response = await axios.get(`http://127.0.0.1:8000/teachers/api/students/${courseId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      const students = response.data;
-      navigation.navigate('Students', { courseId, students });
+      setExpandedCourses(prevState => ({
+        ...prevState,
+        [courseId]: response.data
+      }));
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const toggleCourse = (courseId) => {
+    if (expandedCourses[courseId]) {
+      setExpandedCourses(prevState => {
+        const newState = { ...prevState };
+        delete newState[courseId];
+        return newState;
+      });
+    } else {
+      fetchStudentsForCourse(courseId);
     }
   };
 
@@ -48,9 +60,26 @@ const CoursesScreen = ({ navigation }) => {
         data={courses}
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => fetchStudentsForCourse(item.id)}>
+          <TouchableOpacity onPress={() => toggleCourse(item.id)}>
             <View style={styles.item}>
-              <Text style={styles.title}>{item.name}</Text>
+              <Text style={styles.title}>Cursus: {item.naam}</Text>
+              <Text>Beschrijving: {item.beschrijving}</Text>
+              {expandedCourses[item.id] && (
+                <View>
+                  <Text style={styles.subtitle}>Studenten:</Text>
+                  {Array.isArray(expandedCourses[item.id]) && expandedCourses[item.id].length > 0 ? (
+                    expandedCourses[item.id].map(student => (
+                      <Text key={student.id} style={styles.student}>
+                        {student.first_name}
+                        {student.last_name}
+                        {student.email}
+                      </Text>
+                    ))
+                  ) : (
+                    <Text style={styles.student}>Geen studenten gevonden</Text>
+                  )}
+                </View>
+              )}
             </View>
           </TouchableOpacity>
         )}
@@ -73,6 +102,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
+  },
+  subtitle: {
+    fontSize: 16,
+    marginTop: 10,
+  },
+  student: {
+    fontSize: 14,
+    marginTop: 5,
   },
 });
 

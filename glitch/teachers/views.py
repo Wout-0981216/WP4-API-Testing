@@ -6,7 +6,6 @@ from game.models import Cursussen, User, VoortgangConceptOpdrachten, TeacherCurs
 
 @api_view(['GET'])
 def course_list(request):
-    print("Request headers:", request.headers)
     print("User ID:", request.user.id)
     teacher_cursussen = TeacherCursus.objects.filter(user_id=request.user.id)
     cursus_ids = [teacher_cursus.cursus_id for teacher_cursus in teacher_cursussen]
@@ -34,6 +33,7 @@ def student_list(request, course_id):
         'username': student.username,
         'first_name': student.first_name,
         'last_name': student.last_name,
+        'email' : student.email,
     } for student in students]
     
     return JsonResponse(students_data, safe=False)
