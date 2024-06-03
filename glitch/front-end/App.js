@@ -12,7 +12,6 @@ import ActivitiesPage from './components/activities-module';
 import ProfilePage from './components/ProfilePage';
 import ModulePage from './components/ModulePage';
 import CoursesScreen from './components/CoursesScreen';
-import StudentsScreen from './components/StudentsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -59,8 +58,11 @@ const AppStack = () => (
       component={ActivitiesPage}
       options={{ headerShown: false }}
     />
-    <Stack.Screen name="Courses" component={CoursesScreen} />
-    <Stack.Screen name="Students" component={StudentsScreen} />
+    <Stack.Screen
+      name="CoursesScreen"
+      component={CoursesScreen}
+      options={{ headerShown: false }}
+    />
   </Stack.Navigator>
 );
 

@@ -27,7 +27,8 @@ export default function Layout({ children }) {
   const menuItems = [
     { text: 'Home', icon: <HomeIcon />, location: "Home" },
     { text: 'Cursussen', icon: <SchoolIcon />, location: "Home" },
-    { text: 'Profiel', icon: <AccountCircleIcon />, location: "Profiel" }
+    { text: 'Profiel', icon: <AccountCircleIcon />, location: "Profiel" },
+    { text: 'Studenten', icon: <AccountCircleIcon />, location: "CoursesScreen" }
   ];
 
   const handleMenuItemPress = (path) => {
