@@ -1,159 +1,127 @@
-import React, {useState, useEffect} from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Input, Icon, Button } from '@rneui/themed';
-import LayoutTeacher from './LayoutTeacher'
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Input } from '@rneui/themed';
+import LayoutTeacher from './LayoutTeacher';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfilePageTeacher = () => {
-  const[first_name, setFirst_name] = useState('');
-  const[last_name, setLast_name] = useState('')
-  const[username, setUsername] = useState('');
-  const[email, setEmail] = useState('');
-  const[password, setPassword] = useState('');
-  const[date_joined, setDate_joined] = useState('');
-  const[csrftoken, setCsrfToken] = useState('');
-  const[update_page, setUpdate] = useState(true);
-  const style = styles;
-
+  const [first_name, setFirst_name] = useState('');
+  const [last_name, setLast_name] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [date_joined, setDate_joined] = useState('');
+  const [update_page, setUpdate] = useState(true);
+  const [isEditing, setIsEditing] = useState(false); // State for edit mode
+  const navigation = useNavigation();
 
   useEffect(() => {
-  //   const getCsrfToken = async () => {
-  //     try {
-  //         const response = await fetch('http://127.0.0.1:8000/game/api/csrf/', {
-  //             method: 'GET',
-  //             credentials: 'include',
-  //         });
-  //         const data = await response.json();
-  //         setCsrfToken(data.csrfToken);
-  //     } catch (error) {
-  //         console.error('Er is een fout opgetreden bij het ophalen van de CSRF-token:', error);
-  //     }
-  //   };
-
     const getUserInfo = async () => {
-      try{
+      try {
         const token = await AsyncStorage.getItem('access_token');
-        const response = await fetch('http://127.0.0.1:8000/game/api/profile/', {
-                method: 'GET',
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                },
-                               //credentials: 'include',
-            });
-            const data = await response.json();
-            setFirst_name(data.first_name);
-            setLast_name(data.last_name);
-            setUsername(data.username);
-            setEmail(data.email);
-            setPassword(data.password);
-            setDate_joined(data.date_joined);
-            console.log(data.message)
-        } catch (error) {
-          console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
-        }
+        const response = await fetch('http://192.168.56.1:8000/game/api/profile/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+        });
+        const data = await response.json();
+        setFirst_name(data.first_name);
+        setLast_name(data.last_name);
+        setUsername(data.username);
+        setEmail(data.email);
+        setPassword(data.password);
+        setDate_joined(data.date_joined);
+        console.log(data.message);
+      } catch (error) {
+        console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
+      }
     };
-    //getCsrfToken();
     getUserInfo();
   }, [update_page]);
 
-  const submitForm = async (first_name,last_name,username, email, password) => {
+  const submitForm = async () => {
     try {
-        const token = await AsyncStorage.getItem('access_token');
-        const response = await fetch('http://127.0.0.1:8000/game/api/profile/', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            //'X-CSRFToken': csrftoken,
-            },
-            //credentials: 'include',
-            body: JSON.stringify({ first_name,last_name,username, email, password }),
-        });
-        const data = await response.json();
-        console.log(data.message)
-        alert(data.message)
-        setUpdate(!update_page)
+      const token = await AsyncStorage.getItem('access_token');
+      const response = await fetch('http://192.168.56.1:8000/game/api/profile/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ first_name, last_name, username, email, password }),
+      });
+      const data = await response.json();
+      console.log(data.message);
+      alert(data.message);
+      setUpdate(!update_page);
+      setIsEditing(false);
     } catch (error) {
-        console.error('Er is een fout opgetreden bij het aanpassen van het profiel:', error);
+      console.error('Er is een fout opgetreden bij het aanpassen van het profiel:', error);
     }
   };
 
-  const handleSubmit = (e) => {
-      e.preventDefault();
-
-      submitForm(first_name,last_name,username, email, password);
-  };
-
-  const changePage = () => {
-    var x = document.getElementById("show_profile");
-    var y = document.getElementById("edit_profile");
-    if (x.style.display === "none") {
-      x.style.display = "block";
-      y.style.display = "none";
-    } else {
-      x.style.display = "none";
-      y.style.display = "block";
-    }
-    setUpdate(!update_page)
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('access_token');
+    navigation.navigate('Login');
   };
 
   return (
     <LayoutTeacher>
-    <div>
-      <h2>Profiel pagina</h2>
-      <div id="show_profile">
-        <div><Text style={style.Text}>Voornaam: {first_name}</Text></div>
-        <div><Text style={style.Text}>Achternaam: {last_name}</Text></div>
-        <div><Text style={style.Text}>Gebruikersnaam: {username}</Text></div>
-        <div><Text style={style.Text}>Email: {email}</Text></div>
-        <div><Text style={style.Text}>Wachtwoord: {password}</Text></div>
-        <div><Text style={style.Text}>Gebruiker sinds: {date_joined}</Text></div>
-      </div>
-      <Button onPress={changePage}>Profiel aanpassen</Button>
-      <form id="edit_profile" hidden="hidden">
-        <div>
-          <label>Voornaam:</label>
-          <Input
-            type="text"
-            value={first_name}
-            onChange={(e) => setFirst_name(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Achternaam:</label>
+      <View>
+        <Text style={styles.text}>Profiel pagina test</Text>
+        {isEditing ? (
+          <View style={styles.editProfile}>
             <Input
-              type="text"
+              label="Voornaam"
+              value={first_name}
+              onChangeText={(value) => setFirst_name(value)}
+            />
+            <Input
+              label="Achternaam"
               value={last_name}
-              onChange={(e) => setLast_name(e.target.value)}
+              onChangeText={(value) => setLast_name(value)}
             />
-        </div>
-        <div>
-          <label>Gebruikersnaam:</label>
             <Input
-              type="text"
+              label="Gebruikersnaam"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChangeText={(value) => setUsername(value)}
             />
-        </div>
-        <div>
-          <label>Email:</label>
             <Input
-              type="email"
+              label="Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChangeText={(value) => setEmail(value)}
             />
-        </div>
-        <div>
-          <label>Wachtwoord:</label>
             <Input
-              type="text"
+              label="Wachtwoord"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChangeText={(value) => setPassword(value)}
             />
-        </div>
-        <Button onPress={handleSubmit}>Gegevens aanpassen</Button>
-      </form>
-    </div>
+            <TouchableOpacity onPress={submitForm}>
+              <Text style={styles.buttonText}>Gegevens aanpassen</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsEditing(false)}>
+              <Text style={styles.buttonText}>Annuleren</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.showProfile}>
+            <Text style={styles.text}>Voornaam: {first_name}</Text>
+            <Text style={styles.text}>Achternaam: {last_name}</Text>
+            <Text style={styles.text}>Gebruikersnaam: {username}</Text>
+            <Text style={styles.text}>Email: {email}</Text>
+            <Text style={styles.text}>Wachtwoord: {password}</Text>
+            <Text style={styles.text}>Gebruiker sinds: {date_joined}</Text>
+            <TouchableOpacity onPress={() => setIsEditing(true)}>
+              <Text style={styles.buttonText}>Profiel aanpassen</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        <TouchableOpacity onPress={handleLogout}>
+          <Text style={styles.buttonText}>Uitloggen</Text>
+        </TouchableOpacity>
+      </View>
     </LayoutTeacher>
   );
 };
@@ -161,9 +129,26 @@ const ProfilePageTeacher = () => {
 export default ProfilePageTeacher;
 
 const styles = StyleSheet.create({
-  Text: {
+  text: {
     fontSize: 20,
     marginTop: 10,
     padding: 10,
-  }
-})
+  },
+  buttonText: {
+    fontSize: 18,
+    color: 'blue',
+    marginTop: 10,
+    padding: 10,
+    textAlign: 'center',
+  },
+  showProfile: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  editProfile: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+});

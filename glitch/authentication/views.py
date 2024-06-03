@@ -71,7 +71,6 @@ def login(request):
         if user:
             auth_login(request, user)
             refresh = RefreshToken.for_user(user)
-            print("login succesvol")
             if request.user.is_staff == 1:
                 return JsonResponse({
                     'refresh': str(refresh),

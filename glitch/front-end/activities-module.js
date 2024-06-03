@@ -6,7 +6,7 @@ const ActivitiesPage = () => {
 
     useEffect(() => {
         // uit database halen
-      axios.get('http://localhost:8000/game/api/activiteiten')
+      axios.get('http://192.168.56.1:8000/game/api/activiteiten')
         .then(response => {
           setActiviteiten(response.data);
         })

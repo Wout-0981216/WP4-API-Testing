@@ -5,7 +5,7 @@ const Assignment = () => {
     const [assignments, setAssignments] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/game/api/concept-opdrachten/')
+        axios.get('http://192.168.56.1:8000/game/api/concept-opdrachten/')
             .then(response => {
                 setAssignments(response.data);
             })

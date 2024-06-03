@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, Dimensions, ActivityIndicator,TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import axiosInstance from './axiosInstance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from './AuthProvider';
 import bannerimage from './src/images/image1.jpg';
-import Typography from '@mui/material/Typography';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const isMobile = width < 768;
 
 const LoginForm = () => {
@@ -16,7 +15,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const { setAuthenticated } = useContext(AuthContext);
 
   const handleSubmit = async () => {
@@ -73,8 +72,8 @@ const LoginForm = () => {
     <View style={styles.container}>
       <View style={styles.section}>
         <View style={styles.section_small}>
-          <Typography style={styles.heading} variant="h1">Glitch</Typography>
-          <Typography style={styles.subheading} variant="h2">Login</Typography>
+          <Text style={styles.heading}>Glitch</Text>
+          <Text style={styles.subheading}>Login</Text>
           <Input
             label="Gebruikersnaam"
             value={username}

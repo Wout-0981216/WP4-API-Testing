@@ -20,7 +20,6 @@ def concept_opdracht_list(request):
                 'beschrijving': opdracht.beschrijving
             } for opdracht in opdrachten
         ]
-        print(opdrachten_list)
         return JsonResponse(opdrachten_list, safe=False)
     
 
@@ -56,11 +55,9 @@ def HomepageStudent(request):
                 'course_id': course.id,
                 'voortgang': ingschr_cursus.voortgang
             }
-            print(ingschr_cursus.voortgang)
             courses_data.append(course_data)
 
         if teacher:
-            print(teacher)
             return JsonResponse({'teacher': "true"})
         if courses_data:
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
@@ -72,7 +69,6 @@ def HomepageStudent(request):
 @permission_classes([IsAuthenticated])
 def user_profile(request):
     if request.method == 'GET':
-        print(request.user.id)
         user = User.objects.get(id=request.user.id)
         date = str(user.date_joined).split(" ")[0]
         return JsonResponse({'first_name' : user.first_name,
