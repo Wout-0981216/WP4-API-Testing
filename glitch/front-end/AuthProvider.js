@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axiosInstance from './axiosInstance';
 import { ActivityIndicator, View } from 'react-native';
 
 export const AuthContext = createContext();
@@ -13,25 +14,14 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem('access_token');
       if (token) {
+        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         try {
-          const response = await fetch('http://192.168.56.1:8000/game/HomeCourses', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          console.log('Server response:', data.teacher);
+          const response = await axiosInstance.get('http://192.168.56.1:8000/game/HomeCourses');
           if (response.status === 200) {
+            const data = response.data;
+            console.log('Server response:', data.teacher);
             setAuthenticated(true);
-            if (data.teacher === true) { 
-              console.log("true")
-              setIsTeacher(true);
-            } else {
-              setIsTeacher(false); 
-            }
+            setIsTeacher(!!data.teacher); // Zet isTeacher op true als data.teacher true is, anders false
           } else {
             throw new Error('Token validation failed');
           }
@@ -40,20 +30,15 @@ export const AuthProvider = ({ children }) => {
           try {
             const refreshToken = await AsyncStorage.getItem('refresh_token');
             if (refreshToken) {
-              const refreshResponse = await fetch('http://192.168.56.1:8000/login/refresh-token/', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ refresh_token: refreshToken })
-              });
-              if (!refreshResponse.ok) {
+              const refreshResponse = await axiosInstance.post('/login/refresh-token/', { refresh_token: refreshToken });
+              if (refreshResponse.status === 200) {
+                const newAccessToken = refreshResponse.data.access_token;
+                await AsyncStorage.setItem('access_token', newAccessToken);
+                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+                setAuthenticated(true);
+              } else {
                 throw new Error('Token refresh failed');
               }
-              const refreshData = await refreshResponse.json();
-              const newAccessToken = refreshData.access_token;
-              await AsyncStorage.setItem('access_token', newAccessToken);
-              setAuthenticated(true);
             } else {
               throw new Error('No refresh token available');
             }

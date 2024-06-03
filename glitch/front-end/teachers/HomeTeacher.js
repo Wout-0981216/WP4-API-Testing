@@ -65,7 +65,7 @@ const HomePageTeacher = () => {
     <LayoutTeacher>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.orangeblock}>
-          <Text style={styles.header}>Welkom {userName}!</Text>
+          <Text style={styles.header}>Welkom leraartje {userName}!</Text>
           <Text style={styles.message}>{message}</Text>
         </View>
         <View style={styles.coursesContainer}>
