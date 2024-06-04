@@ -122,7 +122,6 @@ def get_modules(request, course_id):
             core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
             module_list[modulenr]["core_assignment_name"] = core_assignment.naam
 
-        print(module_list)
         return JsonResponse({
                                 "course_name" : course.naam,
                                 "nr_of_modules" : j,
@@ -136,23 +135,27 @@ def get_module(request, module_id):
         module = Modules.objects.get(id=module_id)
         module_info = {"module_name": module.naam, "module_id": module.id, "module_desc": module.beschrijving}
         i = 1
-        module_info["activities"] = {}
+        module_activities = {}
         activities = Activiteiten.objects.filter(module_id=module.id)
         for activity in activities:
-            module_info["activities"]["activity"+str(i)] = {"activity_name": activity.naam, "activity_desc": activity.beschrijving, "activity_id": activity.id}
+            module_activities["activity"+str(i)] = {"activity_name": activity.naam, "activity_desc": activity.beschrijving, "activity_id": activity.id}
             module_info["nr_of_activities"] = i
             i+=1
         points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
         user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging=points_challenge.id, student=request.user.id)
-        module_info["points_challenge"] = {"points_challenge_points": points_challenge.benodige_punten, "points_challenge_progress": user_progress.voortgang}
+        points_challenge_info = {"points_challenge_points": points_challenge.benodige_punten, "points_challenge_progress": user_progress.voortgang}
         context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
-        module_info["context_challenge"] = {"challenge_name": context_challenge.naam, "challenge_desc": context_challenge.beschrijving, "challenge_id": context_challenge.id}
+        context_challenge_info = {"challenge_name": context_challenge.naam, "challenge_desc": context_challenge.beschrijving, "challenge_id": context_challenge.id}
         core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
-        module_info["core_assignment"] = {"challenge_name": core_assignment.naam, "challenge_desc": core_assignment.beschrijving, "challenge_id": core_assignment.id}
-        print(module_info)
+        core_assignment_info = {"challenge_name": core_assignment.naam, "challenge_desc": core_assignment.beschrijving, "challenge_id": core_assignment.id}
+
         return JsonResponse({
                                 "module_name" : module.naam,
-                                "module_list" : module_info
+                                "module_info" : module_info,
+                                "activities" : module_activities,
+                                "points_challenge" : points_challenge_info,
+                                "context_challenge" : context_challenge_info,
+                                "core_assignment" : core_assignment_info
                             }, status=200, safe=False)
 
 def get_csrf_token(request):

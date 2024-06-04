@@ -5,9 +5,14 @@ import { Grid, Typography, LinearProgress } from '@mui/material';
 import Layout from '../Layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Module_page = ({route, navigation}) => {
-  const {module_id, styles} = route.params;
+const ModulePage = ({ route, navigation }) => {
+  const { module_id, styles } = route.params;
+  const [module_name, setModule_name] = useState('');
   const [module_info, setModule_info] = useState({});
+  const [activities, setActivities] = useState({});
+  const [points_challenge, setPoints_challenge] = useState({});
+  const [context_challenge, setContext_challenge] = useState({});
+  const [core_assignment, setCore_assignment] = useState({});
 
   useEffect(() => {
     const get_module_info = async () => {
@@ -20,34 +25,58 @@ const Module_page = ({route, navigation}) => {
                 },
             });
             const data = await response.json();
-            setModule_info(data.module_list);
+            setModule_name(data.module_name);
+            setModule_info(data.module_info);
+            setActivities(data.activities);
+            setPoints_challenge(data.points_challenge);
+            setContext_challenge(data.context_challenge);
+            setCore_assignment(data.core_assignment);
         } catch (error) {
           console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
         }
     };
     get_module_info();
-  }, [module_id]);
+  },[]);
 
-  function Activities(module) {
+  function Activities() {
     const activities_array = [];
-    for (let i = 1; i <= module.module["nr_of_activities"]; i++) {
+    for (let i = 1; i <= module_info.nr_of_activities; i++) {
       const activitynr = "activity" + i;
       activities_array.push(
-        <Text key={i}>{module.module["activities"][activitynr]["activity_name"]}</Text>
+        <Pressable onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.id, styles: styles})} key={i}>
+          <Text style={{ fontWeight: 'bold'}}> {activities[activitynr]["activity_name"]} </Text>
+        </Pressable>
       );
     }
     return activities_array;
   }
+
   return(
-    <Layout> {console.log(module_info)}
-        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{module_info["module_name"]}</Text>
-        <Activities module={module_info}/>
-        <Text>Points Challenge benodigde punten: {module_info["points_challenge"]["points_challenge_points"]}</Text>
-        <LinearProgress variant="determinate" value={(module_info["points_challenge"]["points_challenge_progress"]/module_info["points_challenge"]["points_challenge_points"])*100} style={styles.progressBar} />
-        <Text>{module_info["context_challenge"]["challenge_name"]}</Text>
-        <Text>{module_info["core_assignment"]["challenge_name"]}</Text>
+    <Layout>
+      <View style={styles.coursesContainer}>
+        <View style={styles.courseBlock}>
+          <View style={styles.courseHeader}>
+          <Text style={styles.courseTitleLeft}>{module_name}</Text>
+          </View>
+          <Text>Beschrijving module: {module_info.module_desc}</Text>
+          <Text>Activiteiten:</Text>
+          <Activities/>
+          <Text>Points Challenge benodigede punten: {points_challenge.points_challenge_points}</Text>
+          <LinearProgress variant="determinate" value={(points_challenge["points_challenge_progress"]/points_challenge["points_challenge_points"])*100} style={styles.progressBar}/>
+          <Text>Context Challenge: 
+            <Pressable onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.id, styles: styles})}> 
+              <Text style={{ fontWeight: 'bold'}}> {context_challenge.challenge_name} </Text>
+            </Pressable>
+          </Text>
+          <Text>Core Assignment: 
+            <Pressable onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.id, styles: styles})}>
+              <Text style={{ fontWeight: 'bold'}}> {core_assignment.challenge_name} </Text>
+            </Pressable>
+          </Text>
+        </View>
+      </View>
     </Layout>
   );
 };
 
-export default Module_page;
+export default ModulePage;

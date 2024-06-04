@@ -17,15 +17,15 @@ const CoursePage = ({ route, navigation }) => {
       try {
         const token = await AsyncStorage.getItem('access_token');
         const response = await fetch(`http://192.168.56.1:8000/game/api/modules/${course_id}/`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-        });
-        const data = await response.json();
-        setCourse_name(data.course_name);
-        setNr_of_modules(data.nr_of_modules);
-        setModule_dict(data.module_list);
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              },
+            });
+            const data = await response.json();
+            setCourse_name(data.course_name);
+            setNr_of_modules(data.nr_of_modules);
+            setModule_dict(data.module_list);
       } catch (error) {
         console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
       }
@@ -64,7 +64,7 @@ const CoursePage = ({ route, navigation }) => {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{moduledict[modulenr]["module_name"]}</Text>
+              <Text style={styles.courseTitleLeft}>{moduledict[modulenr]["module_name"]}</Text>
               <Activities module={moduledict[modulenr]}/>
               <Text>Points Challenge  benodigde punten: {moduledict[modulenr]["points_challenge"]["points_challenge_points"]}</Text>
               <LinearProgress variant="determinate" value={(moduledict[modulenr]["points_challenge"]["points_challenge_progress"]/moduledict[modulenr]["points_challenge"]["points_challenge_points"])*100} style={styles.progressBar} />
