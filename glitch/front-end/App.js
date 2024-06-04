@@ -9,7 +9,8 @@ import RegistrationForm from './Registration';
 import Assignment from './components/assignment';
 import ActivitiesPage from './components/activities-module';
 import ProfilePage from './components/ProfilePage';
-import CoursePage from './components/CoursePage'
+import CoursesScreen from './components/CoursesScreen';
+import CoursePage from './components/CoursePage';
 import TeacherHome from './teachers/HomeTeacher';
 import ProfilePageTeacher from './teachers/ProfilePageTeacher';
 import ModulePage from './components/ModulePage';
@@ -54,6 +55,11 @@ const AuthTabs = () => (
       name="ActivitiesModule"
       component={ActivitiesPage}
       options={{ headerShown: false }}
+    />
+    <Tab.Screen
+      name="CoursesScreen"
+      component={CoursesScreen}
+      options={{ headerShown: false, tabBarButton: () => null }}
     />
   </Tab.Navigator>
 );

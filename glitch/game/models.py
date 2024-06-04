@@ -1,12 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 
-
 class Cursussen(models.Model):
     id = models.CharField(editable=False, primary_key=True, max_length=640)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
-
 
 class Modules(models.Model):
     id = models.CharField(editable=False, primary_key=True, max_length=640)
@@ -102,6 +100,12 @@ class User(AbstractUser):
         blank=True,
     )
 
+class TeacherCursus(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    cursus = models.ForeignKey(Cursussen, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'cursus')
 
 class VoortgangHoofdOpdrachten(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
