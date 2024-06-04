@@ -93,7 +93,7 @@ def user_profile(request):
             return JsonResponse({'message': f'error {e}'}, status=400)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_modules(request, course_id):
     if request.method == 'GET':
@@ -115,7 +115,6 @@ def get_modules(request, course_id):
                 module_list[modulenr]["nr_of_activities"] = i
                 i+=1
             points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
-            print(points_challenge.id, request.user.id)
             user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
             module_list[modulenr]["points_challenge"] = {"points_challenge_points": points_challenge.benodige_punten, "points_challenge_progress": user_progress.voortgang}
             context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
@@ -130,6 +129,8 @@ def get_modules(request, course_id):
                                 "module_list" : module_list
                             }, status=200, safe=False)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_module(request, module_id):
     if request.method == 'GET':
         module = Modules.objects.get(id=module_id)
@@ -142,13 +143,17 @@ def get_module(request, module_id):
             module_info["nr_of_activities"] = i
             i+=1
         points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
-        user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
+        user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging=points_challenge.id, student=request.user.id)
         module_info["points_challenge"] = {"points_challenge_points": points_challenge.benodige_punten, "points_challenge_progress": user_progress.voortgang}
         context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
         module_info["context_challenge"] = {"challenge_name": context_challenge.naam, "challenge_desc": context_challenge.beschrijving, "challenge_id": context_challenge.id}
         core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
         module_info["core_assignment"] = {"challenge_name": core_assignment.naam, "challenge_desc": core_assignment.beschrijving, "challenge_id": core_assignment.id}
-
+        print(module_info)
+        return JsonResponse({
+                                "module_name" : module.naam,
+                                "module_list" : module_info
+                            }, status=200, safe=False)
 
 def get_csrf_token(request):
     csrf_token = get_token(request)
