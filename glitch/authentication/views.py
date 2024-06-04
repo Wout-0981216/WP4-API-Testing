@@ -53,7 +53,7 @@ def register_user(request):
                 'access_token': access_token,
                 'refresh_token': refresh_token,
             }, status=200)
-            
+
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 
@@ -71,17 +71,27 @@ def login(request):
         if user:
             auth_login(request, user)
             refresh = RefreshToken.for_user(user)
-            print("login succesvol")
-            return JsonResponse({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'message': 'Login successful'
-            })
+            if request.user.is_staff == 1:
+                return JsonResponse({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                    'teacher': 'True',
+                    'message':  'Login successful'
+                })
+
+            if request.user.is_staff == 0:
+                return JsonResponse({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                    'teacher': 'False',
+                    'message': 'Login successful'
+                })
 
         else:
             return HttpResponseBadRequest('Invalid credentials')
     else:
         return HttpResponseBadRequest('Invalid request method')
+
 
 class HomeView(APIView):
     permission_classes = (IsAuthenticated, )
@@ -90,11 +100,13 @@ class HomeView(APIView):
         content = {'message': 'Welcome to the JWT Authentication page using React Js and Django!'}
         return Response(content)
 
+
 class ValidateTokenView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         return Response({'message': 'Token is valid'}, status=200)
+
 
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)

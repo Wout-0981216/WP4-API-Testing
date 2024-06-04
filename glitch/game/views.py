@@ -6,29 +6,25 @@ from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
-from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, VoortgangPuntenUitdaging
+from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
 @api_view(['GET'])
-def concept_opdracht_list(request):
-    if request.method == 'GET':
-        opdrachten = ConceptOpdracht.objects.all()
-        opdrachten_list = [
-            {
-                'id': opdracht.id,
-                'naam': opdracht.naam,
-                'beschrijving': opdracht.beschrijving
-            } for opdracht in opdrachten
-        ]
-        print(opdrachten_list)
-        return JsonResponse(opdrachten_list, safe=False)
+def concept_opdracht_list(request, module_id):
+    opdrachten = ConceptOpdracht.objects.filter(module_id=module_id)
+    opdrachten_list = [
+        {
+            'id': opdracht.id,
+            'naam': opdracht.naam,
+            'beschrijving': opdracht.beschrijving
+        } for opdracht in opdrachten
+    ]
+    return JsonResponse(opdrachten_list, safe=False)
     
 
 @api_view(['GET'])
-def activities_module(request):
-    if request.method == 'GET':
-        activities_module = Activiteiten.objects.all()
+def activities_module(request, module_id):
+        activities_module = Activiteiten.objects.filter(module_id=module_id)
         activities_list = [
             {
                 'id': activities.id,
@@ -40,17 +36,32 @@ def activities_module(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def HomeCourses(request):
+def HomepageStudent(request):
     if request.method == 'GET':
+        # for the courses
         user_id = request.user.id
+        teacher = request.user.is_teacher
         user_name = request.user.username
-        course_ids = User.objects.filter(id=user_id).values_list('ingschr_cursus__id', flat=True)
-        courses = Cursussen.objects.filter(id__in=course_ids)
-        courses_data = [{'naam': course.naam, 'beschrijving': course.beschrijving, 'course_id': course.id} for course in courses]
+        ingschr_cursussen = IngschrCursus.objects.filter(student_id=user_id)
+        courses_data = []
+
+        for ingschr_cursus in ingschr_cursussen:
+            course = ingschr_cursus.cursus
+            course_data = {
+                'naam': course.naam,
+                'beschrijving': course.beschrijving,
+                'course_id': course.id,
+                'voortgang': ingschr_cursus.voortgang
+            }
+            courses_data.append(course_data)
+
+        if teacher:
+            return JsonResponse({'teacher': "true"})
         if courses_data:
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
             return JsonResponse({'name': user_name, 'message': 'Geen cursussen gevonden voor deze gebruiker'})
+
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
@@ -79,7 +90,8 @@ def user_profile(request):
             return JsonResponse({'message': 'Profiel succesvol aangepast'}, status=200)
 
         except Exception as e:
-            return JsonResponse({'message': 'error {e}'}, status=400)
+            return JsonResponse({'message': f'error {e}'}, status=400)
+
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])

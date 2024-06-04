@@ -1,67 +1,68 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthProvider, AuthContext } from './AuthProvider';
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import LoginForm from './LoginForm';
 import HomePage from './Home';
 import RegistrationForm from './Registration';
-import Assignment from './assignment';
-import ActivitiesPage from './activities-module';
+import Assignment from './components/assignment';
+import ActivitiesPage from './components/activities-module';
 import ProfilePage from './components/ProfilePage';
 import CoursePage from './components/CoursePage'
+import TeacherHome from './teachers/HomeTeacher';
+import ProfilePageTeacher from './teachers/ProfilePageTeacher';
 
-const Stack = createNativeStackNavigator();
 
-const AuthStack = () => (
-  <Stack.Navigator initialRouteName="Auth">
-    <Stack.Screen
+const Tab = createBottomTabNavigator();
+
+const StudentTabs = () => (
+  <Tab.Navigator>
+    <Tab.Screen name="Home" component={HomePage} />
+    <Tab.Screen name="Profile" component={ProfilePage} />
+    <Tab.Screen name="Course" component={CoursePage} options={{ tabBarButton: () => null }} />
+  </Tab.Navigator>
+);
+
+const TeacherTabs = () => (
+  <Tab.Navigator>
+    <Tab.Screen name="TeacherHome" component={TeacherHome} />
+    <Tab.Screen name="TeacherProfile" component={ProfilePageTeacher} />
+  </Tab.Navigator>
+);
+
+const AuthTabs = () => (
+  <Tab.Navigator initialRouteName="Login">
+    <Tab.Screen
       name="Login"
       component={LoginForm}
-      options={{ headerShown: false }}
+      options={{ headerShown: false, tabBarLabel: 'Login', tabBarButton: () => null }}
     />
-    <Stack.Screen
+    <Tab.Screen
       name="Register"
       component={RegistrationForm}
-      options={{ headerShown: false }}
+      options={{ headerShown: false, tabBarLabel: 'Register', tabBarButton: () => null }}
     />
-    <Stack.Screen
+    <Tab.Screen
       name="ConceptAssignment"
       component={Assignment}
-      options={{ headerShown: false }}
+      options={{ headerShown: false, tabBarLabel: 'Concept', tabBarButton: () => null }}
     />
-    <Stack.Screen
+    <Tab.Screen
       name="ActivitiesModule"
       component={ActivitiesPage}
       options={{ headerShown: false }}
     />
-  </Stack.Navigator>
-
-);
-
-const AppStack = () => (
-  <Stack.Navigator initialRouteName="Home">
-    <Stack.Screen
-      name="Home"
-      component={HomePage}
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      name="Profiel"
-      component={ProfilePage}
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      name="Cursus"
-      component={CoursePage}
-      options={{ headerShown: false}}
-    />
-  </Stack.Navigator>
+  </Tab.Navigator>
 );
 
 const App = () => {
-  const { authenticated, loading } = useContext(AuthContext);
+  const { authenticated, loading, isTeacher } = useContext(AuthContext);
+
+  useEffect(() => {
+    console.log('Authenticated:', authenticated);
+    console.log('Is Teacher:', isTeacher);
+  }, [authenticated, isTeacher]);
 
   if (loading) {
     return null;
@@ -69,13 +70,10 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      {authenticated ? <AppStack /> : <AuthStack />}
+      {authenticated ? (isTeacher ? <TeacherTabs /> : <StudentTabs />) : <AuthTabs />}
     </NavigationContainer>
   );
 };
-
-
-
 
 export default function MainApp() {
   return (
@@ -84,12 +82,3 @@ export default function MainApp() {
     </AuthProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
