@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
-from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging
+from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus
 from django.views.decorators.csrf import csrf_exempt
 
 @api_view(['GET'])
@@ -23,16 +23,27 @@ def concept_opdracht_list(request, module_id):
     
 
 @api_view(['GET'])
-def activities_module(request, module_id):
-    activities_module = Activiteiten.objects.filter(module_id=module_id)
-    activities_list = [
-        {
-            'id': activities.id,
-            'naam': activities.naam,
-            'beschrijving': activities.beschrijving
-        } for activities in activities_module
-    ]
-    return JsonResponse(activities_list, safe=False)
+@permission_classes([IsAuthenticated])
+def activities_module(request, activity_id):
+    print(activity_id)
+    activity = Activiteiten.objects.get(id=activity_id)
+    activity_info = [{
+            'id': activity.id,
+            'naam': activity.naam,
+            'beschrijving': activity.beschrijving
+        }]
+    niveaus = Niveaus.objects.filter(activiteit_id=activity.id)
+    niveau_info = [{
+            "id" : niveau.id,
+            "beschrijving" : niveau.beschrijving,
+            "progress" : VoortgangActiviteitenNiveaus.objects.get(niveau_id=niveau.id, student_id=request.user.id).voortgang
+            } for niveau in niveaus]
+
+    print(niveau_info)
+
+    return JsonResponse({"activity_info": activity_info,
+                         "niveau_info": niveau_info
+                         }, safe=False)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

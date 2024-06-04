@@ -74,7 +74,7 @@ const CoursePage = ({ route, navigation }) => {
       }
     }
     return (
-      <Layout>
+      <View>
         <ScrollView>
           <View
             style={{
@@ -93,16 +93,16 @@ const CoursePage = ({ route, navigation }) => {
             })}
           </View>
         </ScrollView>
-      </Layout>
+      </View>
     );
   }
   
 
   return (
-    <Layout>
+    <View>
       <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{course_name} Modules</Text>
       <ModuleCards />
-    </Layout>
+    </View>
   );
 };
 

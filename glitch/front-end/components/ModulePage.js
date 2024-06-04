@@ -43,7 +43,7 @@ const ModulePage = ({ route, navigation }) => {
     for (let i = 1; i <= module_info.nr_of_activities; i++) {
       const activitynr = "activity" + i;
       activities_array.push(
-        <Pressable onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.id, styles: styles})} key={i}>
+        <Pressable onPress={() => navigation.navigate("ActivitiesModule", {screen: "ActivitiesModule", activity_id: activities[activitynr]["activity_id"], styles: styles})} key={i}>
           <Text style={{ fontWeight: 'bold'}}> {activities[activitynr]["activity_name"]} </Text>
         </Pressable>
       );
@@ -52,7 +52,7 @@ const ModulePage = ({ route, navigation }) => {
   }
 
   return(
-    <Layout>
+    <View>
       <View style={styles.coursesContainer}>
         <View style={styles.courseBlock}>
           <View style={styles.courseHeader}>
@@ -75,7 +75,7 @@ const ModulePage = ({ route, navigation }) => {
           </Text>
         </View>
       </View>
-    </Layout>
+    </View>
   );
 };
 

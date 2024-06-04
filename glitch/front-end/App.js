@@ -24,6 +24,8 @@ const StudentTabs = () => (
     <Tab.Screen name="Profile" component={ProfilePage} />
     <Tab.Screen name="Course" component={CoursePage} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="Module" component={ModulePage} options={{ tabBarButton: ()=> null }} />
+    <Tab.Screen name="ConceptAssignment" component={Assignment} options={{ headerShown: false, tabBarLabel: 'Concept', tabBarButton: () => null }}/>
+    <Tab.Screen name="ActivitiesModule" component={ActivitiesPage} options={{ headerShown: false }}/>
   </Tab.Navigator>
 );
 
@@ -45,16 +47,6 @@ const AuthTabs = () => (
       name="Register"
       component={RegistrationForm}
       options={{ headerShown: false, tabBarLabel: 'Register', tabBarButton: () => null }}
-    />
-    <Tab.Screen
-      name="ConceptAssignment"
-      component={Assignment}
-      options={{ headerShown: false, tabBarLabel: 'Concept', tabBarButton: () => null }}
-    />
-    <Tab.Screen
-      name="ActivitiesModule"
-      component={ActivitiesPage}
-      options={{ headerShown: false }}
     />
     <Tab.Screen
       name="CoursesScreen"
