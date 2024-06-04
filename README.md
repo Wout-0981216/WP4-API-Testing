@@ -15,6 +15,7 @@ Ai (chatgpt) prompts:
 - "Hoe validate ik jwt tokens voordat een pagina wordt geladen?"
 - "Zorg ervoor dat ik na 5 minuten niet wordt uitgelogd, gebruik de refreshtokens, dit is mijn code {mijn code op 5/21/2024}"
 - "Ik wil mijn courseheader om de keer links of rechts uigelijnd worden en het icoontje dan daar afhankelijk van links of rechts hebben staan"
+- (meerdere prompts om alle mui elementen om te zetten naar native elementen omdat we niet wisten dat die alleenmaar bij web gebruikt konden worden)
 
 
 Youtube:

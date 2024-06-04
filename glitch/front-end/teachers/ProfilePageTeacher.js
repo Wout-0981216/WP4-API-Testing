@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Input } from '@rneui/themed';
-import Layout from '../Layout';
+import LayoutTeacher from './LayoutTeacher';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
@@ -68,7 +68,7 @@ const ProfilePageTeacher = () => {
   };
 
   return (
-    <Layout>
+    <LayoutTeacher>
       <View>
         <Text style={styles.text}>Profiel pagina test</Text>
         {isEditing ? (
@@ -122,7 +122,7 @@ const ProfilePageTeacher = () => {
           <Text style={styles.buttonText}>Uitloggen</Text>
         </TouchableOpacity>
       </View>
-    </Layout>
+    </LayoutTeacher>
   );
 };
 

@@ -8,6 +8,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isTeacher, setIsTeacher] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -15,13 +16,17 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         try {
-          const response = await axiosInstance.get('/login/validate-token/');
+          const response = await axiosInstance.get('http://192.168.56.1:8000/game/HomeCourses');
           if (response.status === 200) {
+            const data = response.data;
+            console.log('Server response:', data.teacher);
             setAuthenticated(true);
+            setIsTeacher(!!data.teacher); // Zet isTeacher op true als data.teacher true is, anders false
           } else {
             throw new Error('Token validation failed');
           }
         } catch (error) {
+          console.log('Error during token validation:', error);
           try {
             const refreshToken = await AsyncStorage.getItem('refresh_token');
             if (refreshToken) {
@@ -38,6 +43,7 @@ export const AuthProvider = ({ children }) => {
               throw new Error('No refresh token available');
             }
           } catch (refreshError) {
+            console.log('Error during token refresh:', refreshError);
             setAuthenticated(false);
           }
         }
@@ -46,6 +52,7 @@ export const AuthProvider = ({ children }) => {
       }
       setLoading(false);
     };
+
     checkAuth();
   }, []);
 
@@ -58,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
+    <AuthContext.Provider value={{ authenticated, setAuthenticated, isTeacher }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, Dimensions, ActivityIndicator,TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import axiosInstance from './axiosInstance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from './AuthProvider';
 import bannerimage from './src/images/image1.jpg';
-import Typography from '@mui/material/Typography';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const isMobile = width < 768;
 
 const LoginForm = () => {
@@ -24,18 +23,17 @@ const LoginForm = () => {
     try {
       const user = { username, password };
       const response = await axiosInstance.post('/login/login/', user);
-
+  
       if (response.status >= 200 && response.status < 300) {
         await AsyncStorage.setItem('access_token', response.data.access);
         await AsyncStorage.setItem('refresh_token', response.data.refresh);
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
         setAuthenticated(true);
-        if (response.data.teacher == "True") {
-          console.log('True');
+        if (response.data.teacher === "True") {
+          console.log('Is leraar');
           navigation.navigate('TeacherHome'); 
-        }
-        if (response.data.teacher == "False") {
-          console.log('False');
+        } else {
+          console.log('Is geen leraar');
           navigation.navigate('Home');
         }
       } else {
@@ -47,7 +45,7 @@ const LoginForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -74,8 +72,8 @@ const LoginForm = () => {
     <View style={styles.container}>
       <View style={styles.section}>
         <View style={styles.section_small}>
-          <Typography style={styles.heading} variant="h1">Glitch</Typography>
-          <Typography style={styles.subheading} variant="h2">Login</Typography>
+          <Text style={styles.heading}>Glitch</Text>
+          <Text style={styles.subheading}>Login</Text>
           <Input
             label="Gebruikersnaam"
             value={username}

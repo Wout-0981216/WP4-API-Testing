@@ -1,3 +1,4 @@
+
 from django.http import JsonResponse
 from game.models import ConceptOpdracht, Activiteiten, User, Cursussen
 from . import models
@@ -5,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
-from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus
+from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging
 from django.views.decorators.csrf import csrf_exempt
 
 @api_view(['GET'])
@@ -39,6 +40,7 @@ def HomepageStudent(request):
     if request.method == 'GET':
         # for the courses
         user_id = request.user.id
+        teacher = request.user.is_teacher
         user_name = request.user.username
         ingschr_cursussen = IngschrCursus.objects.filter(student_id=user_id)
         courses_data = []
@@ -51,19 +53,20 @@ def HomepageStudent(request):
                 'course_id': course.id,
                 'voortgang': ingschr_cursus.voortgang
             }
-            print(ingschr_cursus.voortgang)
             courses_data.append(course_data)
 
+        if teacher:
+            return JsonResponse({'teacher': "true"})
         if courses_data:
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
             return JsonResponse({'name': user_name, 'message': 'Geen cursussen gevonden voor deze gebruiker'})
 
+
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def user_profile(request):
     if request.method == 'GET':
-        print(request.user.id)
         user = User.objects.get(id=request.user.id)
         date = str(user.date_joined).split(" ")[0]
         return JsonResponse({'first_name' : user.first_name,
@@ -90,7 +93,8 @@ def user_profile(request):
             return JsonResponse({'message': f'error {e}'}, status=400)
 
 
-
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_modules(request, course_id):
     if request.method == 'GET':
         course = Cursussen.objects.get(id=course_id)
@@ -101,16 +105,18 @@ def get_modules(request, course_id):
             j+=1
             modulenr = "module"+str(j)
             module_list[modulenr] = {"module_name" : module.naam}
-            activity = Activiteiten.objects.filter(module_id=module.id)
+            module_list[modulenr]["module_id"] = module.id
+            activities = Activiteiten.objects.filter(module_id=module.id)
             i = 1
             module_list[modulenr]["activities"] = {}
 
-            for activity in activity:
+            for activity in activities:
                 module_list[modulenr]["activities"]["activity"+str(i)] = activity.naam
                 module_list[modulenr]["nr_of_activities"] = i
                 i+=1
             points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
-            module_list[modulenr]["points_challenge_points"] = points_challenge.benodige_punten
+            user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
+            module_list[modulenr]["points_challenge"] = {"points_challenge_points": points_challenge.benodige_punten, "points_challenge_progress": user_progress.voortgang}
             context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
             module_list[modulenr]["context_challenge_name"] = context_challenge.naam
             core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
@@ -121,6 +127,32 @@ def get_modules(request, course_id):
                                 "course_name" : course.naam,
                                 "nr_of_modules" : j,
                                 "module_list" : module_list
+                            }, status=200, safe=False)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_module(request, module_id):
+    if request.method == 'GET':
+        module = Modules.objects.get(id=module_id)
+        module_info = {"module_name": module.naam, "module_id": module.id, "module_desc": module.beschrijving}
+        i = 1
+        module_info["activities"] = {}
+        activities = Activiteiten.objects.filter(module_id=module.id)
+        for activity in activities:
+            module_info["activities"]["activity"+str(i)] = {"activity_name": activity.naam, "activity_desc": activity.beschrijving, "activity_id": activity.id}
+            module_info["nr_of_activities"] = i
+            i+=1
+        points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
+        user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging=points_challenge.id, student=request.user.id)
+        module_info["points_challenge"] = {"points_challenge_points": points_challenge.benodige_punten, "points_challenge_progress": user_progress.voortgang}
+        context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
+        module_info["context_challenge"] = {"challenge_name": context_challenge.naam, "challenge_desc": context_challenge.beschrijving, "challenge_id": context_challenge.id}
+        core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
+        module_info["core_assignment"] = {"challenge_name": core_assignment.naam, "challenge_desc": core_assignment.beschrijving, "challenge_id": core_assignment.id}
+        print(module_info)
+        return JsonResponse({
+                                "module_name" : module.naam,
+                                "module_list" : module_info
                             }, status=200, safe=False)
 
 def get_csrf_token(request):
