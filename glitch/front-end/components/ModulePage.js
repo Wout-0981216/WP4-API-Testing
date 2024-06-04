@@ -64,7 +64,7 @@ const ModulePage = ({ route, navigation }) => {
           <Text>Points Challenge benodigede punten: {points_challenge.points_challenge_points}</Text>
           <LinearProgress variant="determinate" value={(points_challenge["points_challenge_progress"]/points_challenge["points_challenge_points"])*100} style={styles.progressBar}/>
           <Text>Context Challenge: 
-            <Pressable onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.id, styles: styles})}> 
+            <Pressable onPress={() => navigation.navigate("ConceptAssignment", {screen: "ConceptAssignment", concept_id: context_challenge.challenge_id, styles: styles})}> 
               <Text style={{ fontWeight: 'bold'}}> {context_challenge.challenge_name} </Text>
             </Pressable>
           </Text>

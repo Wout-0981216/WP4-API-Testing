@@ -6,20 +6,23 @@ from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
-from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus
+from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten
 from django.views.decorators.csrf import csrf_exempt
 
 @api_view(['GET'])
-def concept_opdracht_list(request, module_id):
-    opdrachten = ConceptOpdracht.objects.filter(module_id=module_id)
+@permission_classes([IsAuthenticated])
+def concept_opdracht_list(request, concept_id):
+    opdracht = ConceptOpdracht.objects.get(id=concept_id)
+    voortgang = VoortgangConceptOpdrachten.objects.get(concept_opdracht_id=opdracht.id, student_id=request.user.id)
     opdrachten_list = [
         {
             'id': opdracht.id,
             'naam': opdracht.naam,
-            'beschrijving': opdracht.beschrijving
-        } for opdracht in opdrachten
+            'beschrijving': opdracht.beschrijving,
+            'progress' : voortgang.voortgang
+        }
     ]
-    return JsonResponse(opdrachten_list, safe=False)
+    return JsonResponse({"assignment_info": opdrachten_list}, safe=False)
     
 
 @api_view(['GET'])
