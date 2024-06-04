@@ -3,7 +3,6 @@ import { View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Layout({ children }) {
-<<<<<<< HEAD
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -14,9 +13,6 @@ export default function Layout({ children }) {
     { text: 'Profiel', icon: <AccountCircleIcon />, location: "Profiel" },
     { text: 'Studenten', icon: <AccountCircleIcon />, location: "CoursesScreen" }
   ];
-=======
-  const navigation = useNavigation();
->>>>>>> main
 
   const handleMenuItemPress = (path) => {
     navigation.navigate(path);

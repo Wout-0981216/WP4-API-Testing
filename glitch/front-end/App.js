@@ -10,11 +10,10 @@ import Assignment from './components/assignment';
 import ActivitiesPage from './components/activities-module';
 import ProfilePage from './components/ProfilePage';
 import CoursesScreen from './components/CoursesScreen';
-import CoursePage from './components/CoursePage'
+import CoursePage from './components/CoursePage';
 import TeacherHome from './teachers/HomeTeacher';
 import ProfilePageTeacher from './teachers/ProfilePageTeacher';
 import Module_page from './components/ModulePage';
-
 
 const Tab = createBottomTabNavigator();
 
@@ -23,7 +22,7 @@ const StudentTabs = () => (
     <Tab.Screen name="Home" component={HomePage} />
     <Tab.Screen name="Profile" component={ProfilePage} />
     <Tab.Screen name="Course" component={CoursePage} options={{ tabBarButton: () => null }} />
-    <Tab.Screen name="Module" component={Module_page} options={{ tabBarButton: ()=> null }} />
+    <Tab.Screen name="Module" component={Module_page} options={{ tabBarButton: () => null }} />
   </Tab.Navigator>
 );
 
@@ -56,10 +55,10 @@ const AuthTabs = () => (
       component={ActivitiesPage}
       options={{ headerShown: false }}
     />
-    <Stack.Screen
+    <Tab.Screen
       name="CoursesScreen"
       component={CoursesScreen}
-      options={{ headerShown: false }}
+      options={{ headerShown: false, tabBarButton: () => null }}
     />
   </Tab.Navigator>
 );
