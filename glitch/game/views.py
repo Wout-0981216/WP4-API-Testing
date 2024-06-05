@@ -6,8 +6,17 @@ from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
-from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten
+from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten, Domeinen
 from django.views.decorators.csrf import csrf_exempt
+
+@api_view(['GET'])
+def get_domains(request):
+    domeinen = Domeinen.objects.all()
+    domain_list = [{
+        'label': domein.naam,
+        'value': domein.id
+    } for domein in domeinen]
+    return JsonResponse({'domain_list':domain_list})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

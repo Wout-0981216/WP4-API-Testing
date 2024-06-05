@@ -2,10 +2,18 @@ from django.db import models
 import uuid
 from django.contrib.auth.models import AbstractUser, Group, Permission
 
-class Cursussen(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+class Domeinen(models.Model):
+    id = models.AutoField(editable=False, primary_key=True)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
+
+
+class Cursussen(models.Model):
+    id = models.AutoField(editable=False, primary_key=True)
+    naam = models.CharField(max_length=64)
+    beschrijving = models.CharField(max_length=640, blank=True)
+    domein = models.ForeignKey(Domeinen, on_delete=models.CASCADE)
+
 
 class Modules(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -15,20 +23,20 @@ class Modules(models.Model):
 
 
 class HoofdOpdrachten(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.AutoField(editable=False, primary_key=True)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
 
 
 class PuntenUitdagingen(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.AutoField(editable=False, primary_key=True)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     benodige_punten = models.IntegerField()
 
 
 class ConceptOpdracht(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.AutoField(editable=False, primary_key=True)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
@@ -38,14 +46,14 @@ class ConceptOpdracht(models.Model):
 
 
 class Activiteiten(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.AutoField(editable=False, primary_key=True)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
 
 
 class Niveaus(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.AutoField(editable=False, primary_key=True)
     activiteit = models.ForeignKey(Activiteiten, on_delete=models.CASCADE)
     beschrijving = models.CharField(max_length=640, blank=True)
 
@@ -61,6 +69,12 @@ class User(AbstractUser):
         through='IngschrCursus',
         blank=True
     )
+    ingschr_domein = models.ManyToManyField(
+        Domeinen,
+        through='IngschrDomein',
+        blank=True
+    )
+
     voortgang_hoofd_opdracht = models.ManyToManyField(
         HoofdOpdrachten,
         through='VoortgangHoofdOpdrachten',
@@ -140,3 +154,8 @@ class IngschrCursus(models.Model):
     student = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_column='user_id')
     cursus = models.ForeignKey(Cursussen, on_delete=models.DO_NOTHING, db_column='cursussen_id')
     voortgang = models.IntegerField(default=0)
+
+
+class IngschrDomein(models.Model):
+    student = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_column='user_id')
+    domein = models.ForeignKey(Domeinen, on_delete=models.DO_NOTHING, db_column='domeinen_id')
