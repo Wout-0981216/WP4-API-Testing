@@ -3,5 +3,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('registrations', views.register, name="register"),
+    path('register_module/', views.register_module, name="register_module"),
 ]

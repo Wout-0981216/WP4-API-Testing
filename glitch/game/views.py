@@ -55,7 +55,7 @@ def HomepageStudent(request):
             courses_data.append(course_data)
 
         if teacher:
-            return JsonResponse({'teacher': "true"})
+            return JsonResponse({'teacher': "true", 'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         if courses_data:
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
@@ -128,3 +128,5 @@ def get_modules(request, course_id):
 def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrfToken': csrf_token})
+
+

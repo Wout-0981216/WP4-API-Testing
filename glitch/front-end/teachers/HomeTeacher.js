@@ -68,6 +68,8 @@ const HomePageTeacher = () => {
           <Text style={styles.header}>Welkom leraartje {userName}!</Text>
           <Text style={styles.message}>{message}</Text>
         </View>
+        <View style={styles.greyblock}>
+        </View>
         <View style={styles.coursesContainer}>
           {Array.isArray(courseNames) && courseNames.map((courseName, index) => (
             <View
@@ -98,15 +100,11 @@ const HomePageTeacher = () => {
               <Text>Voortgang:</Text>
               <LinearProgress style={styles.progressBar} value={progress[index]} />
               <Button
-                onPress={() => navigation.navigate("Module", { screen: "Module", course_id: courseIDs[index], styles: styles })}
+                onPress={() => navigation.navigate("TeacherModule", { screen: "TeacherModule", course_id: courseIDs[index], styles: styles })}
                 title={"Bekijk cursus"}
               />
             </View>
           ))}
-        </View>
-        <View style={styles.greyblock}>
-          <Text style={styles.header}>Deadlines</Text>
-          <Text>Hier komen de aankomende deadlines...</Text>
         </View>
       </ScrollView>
    </LayoutTeacher>
@@ -189,7 +187,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
   },
-  '@media (max-width: 600px)': {
+  '@media (maxWidth: 600px)': {
     coursesContainer: {
       flexDirection: 'column',
     },

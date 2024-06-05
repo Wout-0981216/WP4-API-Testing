@@ -9,9 +9,11 @@ import RegistrationForm from './Registration';
 import Assignment from './components/assignment';
 import ActivitiesPage from './components/activities-module';
 import ProfilePage from './components/ProfilePage';
-import ModulePage from './components/ModulePage'
+import ModulePage from './components/ModulePage';
 import TeacherHome from './teachers/HomeTeacher';
 import ProfilePageTeacher from './teachers/ProfilePageTeacher';
+import ModulePageTeacher from './teachers/ModulePageTeacher';
+import AddModuleTeacher from './teachers/AddModuleTeacher';
 
 
 const Tab = createBottomTabNavigator();
@@ -28,6 +30,8 @@ const TeacherTabs = () => (
   <Tab.Navigator>
     <Tab.Screen name="TeacherHome" component={TeacherHome} />
     <Tab.Screen name="TeacherProfile" component={ProfilePageTeacher} />
+    <Tab.Screen name="TeacherModule" component={ModulePageTeacher} options={{ tabBarButton: () => null }} />
+    <Tab.Screen name="AddModuleTeacher" component={AddModuleTeacher} options={{ tabBarButton: () => null }} />
   </Tab.Navigator>
 );
 

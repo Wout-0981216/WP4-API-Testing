@@ -1,6 +1,6 @@
 from django.db import models
+import uuid
 from django.contrib.auth.models import AbstractUser, Group, Permission
-
 
 class Cursussen(models.Model):
     naam = models.CharField(max_length=64)
@@ -8,6 +8,7 @@ class Cursussen(models.Model):
 
 
 class Modules(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     cursus = models.ForeignKey(Cursussen, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
@@ -32,6 +33,7 @@ class ConceptOpdracht(models.Model):
     class Meta:
         db_table = 'game_conceptopdracht'
 
+
 class Activiteiten(models.Model):
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
@@ -44,18 +46,10 @@ class Niveaus(models.Model):
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=64, unique=True)
-    password = models.CharField(max_length=64)
     is_teacher = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.EmailField(unique=True)
-    username = models.CharField(max_length=150, unique=True)
-    password = models.CharField(max_length=128)
-    date_joined = models.DateTimeField(auto_now_add=True)
     
     ingschr_cursus = models.ManyToManyField(
         Cursussen,
@@ -132,11 +126,6 @@ class VoortgangActiviteitenNiveaus(models.Model):
 
 
 class IngschrCursus(models.Model):
-    student = models.ForeignKey(User, models.DO_NOTHING, db_column='user_id')
-    cursus = models.ForeignKey(Cursussen, models.DO_NOTHING, db_column='cursussen_id')
+    student = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_column='user_id')
+    cursus = models.ForeignKey(Cursussen, on_delete=models.DO_NOTHING, db_column='cursussen_id')
     voortgang = models.IntegerField(default=0)
-
-    class Meta: 
-        managed = False
-        db_table = 'game_user_ingschr_cursus'
-        unique_together = (('student', 'cursus'),)
