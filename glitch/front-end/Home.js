@@ -77,7 +77,6 @@ const HomePage = () => {
     return null;
   }
 
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.orangeblock}>
@@ -115,8 +114,8 @@ const HomePage = () => {
             <LinearProgress style={styles.progressBar} value={progress[index]} />
             <Button
             onPress={() => {
-                navigation.navigate("Module", { 
-                    screen: "Module", 
+                navigation.navigate("Course", { 
+                    screen: "Course", 
                     course_id: courseIDs[index], 
                     styles: styles 
                 });

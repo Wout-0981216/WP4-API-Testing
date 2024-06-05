@@ -1,74 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { View, Text, StyleSheet, FlatList, ScrollView, Pressable} from 'react-native';
 import { Input, Icon, Button, Card } from '@rneui/themed';
-import { FlatGrid } from 'react-native-super-grid';
 import Layout from '../Layout';
+import { LinearProgress } from '@rneui/themed';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ModulePage = ({ route, navigation }) => {
-  const { course_id, styles } = route.params;
-  const [course_name, setCourse_name] = useState('');
-  const [moduledict, setModule_dict] = useState({});
-  const [nr_of_modules, setNr_of_modules] = useState('');
+  const { module_id, styles } = route.params;
+  const [module_name, setModule_name] = useState('');
+  const [module_info, setModule_info] = useState({});
+  const [activities, setActivities] = useState({});
+  const [points_challenge, setPoints_challenge] = useState({});
+  const [context_challenge, setContext_challenge] = useState({});
+  const [core_assignment, setCore_assignment] = useState({});
 
   useEffect(() => {
     const get_module_info = async () => {
-      try {
-        const response = await fetch(`http://192.168.56.1:8000/game/api/module/${course_id}/`, {
-          method: 'GET',
-        });
-        const data = await response.json();
-        setCourse_name(data.course_name);
-        setNr_of_modules(data.nr_of_modules);
-        setModule_dict(data.module_list);
-      } catch (error) {
-        console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
-      }
+      try{
+        const token = await AsyncStorage.getItem('access_token');
+        const response = await fetch(`http://192.168.56.1:8000/game/api/module/${module_id}/`, {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                },
+            });
+            const data = await response.json();
+            setModule_name(data.module_name);
+            setModule_info(data.module_info);
+            setActivities(data.activities);
+            setPoints_challenge(data.points_challenge);
+            setContext_challenge(data.context_challenge);
+            setCore_assignment(data.core_assignment);
+        } catch (error) {
+          console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
+        }
     };
     get_module_info();
-  }, [course_id]); // Voeg course_id toe aan de dependency array
+  },[]);
 
-  function Activities(activities) {
+  function Activities() {
     const activities_array = [];
-    for (let i = 1; i <= nr_of_modules; i++) {
+    for (let i = 1; i <= module_info.nr_of_activities; i++) {
       const activitynr = "activity" + i;
       activities_array.push(
-        <Text key={i}>{activities["activities"][activitynr]}</Text>
+        <Pressable
+          onPress={() => navigation.navigate("ActivitiesModule", {
+            screen: "ActivitiesModule",
+            activity_id: activities[activitynr]["activity_id"],
+            styles: styles
+          })}
+          key={i}
+        >
+          <Text style={{ fontWeight: 'bold'}}>
+          {activities[activitynr]["activity_name"]} 
+          </Text>
+        </Pressable>
       );
     }
     return activities_array;
   }
-
-  function ModuleCards() {
-    const module_array = [];
-    for (let i = 1; i <= nr_of_modules; i++) {
-      const modulenr = "module" + i;
-      if (moduledict[modulenr]) { // Check if module data exists
-        module_array.push(
-          <Card key={i} style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5, margin: 10, padding: 20 }}>
-            <View style={styles}>
-              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{moduledict[modulenr]["module_name"]}</Text>
-              <Activities activities={moduledict[modulenr]["activities"]} />
-              <Text>Points Challenge benodigde punten: {moduledict[modulenr]["points_challenge_points"]}</Text>
-              <Text>{moduledict[modulenr]["context_challenge_name"]}</Text>
-              <Text>{moduledict[modulenr]["core_assignment_name"]}</Text>
-            </View>
-          </Card>
-        );
-      }
-    }
-    return (
-      <View style={styles.container}>
-        {module_array}
-      </View>
-    );
-  }
+  
   
 
-  return (
-    <Layout>
-      <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{course_name} Modules</Text>
-      <ModuleCards />
-    </Layout>
+  return(
+    <View>
+      <View style={styles.coursesContainer}>
+        <View style={styles.courseBlock}>
+          <View style={styles.courseHeader}>
+          <Text style={styles.courseTitleLeft}>{module_name}</Text>
+          </View>
+          <Text>Beschrijving module: {module_info.module_desc}</Text>
+          <Text>Activiteiten:</Text>
+          <Activities/>
+          <Text>Points Challenge benodigede punten: {points_challenge.points_challenge_points}</Text>
+          <LinearProgress value={(points_challenge["points_challenge_progress"]/points_challenge["points_challenge_points"])*100} style={styles.progressBar}/>
+          <Text>Context Challenge: 
+            <Pressable onPress={() => navigation.navigate("ConceptAssignment", {screen: "ConceptAssignment", concept_id: context_challenge.challenge_id, styles: styles})}> 
+              <Text style={{ fontWeight: 'bold'}}> {context_challenge.challenge_name} </Text>
+            </Pressable>
+          </Text>
+          <Text>Core Assignment: 
+            <Pressable onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.id, styles: styles})}>
+              <Text style={{ fontWeight: 'bold'}}> {core_assignment.challenge_name} </Text>
+            </Pressable>
+          </Text>
+        </View>
+      </View>
+    </View>
   );
 };
 

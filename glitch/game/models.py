@@ -3,9 +3,9 @@ import uuid
 from django.contrib.auth.models import AbstractUser, Group, Permission
 
 class Cursussen(models.Model):
+    id = models.CharField(editable=False, primary_key=True, max_length=640)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
-
 
 class Modules(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -15,17 +15,20 @@ class Modules(models.Model):
 
 
 class HoofdOpdrachten(models.Model):
+    id = models.CharField(editable=False, primary_key=True, max_length=640)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
 
 
 class PuntenUitdagingen(models.Model):
+    id = models.CharField(editable=False, primary_key=True, max_length=640)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     benodige_punten = models.IntegerField()
 
 
 class ConceptOpdracht(models.Model):
+    id = models.CharField(editable=False, primary_key=True, max_length=640)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
@@ -35,12 +38,14 @@ class ConceptOpdracht(models.Model):
 
 
 class Activiteiten(models.Model):
+    id = models.CharField(editable=False, primary_key=True, max_length=640)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
 
 
 class Niveaus(models.Model):
+    id = models.CharField(editable=False, primary_key=True, max_length=640)
     activiteit = models.ForeignKey(Activiteiten, on_delete=models.CASCADE)
     beschrijving = models.CharField(max_length=640, blank=True)
 
@@ -89,6 +94,12 @@ class User(AbstractUser):
         blank=True,
     )
 
+class TeacherCursus(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    cursus = models.ForeignKey(Cursussen, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'cursus')
 
 class VoortgangHoofdOpdrachten(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -116,13 +127,13 @@ class VoortgangPuntenUitdaging(models.Model):
         on_delete=models.DO_NOTHING,
         null=True
     )
-    voortgang = models.BooleanField(default=False)
+    voortgang = models.IntegerField(default=0)
 
 
 class VoortgangActiviteitenNiveaus(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     niveau = models.ForeignKey(Niveaus, on_delete=models.DO_NOTHING, null=True)
-    voortgang = models.IntegerField(default=0)
+    voortgang = models.BooleanField(default=False)
 
 
 class IngschrCursus(models.Model):
