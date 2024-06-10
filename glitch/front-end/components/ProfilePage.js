@@ -93,7 +93,6 @@ const ProfilePageTeacher = () => {
           />
           <Input
             label="Wachtwoord"
-            value={password}
             onChangeText={(value) => setPassword(value)}
           />
           <TouchableOpacity onPress={submitForm}>
@@ -109,7 +108,6 @@ const ProfilePageTeacher = () => {
           <Text style={styles.text}>Achternaam: {last_name}</Text>
           <Text style={styles.text}>Gebruikersnaam: {username}</Text>
           <Text style={styles.text}>Email: {email}</Text>
-          <Text style={styles.text}>Wachtwoord: {password}</Text>
           <Text style={styles.text}>Gebruiker sinds: {date_joined}</Text>
           <TouchableOpacity onPress={() => setIsEditing(true)}>
             <Text style={styles.buttonText}>Profiel aanpassen</Text>

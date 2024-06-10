@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
 from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten, Domeinen
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import make_password
 
 @api_view(['GET'])
 def get_domains(request):
@@ -108,7 +109,8 @@ def user_profile(request):
             user.last_name = request.data.get('last_name', '')
             user.username = request.data.get('username', '')
             user.email = request.data.get('email', '')
-            user.password = request.data.get('password', '')
+            hashed_password = make_password(request.data.get('password', ''))
+            user.password = hashed_password
             user.save()
             return JsonResponse({'message': 'Profiel succesvol aangepast'}, status=200)
 
