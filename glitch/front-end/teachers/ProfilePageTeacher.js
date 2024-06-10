@@ -4,8 +4,7 @@ import { Input } from '@rneui/themed';
 import LayoutTeacher from './LayoutTeacher';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import PushNotification from 'react-native-push-notification';
-import './PushNotificationConfig'
+import './PushNotification'
 
 const ProfilePageTeacher = () => {
   const [first_name, setFirst_name] = useState('');
@@ -66,11 +65,12 @@ const ProfilePageTeacher = () => {
       alert(data.message);
       setUpdate(!update_page);
       setIsEditing(false);
-      showNotification();
+      
     } catch (error) {
       console.error('Er is een fout opgetreden bij het aanpassen van het profiel:', error);
     }
   };
+  
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('access_token');
