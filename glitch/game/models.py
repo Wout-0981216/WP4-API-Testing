@@ -1,33 +1,42 @@
 from django.db import models
+import uuid
 from django.contrib.auth.models import AbstractUser, Group, Permission
 
-class Cursussen(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+class Domeinen(models.Model):
+    id = models.AutoField(editable=False, primary_key=True)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
 
+
+class Cursussen(models.Model):
+    id = models.AutoField(editable=False, primary_key=True)
+    naam = models.CharField(max_length=64)
+    beschrijving = models.CharField(max_length=640, blank=True)
+    domein = models.ForeignKey(Domeinen, on_delete=models.CASCADE)
+
+
 class Modules(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     cursus = models.ForeignKey(Cursussen, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
 
 
 class HoofdOpdrachten(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.AutoField(editable=False, primary_key=True)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
 
 
 class PuntenUitdagingen(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.AutoField(editable=False, primary_key=True)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     benodige_punten = models.IntegerField()
 
 
 class ConceptOpdracht(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.AutoField(editable=False, primary_key=True)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
@@ -35,38 +44,37 @@ class ConceptOpdracht(models.Model):
     class Meta:
         db_table = 'game_conceptopdracht'
 
+
 class Activiteiten(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.AutoField(editable=False, primary_key=True)
     module = models.ForeignKey(Modules, on_delete=models.CASCADE)
     naam = models.CharField(max_length=64)
     beschrijving = models.CharField(max_length=640, blank=True)
 
 
 class Niveaus(models.Model):
-    id = models.CharField(editable=False, primary_key=True, max_length=640)
+    id = models.AutoField(editable=False, primary_key=True)
     activiteit = models.ForeignKey(Activiteiten, on_delete=models.CASCADE)
     beschrijving = models.CharField(max_length=640, blank=True)
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=64, unique=True)
-    password = models.CharField(max_length=64)
     is_teacher = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.EmailField(unique=True)
-    username = models.CharField(max_length=150, unique=True)
-    password = models.CharField(max_length=128)
-    date_joined = models.DateTimeField(auto_now_add=True)
     
     ingschr_cursus = models.ManyToManyField(
         Cursussen,
         through='IngschrCursus',
         blank=True
     )
+    ingschr_domein = models.ManyToManyField(
+        Domeinen,
+        through='IngschrDomein',
+        blank=True
+    )
+
     voortgang_hoofd_opdracht = models.ManyToManyField(
         HoofdOpdrachten,
         through='VoortgangHoofdOpdrachten',
@@ -143,11 +151,11 @@ class VoortgangActiviteitenNiveaus(models.Model):
 
 
 class IngschrCursus(models.Model):
-    student = models.ForeignKey(User, models.DO_NOTHING, db_column='user_id')
-    cursus = models.ForeignKey(Cursussen, models.DO_NOTHING, db_column='cursussen_id')
+    student = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_column='user_id')
+    cursus = models.ForeignKey(Cursussen, on_delete=models.DO_NOTHING, db_column='cursussen_id')
     voortgang = models.IntegerField(default=0)
 
-    class Meta: 
-        managed = False
-        db_table = 'game_user_ingschr_cursus'
-        unique_together = (('student', 'cursus'),)
+
+class IngschrDomein(models.Model):
+    student = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_column='user_id')
+    domein = models.ForeignKey(Domeinen, on_delete=models.DO_NOTHING, db_column='domeinen_id')

@@ -74,7 +74,6 @@ const ProfilePageTeacher = () => {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('access_token');
-    navigation.navigate('Login');
   };
 
   return (

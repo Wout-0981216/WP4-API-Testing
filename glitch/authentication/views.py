@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from django.db import connection
-from game.models import User
+from game.models import *
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -30,8 +30,9 @@ def register_user(request):
             username = request.data.get('username', '')
             email = request.data.get('email', '')
             password = request.data.get('password', '')
+            domain = request.data.get('chosen_domain', '')
 
-            if not (first_name and last_name and username and email and password):
+            if not (first_name and last_name and username and email and password and domain):
                 return JsonResponse({'error': 'Missing required fields'}, status=400)
 
             hashed_password = make_password(password)   
@@ -44,6 +45,42 @@ def register_user(request):
                 is_active=True,
                 is_teacher=False
             )
+            student = User.objects.get(username=username)
+            domein = Domeinen.objects.get(id=domain)
+            IngschrDomein.objects.create(
+                student = student,
+                domein = domein
+            )
+            cursussen = Cursussen.objects.filter(domein=domein)
+            for cursus in cursussen:
+                IngschrCursus.objects.create(
+                    student = student,
+                    cursus = cursus
+                )
+                modules = Modules.objects.filter(cursus=cursus)
+                for module in modules:
+                    VoortgangConceptOpdrachten.objects.create(
+                        student = student,
+                        concept_opdracht = ConceptOpdracht.objects.get(module=module)
+                    )
+                    VoortgangHoofdOpdrachten.objects.create(
+                        student = student,
+                        hoofd_opdracht = HoofdOpdrachten.objects.get(module=module)
+                    )
+                    VoortgangPuntenUitdaging.objects.create(
+                        student = student,
+                        punten_uitdaging = PuntenUitdagingen.objects.get(module=module)
+                    )
+                    activiteiten = Activiteiten.objects.filter(module=module)
+                    for activiteit in activiteiten:
+                        niveaus = Niveaus.objects.filter(activiteit=activiteit)
+                        for niveau in niveaus:
+                            VoortgangActiviteitenNiveaus.objects.create(
+                                student = student,
+                                niveau = niveau
+                            )
+            
+
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
             refresh_token = str(refresh)

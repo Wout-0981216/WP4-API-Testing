@@ -1,12 +1,14 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, ScrollView } from 'react-native';
 
 export default function Layout({ children }) {
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
-      <View style={{ flex: 1 }}>
-        {children}
-      </View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View>
+          {children}
+        </View>
+      </ScrollView>
     </View>
   );
 }
