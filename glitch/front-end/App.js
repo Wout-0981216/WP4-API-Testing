@@ -27,18 +27,15 @@ const StudentTabs = () => (
     <Tab.Screen name="Profile" component={ProfilePage} />
     <Tab.Screen name="Course" component={CoursePage} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="Module" component={ModulePage} options={{ tabBarButton: ()=> null }} />
-    <Tab.Screen name="ConceptAssignment" component={Assignment} options={{ headerShown: false, tabBarLabel: 'Concept', tabBarButton: () => null }}/>
-    <Tab.Screen name="ActivitiesModule" component={ActivitiesPage} options={{ headerShown: false, tabBarButton: () => null }}/>
+    <Tab.Screen name="ConceptAssignment" component={Assignment} options={{ tabBarLabel: 'Concept', tabBarButton: () => null }}/>
+    <Tab.Screen name="ActivitiesModule" component={ActivitiesPage} options={{ tabBarButton: () => null }}/>
   </Tab.Navigator>
 );
 
 const TeacherTabs = () => (
   <Tab.Navigator>
     <Tab.Screen name="TeacherHome" component={TeacherHome} />
-    <Tab.Screen
-      name="Leerlingen"
-      component={CoursesScreen}
-    />
+    <Tab.Screen name="Leerlingen" component={CoursesScreen} />
     <Tab.Screen name="TeacherProfile" component={ProfilePageTeacher} />
     <Tab.Screen name="TeacherModule" component={ModulePageTeacher} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="AddModuleTeacher" component={AddModuleTeacher} options={{ tabBarButton: () => null }} />

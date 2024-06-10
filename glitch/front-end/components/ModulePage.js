@@ -1,12 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView, Pressable} from 'react-native';
-import { Input, Icon, Button, Card } from '@rneui/themed';
+import { View, Text, StyleSheet, FlatList, ScrollView, Pressable, Button} from 'react-native';
+import { Input, Icon, Card } from '@rneui/themed';
 import Layout from '../Layout';
 import { LinearProgress } from '@rneui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ModulePage = ({ route, navigation }) => {
   const { module_id, styles } = route.params;
+  const [course_id, setCourse_id] = useState('');
   const [module_name, setModule_name] = useState('');
   const [module_info, setModule_info] = useState({});
   const [activities, setActivities] = useState({});
@@ -25,6 +26,7 @@ const ModulePage = ({ route, navigation }) => {
                 },
             });
             const data = await response.json();
+            setCourse_id(data.course_id);
             setModule_name(data.module_name);
             setModule_info(data.module_info);
             setActivities(data.activities);
@@ -64,6 +66,7 @@ const ModulePage = ({ route, navigation }) => {
 
   return(
     <View>
+      <Button onPress={() => navigation.navigate("Course", {screen: "Course", course_id: course_id, styles: styles})} title='Terug'/>
       <View style={styles.coursesContainer}>
         <View style={styles.courseBlock}>
           <View style={styles.courseHeader}>
