@@ -7,13 +7,17 @@ import LoginForm from './LoginForm';
 import HomePage from './Home';
 import RegistrationForm from './Registration';
 import Assignment from './components/assignment';
+
 import ActivitiesPage from './components/activities-module';
 import ProfilePage from './components/ProfilePage';
-import CoursesScreen from './components/CoursesScreen';
-import CoursePage from './components/CoursePage';
+import ModulePage from './components/ModulePage';
 import TeacherHome from './teachers/HomeTeacher';
 import ProfilePageTeacher from './teachers/ProfilePageTeacher';
-import Module_page from './components/ModulePage';
+import ModulePageTeacher from './teachers/ModulePageTeacher';
+import AddModuleTeacher from './teachers/AddModuleTeacher';
+import CoursesScreen from './teachers/CoursesScreen';
+import CoursePage from './components/CoursePage';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -22,14 +26,23 @@ const StudentTabs = () => (
     <Tab.Screen name="Home" component={HomePage} />
     <Tab.Screen name="Profile" component={ProfilePage} />
     <Tab.Screen name="Course" component={CoursePage} options={{ tabBarButton: () => null }} />
-    <Tab.Screen name="Module" component={Module_page} options={{ tabBarButton: () => null }} />
+    <Tab.Screen name="Module" component={ModulePage} options={{ tabBarButton: ()=> null }} />
+    <Tab.Screen name="ConceptAssignment" component={Assignment} options={{ headerShown: false, tabBarLabel: 'Concept', tabBarButton: () => null }}/>
+    <Tab.Screen name="ActivitiesModule" component={ActivitiesPage} options={{ headerShown: false, tabBarButton: () => null }}/>
   </Tab.Navigator>
 );
 
 const TeacherTabs = () => (
   <Tab.Navigator>
     <Tab.Screen name="TeacherHome" component={TeacherHome} />
+    <Tab.Screen
+      name="Leerlingen"
+      component={CoursesScreen}
+    />
     <Tab.Screen name="TeacherProfile" component={ProfilePageTeacher} />
+    <Tab.Screen name="TeacherModule" component={ModulePageTeacher} options={{ tabBarButton: () => null }} />
+    <Tab.Screen name="AddModuleTeacher" component={AddModuleTeacher} options={{ tabBarButton: () => null }} />
+
   </Tab.Navigator>
 );
 
@@ -44,21 +57,6 @@ const AuthTabs = () => (
       name="Register"
       component={RegistrationForm}
       options={{ headerShown: false, tabBarLabel: 'Register', tabBarButton: () => null }}
-    />
-    <Tab.Screen
-      name="ConceptAssignment"
-      component={Assignment}
-      options={{ headerShown: false, tabBarLabel: 'Concept', tabBarButton: () => null }}
-    />
-    <Tab.Screen
-      name="ActivitiesModule"
-      component={ActivitiesPage}
-      options={{ headerShown: false }}
-    />
-    <Tab.Screen
-      name="CoursesScreen"
-      component={CoursesScreen}
-      options={{ headerShown: false, tabBarButton: () => null }}
     />
   </Tab.Navigator>
 );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import RNPickerSelect from 'react-native-picker-select';
 import { View, StyleSheet, Text, Dimensions, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import axiosInstance from './axiosInstance';
@@ -12,6 +13,8 @@ const { width, height } = Dimensions.get('window');
 const isMobile = width < 768;
 
 const RegistrationForm = () => {
+  const [domains, setDomains] = useState([]);
+  const [chosen_domain, setChosen_domain] = useState('');
   const [first_name, setFirst_name] = useState('');
   const [last_name, setLast_name] = useState('');
   const [username, setUsername] = useState('');
@@ -22,10 +25,25 @@ const RegistrationForm = () => {
   const navigation = useNavigation();
   const { setAuthenticated } = useContext(AuthContext);
 
+  useEffect(() => {
+    const get_domains = async () => {
+      try{
+        const response = await fetch(`http://192.168.56.1:8000/game/api/domains/`, {
+                method: 'GET',
+            });
+            const data = await response.json();
+            setDomains(data.domain_list);
+          } catch (error) {
+            console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
+          }
+    };
+    get_domains()
+  },[])
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const user = { first_name, last_name, username, email, password };
+      const user = { first_name, last_name, username, email, password, chosen_domain };
       const response = await axiosInstance.post('/authentication/api/register/', user);
 
       if (response.status >= 200 && response.status < 300) {
@@ -98,6 +116,10 @@ const RegistrationForm = () => {
             onChangeText={setPassword}
             secureTextEntry
             placeholder="Typ je wachtwoord"
+          />
+          <RNPickerSelect
+            onValueChange={(value) => setChosen_domain(value)}
+            items={domains} 
           />
           <View style={{ width: '100%' }}>
             <Button

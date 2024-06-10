@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import ModulePage from '../components/ModulePage';
 
-const CoursesScreen = () => {
+const ModulePageTeacher = () => {
   const [courses, setCourses] = useState([]);
   const [expandedCourses, setExpandedCourses] = useState({});
 
@@ -14,7 +15,7 @@ const CoursesScreen = () => {
   const fetchCourses = async () => {
     try {
       const token = await AsyncStorage.getItem('access_token');
-      const response = await axios.get('http://127.0.0.1:8000/teachers/api/courses/', {
+      const response = await axios.get('http://192.168.56.1:8000/teachers/api/courses/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -28,7 +29,7 @@ const CoursesScreen = () => {
   const fetchStudentsForCourse = async (courseId) => {
     try {
       const token = await AsyncStorage.getItem('access_token');
-      const response = await axios.get(`http://127.0.0.1:8000/teachers/api/students/${courseId}`, {
+      const response = await axios.get(`http://192.168.56.1:8000/teachers/api/students/${courseId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -61,7 +62,7 @@ const CoursesScreen = () => {
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => toggleCourse(item.id)}>
-            <View style={styles.item}>
+            <View style={styles.item}>  
               <Text style={styles.title}>Cursus: {item.naam}</Text>
               <Text>Beschrijving: {item.beschrijving}</Text>
               {expandedCourses[item.id] && (
@@ -136,4 +137,4 @@ const styles = StyleSheet.create({
   });
   
 
-export default CoursesScreen;
+export default ModulePageTeacher;
