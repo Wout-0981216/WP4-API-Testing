@@ -65,7 +65,7 @@ const AddModuleTeacher = () => {
       }
     } catch (error) {
       console.error('Error registering:', error);
-      setError('Er is een fout opgetreden bij het registreren');
+      setError('Er is een fout opgetreden bij het opslaan van module');
     } finally {
       setLoading(false);
     }
