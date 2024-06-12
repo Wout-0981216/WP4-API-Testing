@@ -4,7 +4,7 @@ import { Input } from '@rneui/themed';
 import LayoutTeacher from './LayoutTeacher';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import './PushNotification'
+import Notification from '../PushNotification';
 
 const ProfilePageTeacher = () => {
   const [first_name, setFirst_name] = useState('');
@@ -14,7 +14,8 @@ const ProfilePageTeacher = () => {
   const [password, setPassword] = useState('');
   const [date_joined, setDate_joined] = useState('');
   const [update_page, setUpdate] = useState(true);
-  const [isEditing, setIsEditing] = useState(false); // State for edit mode
+  const [isEditing, setIsEditing] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -36,18 +37,11 @@ const ProfilePageTeacher = () => {
         setDate_joined(data.date_joined);
         console.log(data.message);
       } catch (error) {
-        console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
+        console.error('Er is een fout opgetreden bij het ophalen van de gebruikersinformatie', error);
       }
     };
     getUserInfo();
   }, [update_page]);
-
-  const showNotification = () => {
-    PushNotification.localNotification({
-      title: 'Profiel Bijgewerkt',
-      message: 'Je profiel is succesvol bijgewerkt.',
-    });
-  };
 
   const submitForm = async () => {
     try {
@@ -61,19 +55,28 @@ const ProfilePageTeacher = () => {
         body: JSON.stringify({ first_name, last_name, username, email, password }),
       });
       const data = await response.json();
-      console.log(data.message);
-      alert(data.message);
+          if (response.ok) {
+      setShowNotification(true);
+    }
       setUpdate(!update_page);
       setIsEditing(false);
-      
+      setShowNotification(true);
     } catch (error) {
       console.error('Er is een fout opgetreden bij het aanpassen van het profiel:', error);
     }
   };
-  
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('access_token');
+    try {
+      await AsyncStorage.removeItem('access_token');
+
+      setTimeout(() => {
+        setShowNotification(false);
+        navigation.navigate('Login');
+      }, 3000);
+    } catch (error) {
+      console.error('Er is een fout opgetreden bij het uitloggen:', error);
+    }
   };
 
   return (
@@ -123,6 +126,7 @@ const ProfilePageTeacher = () => {
             <TouchableOpacity onPress={() => setIsEditing(true)}>
               <Text style={styles.buttonText}>Profiel aanpassen</Text>
             </TouchableOpacity>
+            <Notification message="Profiel succesvol bijgewerkt" visible={showNotification} />
           </View>
         )}
         <TouchableOpacity onPress={handleLogout}>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, ActivityIndicator, ScrollView, Text } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, Icon, LinearProgress } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import LayoutTeacher from './LayoutTeacher';
+import Notification from '../PushNotification';
 
 const HomePageTeacher = () => {
   const navigation = useNavigation();
@@ -16,6 +17,7 @@ const HomePageTeacher = () => {
   const [courseIDs, setCourseIds] = useState([]);
   const [userName, setUserName] = useState('');
   const [progress, setProgress] = useState([]);
+  const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +39,7 @@ const HomePageTeacher = () => {
           setCourseIds(data.courses.map(course => course.course_id) || []);
           setProgress(data.courses.map(course => course.voortgang) || []);
           setUserName(data.name || '');
+          setShowNotification(true);
         }
       } catch (error) {
         console.log('Error fetching data:', error);
@@ -48,6 +51,10 @@ const HomePageTeacher = () => {
       fetchData();
     }
   }, [authenticated, logout]);
+
+  const handleCloseNotification = () => {
+    setShowNotification(false);
+  };
 
   if (loading) {
     return (
@@ -106,6 +113,20 @@ const HomePageTeacher = () => {
             </View>
           ))}
         </View>
+        <View style={styles.notificationContainer}>
+        {showNotification && (
+          <TouchableOpacity style={styles.closeButton} onPress={handleCloseNotification}>
+            <Icon name="close" size={24} color="#000" />
+          </TouchableOpacity>
+        )}
+        {showNotification && (
+          <Notification
+            message="Cursussen geladen!"
+            visible={showNotification}
+            onClose={handleCloseNotification}
+          />
+        )}
+      </View>
       </ScrollView>
    </LayoutTeacher>
   );
@@ -117,6 +138,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 75,
+  },
+  notificationContainer: {
+    position: 'absolute',
+    width: '40%',
+  },
+  closeButton: {
+    position: 'relative',
+    top: 0,
+    right: 0,
+    zIndex: 1,
+    padding: 10,
   },
   orangeblock: {
     backgroundColor: '#CA591A',
