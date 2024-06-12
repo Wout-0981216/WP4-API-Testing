@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { View, Text } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { green, red } from '@mui/material/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Assignment = ({ route, navigation }) => {
     const { concept_id, styles } = route.params;
+    const [module_id, setModule_id] = useState('');
     const [assignment, setAssignment] = useState([]);
 
     useEffect(() => {
@@ -20,6 +21,7 @@ const Assignment = ({ route, navigation }) => {
                     },
                 });
                 const data = await response.json();
+                setModule_id(data.module_id)
                 setAssignment(data.assignment_info[0]);
               }
         catch(error) {
@@ -30,23 +32,24 @@ const Assignment = ({ route, navigation }) => {
     }, []);
 
     return (
-        <View> {console.log(assignment)}
-            <View style={styles.coursesContainer}>
-                <View style={styles.courseBlock}>
-                    <View style={styles.courseHeader}>
-                    <Text style={styles.courseTitleLeft}>{assignment.naam}</Text>
+        <View>
+            <Button onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module_id, styles: styles})} title='Terug'/>
+                <View style={styles.coursesContainer}>
+                    <View style={styles.courseBlock}>
+                        <View style={styles.courseHeader}>
+                        <Text style={styles.courseTitleLeft}>{assignment.naam}</Text>
+                        </View>
+                            {assignment.progress === true ? (
+                            <>
+                            <Text style={{color: "green"}}>{assignment.beschrijving}</Text>
+                            </>
+                            ) : (
+                            <>
+                            <Text style={{color: "red"}}>{assignment.beschrijving}</Text>
+                            </>
+                            )}
                     </View>
-                        {assignment.progress === true ? (
-                        <>
-                        <Text style={{color: "green"}}>{assignment.beschrijving}</Text>
-                        </>
-                        ) : (
-                        <>
-                        <Text style={{color: "red"}}>{assignment.beschrijving}</Text>
-                        </>
-                        )}
                 </View>
-            </View>
         </View>
     );
 };
