@@ -29,6 +29,7 @@ const StudentTabs = () => (
     <Tab.Screen name="Module" component={ModulePage} options={{ tabBarButton: ()=> null }} />
     <Tab.Screen name="ConceptAssignment" component={Assignment} options={{ tabBarLabel: 'Concept', tabBarButton: () => null }}/>
     <Tab.Screen name="ActivitiesModule" component={ActivitiesPage} options={{ tabBarButton: () => null }}/>
+    <Tab.Screen name="CoreAssignment" component={CoreAssignment} options={{ tabBarButton: () => null }}/>
   </Tab.Navigator>
 );
 

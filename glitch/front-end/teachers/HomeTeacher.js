@@ -114,11 +114,11 @@ const HomePageTeacher = () => {
           ))}
         </View>
         <View style={styles.notificationContainer}>
-        {showNotification && (
+        {/* showNotification && (
           <TouchableOpacity style={styles.closeButton} onPress={handleCloseNotification}>
             <Icon name="close" size={24} color="#000" />
           </TouchableOpacity>
-        )}
+        ) */ }
         {/* showNotification && (
           <Notification
             message="Cursussen geladen!"

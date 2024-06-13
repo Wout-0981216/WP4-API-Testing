@@ -20,7 +20,6 @@ def get_domains(request):
     return JsonResponse({'domain_list':domain_list})
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def concept_opdracht_list(request, concept_id):
     opdracht = ConceptOpdracht.objects.get(id=concept_id)
     voortgang = VoortgangConceptOpdrachten.objects.get(concept_opdracht_id=opdracht.id, student_id=request.user.id)
@@ -188,3 +187,16 @@ def get_module(request, module_id):
 def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrfToken': csrf_token})
+
+@api_view(['GET'])
+def core_assignment_list(request, module_id):
+
+    core_assignment = HoofdOpdrachten.objects.get(module_id=module_id)
+    assignment_data = {
+        'id': core_assignment.id,
+        'naam': core_assignment.naam,
+        'beschrijving': core_assignment.beschrijving,
+        'module_id': core_assignment.module_id
+    }
+    
+    return JsonResponse({'core_assignment': assignment_data}, status=200, safe=False)

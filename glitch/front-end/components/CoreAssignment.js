@@ -51,3 +51,34 @@ const CoreAssignment = ({ route }) => {
         </View>
       );
 };
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#E6E6E8',
+    },
+    assignmentContainer: {
+      padding: 20,
+      marginVertical: 10,
+      backgroundColor: '#fff',
+      borderRadius: 10,
+      width: '90%',
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    description: {
+      fontSize: 16,
+      marginTop: 10,
+    },
+    error: {
+      color: 'red',
+      fontSize: 18,
+      textAlign: 'center',
+    },
+  });
+  
+  export default CoreAssignment;
