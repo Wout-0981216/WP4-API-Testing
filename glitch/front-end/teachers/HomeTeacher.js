@@ -119,13 +119,13 @@ const HomePageTeacher = () => {
             <Icon name="close" size={24} color="#000" />
           </TouchableOpacity>
         )}
-        {showNotification && (
+        {/* showNotification && (
           <Notification
             message="Cursussen geladen!"
             visible={showNotification}
             onClose={handleCloseNotification}
           />
-        )}
+        )*/}
       </View>
       </ScrollView>
    </LayoutTeacher>
