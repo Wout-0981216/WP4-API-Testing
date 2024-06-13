@@ -223,9 +223,6 @@ const styles = StyleSheet.create({
       height: 100,
     },
   },
-  FlatList: {
-    flexWrap: 'wrap',
-  },
 });
 
 export default HomePage;

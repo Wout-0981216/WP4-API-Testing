@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
 from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten, Domeinen
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import make_password
 
 @api_view(['GET'])
 def get_domains(request):
@@ -31,7 +32,7 @@ def concept_opdracht_list(request, concept_id):
             'progress' : voortgang.voortgang
         }
     ]
-    return JsonResponse({"assignment_info": opdrachten_list}, safe=False)
+    return JsonResponse({"assignment_info": opdrachten_list, "module_id": opdracht.module.id}, safe=False)
     
 
 @api_view(['GET'])
@@ -51,10 +52,9 @@ def activities_module(request, activity_id):
             "progress" : VoortgangActiviteitenNiveaus.objects.get(niveau_id=niveau.id, student_id=request.user.id).voortgang
             } for niveau in niveaus]
 
-    print(niveau_info)
-
     return JsonResponse({"activity_info": activity_info,
-                         "niveau_info": niveau_info
+                         "niveau_info": niveau_info,
+                         "module_id": activity.module.id
                          }, safe=False)
 
 @api_view(['GET'])
@@ -108,7 +108,8 @@ def user_profile(request):
             user.last_name = request.data.get('last_name', '')
             user.username = request.data.get('username', '')
             user.email = request.data.get('email', '')
-            user.password = request.data.get('password', '')
+            hashed_password = make_password(request.data.get('password', ''))
+            user.password = hashed_password
             user.save()
             return JsonResponse({'message': 'Profiel succesvol aangepast'}, status=200)
 
@@ -175,6 +176,7 @@ def get_module(request, module_id):
 
         print(module_activities)
         return JsonResponse({
+                                "course_id": module.cursus.id,
                                 "module_name" : module.naam,
                                 "module_info" : module_info,
                                 "activities" : module_activities,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Button} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearProgress } from '@rneui/themed';
 
@@ -43,17 +43,12 @@ const CoursePage = ({ route, navigation }) => {
 
   function ModuleCards() {
     const module_array = [];
-    const cardGap = 16;
-    const cardWidth = (window.innerWidth - cardGap * 3) / 2;
     for (let i = 1; i <= nr_of_modules; i++) {
       const modulenr = "module" + i;
       if (moduledict[modulenr]) { 
         module_array.push(
           <View key={moduledict[modulenr]["module_id"]} 
           style={{
-            // marginTop: cardGap,
-            // marginLeft: i % 2 !== 0 ? cardGap : 0,
-            // width: cardWidth,
             height: 180,
             backgroundColor: 'white',
             borderRadius: 16,
@@ -92,6 +87,7 @@ const CoursePage = ({ route, navigation }) => {
 
   return (
     <View>
+      <Button onPress={() => navigation.goBack()} title='Terug'/>
       <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{course_name} Modules</Text>
       <ModuleCards />
     </View>
