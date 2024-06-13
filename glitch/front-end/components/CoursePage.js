@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Button} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Button, Dimensions} from 'react-native';
 import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearProgress } from '@rneui/themed';
@@ -37,7 +37,7 @@ const CoursePage = ({ route, navigation }) => {
     for (let i = 1; i <= module.module["nr_of_activities"]; i++) {
       const activitynr = "activity" + i;
       activities_array.push(
-        <Text key={i}>{module.module["activities"][activitynr]["activity_name"]} - voortgang: {module.module["activities"][activitynr]["progress"]}/{module.module["activities"][activitynr]["max_progress"]}</Text>
+        <Text key={i}>{module.module["activities"][activitynr]["activity_name"]}    {module.module["activities"][activitynr]["progress"]}/{module.module["activities"][activitynr]["max_progress"]}</Text>
       );
     }
     return activities_array;
@@ -61,7 +61,7 @@ const CoursePage = ({ route, navigation }) => {
           }}>
             <Text style={styles.courseTitleLeft}>{moduledict[modulenr]["module_name"]}</Text>
             <Activities module={moduledict[modulenr]}/>
-            <Text>Points Challenge  benodigde punten: {moduledict[modulenr]["points_challenge"]["points_challenge_points"]}</Text>
+            <Text>Points Challenge    {moduledict[modulenr]["points_challenge"]["points_challenge_progress"]}/{moduledict[modulenr]["points_challenge"]["points_challenge_points"]}</Text>
             <LinearProgress value={(moduledict[modulenr]["points_challenge"]["points_challenge_progress"]/moduledict[modulenr]["points_challenge"]["points_challenge_points"])} style={styles.progressBar} />
             <Text>{moduledict[modulenr]["context_challenge_name"]}</Text>
             <Text>{moduledict[modulenr]["core_assignment_name"]}</Text>
@@ -71,7 +71,7 @@ const CoursePage = ({ route, navigation }) => {
       }
     }
     return (
-      <ScrollView>
+      <ScrollView style={{height: (Dimensions.get('window').height)*0.70}}>
         <View style={{
           flex: 1,
           flexDirection: 'row',
@@ -80,7 +80,7 @@ const CoursePage = ({ route, navigation }) => {
         }}>
           {module_array.map((module) => {
             return (
-              <Pressable key={module.key} onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.key, styles: styles})} style={{flex: 1}}>
+              <Pressable key={module.key} onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.key, styles: styles})} style={{flex: 1, minWidth: 250}}>
                 {module}
               </Pressable>
             );
