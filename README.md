@@ -16,12 +16,14 @@ Ai (chatgpt) prompts:
 - "Zorg ervoor dat ik na 5 minuten niet wordt uitgelogd, gebruik de refreshtokens, dit is mijn code {mijn code op 5/21/2024}"
 - "Ik wil mijn courseheader om de keer links of rechts uigelijnd worden en het icoontje dan daar afhankelijk van links of rechts hebben staan"
 - (meerdere prompts om alle mui elementen om te zetten naar native elementen omdat we niet wisten dat die alleenmaar bij web gebruikt konden worden)
+- "zoek het verschil tussen CoreAssignment.js en assignment.js (codes gekopieerd)"
 
 
 Youtube:
 - https://www.youtube.com/watch?v=GnhbZbPb6uo
 - https://www.youtube.com/watch?v=eXrwF4LXF5c&t=952s
 - https://www.youtube.com/watch?v=iM5xEdair20
+- https://www.youtube.com/watch?v=A39cBW-WJ7Q
 
 Overige websites:
 - https://medium.com/@ronakchitlangya1997/jwt-authentication-with-react-js-and-django-c034aae1e60d
@@ -32,7 +34,8 @@ Overige websites:
 - https://dev.to/sanjayttg/jwt-authentication-in-react-with-react-router-1d03?utm_source=reactdigest&utm_medium=&utm_campaign=1655
 - https://reactnavigation.org/docs/getting-started/
 - https://m2.material.io/design/typography/the-type-system.html#type-scale
-
+- https://www.w3schools.com/react/react_jsx.asp 
+- https://www.w3schools.com/django/index.php
 
 
 
