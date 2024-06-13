@@ -35,7 +35,7 @@ const CoursePage = ({ route, navigation }) => {
     for (let i = 1; i <= module.module["nr_of_activities"]; i++) {
       const activitynr = "activity" + i;
       activities_array.push(
-        <Text key={i}>{module.module["activities"][activitynr]}</Text>
+        <Text key={i}>{module.module["activities"][activitynr]["activity_name"]} - voortgang: {module.module["activities"][activitynr]["progress"]}/{module.module["activities"][activitynr]["max_progress"]}</Text>
       );
     }
     return activities_array;
@@ -59,9 +59,10 @@ const CoursePage = ({ route, navigation }) => {
             <Text style={styles.courseTitleLeft}>{moduledict[modulenr]["module_name"]}</Text>
             <Activities module={moduledict[modulenr]}/>
             <Text>Points Challenge  benodigde punten: {moduledict[modulenr]["points_challenge"]["points_challenge_points"]}</Text>
-            <LinearProgress value={(moduledict[modulenr]["points_challenge"]["points_challenge_progress"]/moduledict[modulenr]["points_challenge"]["points_challenge_points"])*100} style={styles.progressBar} />
+            <LinearProgress value={(moduledict[modulenr]["points_challenge"]["points_challenge_progress"]/moduledict[modulenr]["points_challenge"]["points_challenge_points"])} style={styles.progressBar} />
             <Text>{moduledict[modulenr]["context_challenge_name"]}</Text>
             <Text>{moduledict[modulenr]["core_assignment_name"]}</Text>
+            <Button onPress={() => navigation.navigate("Module", {screen: "Module", module_id: moduledict[modulenr]["module_id"], styles: styles})} title='Module bekijken' />
           </View>
         );
       }

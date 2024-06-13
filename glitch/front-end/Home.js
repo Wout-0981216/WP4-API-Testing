@@ -181,6 +181,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     height: 10,
   },
+  progressBarSmall: {
+    marginTop: 10,
+    height: 10,
+    width: 200,
+  },
   iconWrapper: {
     backgroundColor: '#D9D9D9',
     borderRadius: 50,
