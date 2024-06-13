@@ -87,7 +87,7 @@ const CoursePage = ({ route, navigation }) => {
 
   return (
     <View>
-      <Button onPress={() => navigation.navigate("Home", {screen: "Home"})} title='Terug'/>
+      <Button onPress={() => navigation.goBack()} title='Terug'/>
       <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{course_name} Modules</Text>
       <ModuleCards />
     </View>

@@ -5,7 +5,7 @@ import Layout from '../Layout';
 import { LinearProgress } from '@rneui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ModulePage = ({ route, navigation }) => {
+const ModulePage = ({ route, navigation}) => {
   const { module_id, styles } = route.params;
   const [course_id, setCourse_id] = useState('');
   const [module_name, setModule_name] = useState('');
@@ -38,7 +38,7 @@ const ModulePage = ({ route, navigation }) => {
         }
     };
     get_module_info();
-  },[]);
+  },[module_id]);
 
   function Activities() {
     const activities_array = [];
@@ -66,7 +66,7 @@ const ModulePage = ({ route, navigation }) => {
 
   return(
     <View>
-      <Button onPress={() => navigation.navigate("Course", {screen: "Course", course_id: course_id, styles: styles})} title='Terug'/>
+      <Button onPress={() => navigation.goBack()} title='Terug'/>
       <View style={styles.coursesContainer}>
         <View style={styles.courseBlock}>
           <View style={styles.courseHeader}>

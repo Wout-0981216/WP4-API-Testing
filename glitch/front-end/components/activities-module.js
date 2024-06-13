@@ -8,7 +8,7 @@ const ActivitiesPage = ({ route, navigation }) => {
     const { activity_id, styles } = route.params;
     const [module_id, setModule_id] = useState('');
     const [activiteiten, setActiviteiten] = useState([]);
-    const [niveaus, setNiveaus] = useState([])
+    const [niveaus, setNiveaus] = useState([]);
 
     useEffect(() => {
         const get_activity_info = async () => {
@@ -30,7 +30,7 @@ const ActivitiesPage = ({ route, navigation }) => {
         }
       };
       get_activity_info()
-    }, []);
+    }, [activity_id]);
 
     const handleSubmit = (activiteitId) => {
     // inlever knop
@@ -38,7 +38,7 @@ const ActivitiesPage = ({ route, navigation }) => {
 
     return (
     <View>
-      <Button onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module_id, styles: styles})} title='Terug'/>
+      <Button onPress={() => navigation.goBack()} title='Terug'/>
       <View style={styles.coursesContainer}>
         <View style={styles.courseBlock}>
           <View style={styles.courseHeader}>
