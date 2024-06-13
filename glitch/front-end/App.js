@@ -15,6 +15,7 @@ import TeacherHome from './teachers/HomeTeacher';
 import ProfilePageTeacher from './teachers/ProfilePageTeacher';
 import ModulePageTeacher from './teachers/ModulePageTeacher';
 import AddModuleTeacher from './teachers/AddModuleTeacher';
+import InspectStudent from './teachers/InspectStudent';
 import CoursesScreen from './teachers/CoursesScreen';
 import CoursePage from './components/CoursePage';
 
@@ -39,6 +40,7 @@ const TeacherTabs = () => (
     <Tab.Screen name="TeacherProfile" component={ProfilePageTeacher} />
     <Tab.Screen name="TeacherModule" component={ModulePageTeacher} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="AddModuleTeacher" component={AddModuleTeacher} options={{ tabBarButton: () => null }} />
+    <Tab.Screen name="InspectStudent" component={InspectStudent} options={{ tabBarButton: () => null }} />
 
   </Tab.Navigator>
 );

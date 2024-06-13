@@ -121,36 +121,62 @@ def user_profile(request):
 @permission_classes([IsAuthenticated])
 def get_modules(request, course_id):
     if request.method == 'GET':
-        course = Cursussen.objects.get(id=course_id)
+        try:
+            course = Cursussen.objects.get(id=course_id)
+        except Cursussen.DoesNotExist:
+            return JsonResponse({"error": "Course not found"}, status=404)
+
         modules = Modules.objects.filter(cursus_id=course_id)
         module_list = {}
         j = 0
         for module in modules:
-            j+=1
-            modulenr = "module"+str(j)
-            module_list[modulenr] = {"module_name" : module.naam}
-            module_list[modulenr]["module_id"] = module.id
+            j += 1
+            modulenr = "module" + str(j)
+            module_list[modulenr] = {
+                "module_name": module.naam,
+                "module_id": module.id,
+                "activities": {}
+            }
             activities = Activiteiten.objects.filter(module_id=module.id)
             i = 1
-            module_list[modulenr]["activities"] = {}
-
             for activity in activities:
-                module_list[modulenr]["activities"]["activity"+str(i)] = activity.naam
-                module_list[modulenr]["nr_of_activities"] = i
-                i+=1
-            points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
-            user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
-            module_list[modulenr]["points_challenge"] = {"points_challenge_points": points_challenge.benodige_punten, "points_challenge_progress": user_progress.voortgang}
-            context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
-            module_list[modulenr]["context_challenge_name"] = context_challenge.naam
-            core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
-            module_list[modulenr]["core_assignment_name"] = core_assignment.naam
+                module_list[modulenr]["activities"]["activity" + str(i)] = activity.naam
+                i += 1
+            module_list[modulenr]["nr_of_activities"] = i - 1
+
+            try:
+                points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
+                try:
+                    user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
+                    module_list[modulenr]["points_challenge"] = {
+                        "points_challenge_points": points_challenge.benodige_punten,
+                        "points_challenge_progress": user_progress.voortgang
+                    }
+                except VoortgangPuntenUitdaging.DoesNotExist:
+                    module_list[modulenr]["points_challenge"] = {
+                        "points_challenge_points": points_challenge.benodige_punten,
+                        "points_challenge_progress": None
+                    }
+            except PuntenUitdagingen.DoesNotExist:
+                module_list[modulenr]["points_challenge"] = None
+
+            try:
+                context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
+                module_list[modulenr]["context_challenge_name"] = context_challenge.naam
+            except ConceptOpdracht.DoesNotExist:
+                module_list[modulenr]["context_challenge_name"] = None
+
+            try:
+                core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
+                module_list[modulenr]["core_assignment_name"] = core_assignment.naam
+            except HoofdOpdrachten.DoesNotExist:
+                module_list[modulenr]["core_assignment_name"] = None
 
         return JsonResponse({
-                                "course_name" : course.naam,
-                                "nr_of_modules" : j,
-                                "module_list" : module_list
-                            }, status=200, safe=False)
+            "course_name": course.naam,
+            "nr_of_modules": j,
+            "module_list": module_list
+        }, status=200, safe=False)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

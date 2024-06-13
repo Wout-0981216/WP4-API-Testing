@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from game.models import ConceptOpdracht, Activiteiten
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
-from game.models import Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten
+from game.models import Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten, VoortgangPuntenUitdaging
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from game.models import Cursussen, User, TeacherCursus
@@ -93,7 +93,7 @@ def course_list(request):
             'naam': cursus.naam,
             'beschrijving': cursus.beschrijving
         })
-    print("daya is",courses_data)
+    print("data is",courses_data)
     return JsonResponse(courses_data, safe=False)
 
 
@@ -112,3 +112,38 @@ def student_list(request, course_id):
     print(students_data)
     
     return JsonResponse(students_data, safe=False)
+
+
+def get_student_voortgang(request, student_id):
+    hoofd_opdrachten_voortgang = VoortgangHoofdOpdrachten.objects.filter(
+        student_id=student_id, voortgang=1
+    ).select_related('hoofd_opdracht').values(
+        'hoofd_opdracht__naam', 'hoofd_opdracht__beschrijving'
+    )
+
+    concept_opdrachten_voortgang = VoortgangConceptOpdrachten.objects.filter(
+        student_id=student_id, voortgang=1
+    ).select_related('concept_opdracht').values(
+        'concept_opdracht__naam', 'concept_opdracht__beschrijving'
+    )
+
+    punten_uitdaging_voortgang = VoortgangPuntenUitdaging.objects.filter(
+        student_id=student_id, voortgang__gte=1
+    ).select_related('punten_uitdaging').values(
+        'punten_uitdaging__benodige_punten', 'punten_uitdaging__module__naam'
+    )
+
+    activiteiten_niveaus_voortgang = VoortgangActiviteitenNiveaus.objects.filter(
+        student_id=student_id, voortgang=1
+    ).select_related('niveau').values(
+        'niveau__beschrijving', 'niveau__activiteit__naam'
+    )
+
+    data = {
+        "hoofd_opdrachten_voortgang": list(hoofd_opdrachten_voortgang),
+        "concept_opdrachten_voortgang": list(concept_opdrachten_voortgang),
+        "punten_uitdaging_voortgang": list(punten_uitdaging_voortgang),
+        "activiteiten_niveaus_voortgang": list(activiteiten_niveaus_voortgang)
+    }
+
+    return JsonResponse(data)
