@@ -24,15 +24,15 @@ const Assignment = ({ route, navigation }) => {
                 setAssignment(data.assignment_info[0]);
               }
         catch(error) {
-          console.error('Er is een fout opgetreden bij het ophalen van de activiteiten', error);
+          console.error('Er is een fout opgetreden bij het ophalen van de conceptopdrachten', error);
         }
       };
       get_concept_info()
-    }, [concept_id]);
+    }, []);
 
     return (
         <View>
-            <Button onPress={() => navigation.goBack()} title='Terug'/>
+            <Button onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module_id, styles: styles})} title='Terug'/>
                 <View style={styles.coursesContainer}>
                     <View style={styles.courseBlock}>
                         <View style={styles.courseHeader}>

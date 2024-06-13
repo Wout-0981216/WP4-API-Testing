@@ -83,8 +83,8 @@ const ModulePage = ({ route, navigation}) => {
             </Pressable>
           </Text>
           <Text>Core Assignment: 
-            <Pressable onPress={() => navigation.navigate("CoreAssignment", {screen: "CoreAssignment", module_id: module.id, styles: styles})}>
-              <Text style={{ fontWeight: 'bold'}}> {core_assignment.name} </Text>
+            <Pressable onPress={() => navigation.navigate("CoreAssignment", {screen: "CoreAssignment", module_id: module_id, styles: styles})}>
+              <Text style={{ fontWeight: 'bold'}}> {core_assignment.challenge_name} </Text>
             </Pressable>
           </Text>
         </View>

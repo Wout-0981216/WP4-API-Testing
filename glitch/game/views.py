@@ -189,7 +189,6 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': csrf_token})
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def core_assignment_list(request, module_id):
 
     core_assignment = HoofdOpdrachten.objects.get(module_id=module_id)

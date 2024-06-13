@@ -1,26 +1,26 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, Button } from 'react-native';
 import axiosInstance from '../axiosInstance';
 import { AuthContext } from '../AuthProvider';
 
 const CoreAssignment = ({ route }) => {
     const { module_id } = route.params;
-    const [assignments, setAssignments] = useState([]);
+    const [assignment, setAssignment] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const { authenticated } = useContext(AuthContext);
   
     useEffect(() => {
       if (authenticated) {
-        fetchCoreAssignments();
+        fetchCoreAssignment();
       }
     }, [authenticated]);
   
-    const fetchCoreAssignments = async () => {
+    const fetchCoreAssignment = async () => {
       try {
-        const response = await axiosInstance.get(`/api/module/${module_id}`);
+        const response = await axiosInstance.get(`game/api/core-assignment/${module_id}`);
         const coreAssignment = response.data.core_assignment;
-        setAssignments([coreAssignment]);
+        setAssignment(coreAssignment);
       } catch (error) {
         setError('Er is een fout opgetreden bij het ophalen van de hoofdopdrachten.');
       } finally {
@@ -37,19 +37,14 @@ const CoreAssignment = ({ route }) => {
     }
 
     return (
-        <View style={styles.container}>
-          <FlatList
-            data={assignments}
-            keyExtractor={(item) => item.challenge_id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.assignmentContainer}>
-                <Text style={styles.title}>{item.challenge_name}</Text>
-                <Text style={styles.description}>{item.challenge_desc}</Text>
-              </View>
-            )}
-          />
+      <View style={styles.container}>
+        <Button onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module_id, styles: styles})} title='Terug'/>
+        <View style={styles.assignmentContainer}>
+          <Text style={styles.title}>{assignment.naam}</Text>
+          <Text style={styles.description}>{assignment.beschrijving}</Text>
         </View>
-      );
+      </View>
+    );
 };
 
 const styles = StyleSheet.create({
