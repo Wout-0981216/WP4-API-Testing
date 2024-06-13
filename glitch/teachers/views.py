@@ -2,10 +2,10 @@ from django.http import JsonResponse
 from game.models import ConceptOpdracht, Activiteiten
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
-from game.models import Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, Niveaus
+from game.models import *
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
-from game.models import Cursussen, User, TeacherCursus
+from add_user_to_module import add_user_to_module
 
 @csrf_exempt
 @api_view(['POST'])
@@ -75,6 +75,9 @@ def register_module(request):
             benodige_punten=points,
             module_id = new_module.id
         )
+        course_student = IngschrCursus.objects.filter(cursus=course_id)
+        for student in course_student:
+            add_user_to_module(student.student, new_module)
 
 
         return JsonResponse({

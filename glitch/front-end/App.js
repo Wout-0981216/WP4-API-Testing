@@ -34,7 +34,7 @@ const StudentTabs = () => (
 );
 
 const TeacherTabs = () => (
-  <Tab.Navigator>
+  <Tab.Navigator backBehavior='history'>
     <Tab.Screen name="TeacherHome" component={TeacherHome} />
     <Tab.Screen name="Leerlingen" component={CoursesScreen} />
     <Tab.Screen name="TeacherProfile" component={ProfilePageTeacher} />

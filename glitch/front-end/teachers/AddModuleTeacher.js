@@ -56,7 +56,6 @@ const AddModuleTeacher = () => {
 
       if (response.status >= 200 && response.status < 300) {
         await AsyncStorage.setItem('access_token', response.data.access_token);
-        await AsyncStorage.setItem('refresh_token', response.data.refresh_token);
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
         setAuthenticated(true);
         setShowNotification(true); // Toon de notificatie na het succesvol toevoegen van de module
@@ -82,7 +81,7 @@ const AddModuleTeacher = () => {
 
   return (
     <LayoutTeacher>
-            <Input
+          <Input
             label="Module naam"
             onChangeText={setModule_name}
             autoCapitalize="none"
