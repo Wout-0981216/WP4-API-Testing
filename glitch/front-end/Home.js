@@ -83,8 +83,8 @@ const HomePage = () => {
                       {index % 2 === 0 ? (
                         <>
                           <SchoolIcon style={styles.icon}/>
-                          <Typography onClick={() => navigation.navigate("Module", {screen: "Module", course_id: courseIDs[index], styles: styles})} variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
-                        </>
+                          <Typography onClick={() => navigation.navigate("Module", { screen: "Module", course_id: courseIDs[index], styles: styles })} variant="h4" style={styles.courseTitleLeft}>{courseName}</Typography>
+                          </>
                       ) : (
                         <>
                           <Typography variant="h4" style={styles.courseTitleRight}>{courseName}</Typography>
