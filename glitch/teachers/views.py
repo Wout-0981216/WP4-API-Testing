@@ -128,30 +128,13 @@ def get_student_voortgang(request, student_id):
     ).select_related('concept_opdracht').values(
         'id',
         'concept_opdracht__naam',
-        'concept_opdracht__beschrijving'
-    )
-
-    punten_uitdaging_voortgang = VoortgangPuntenUitdaging.objects.filter(
-        student_id=student_id, voortgang__gte=1
-    ).select_related('punten_uitdaging').values(
-        'id', 
-        'punten_uitdaging__benodige_punten',
-        'punten_uitdaging__module__naam'
-    )
-
-    activiteiten_niveaus_voortgang = VoortgangActiviteitenNiveaus.objects.filter(
-        student_id=student_id, voortgang=1
-    ).select_related('niveau').values(
-        'id', 
-        'niveau__beschrijving',
-        'niveau__activiteit__naam'
+        'concept_opdracht__beschrijving',
+        'ingeleverd_tekst'
     )
 
     data = {
         "hoofd_opdrachten_voortgang": list(hoofd_opdrachten_voortgang),
         "concept_opdrachten_voortgang": list(concept_opdrachten_voortgang),
-        "punten_uitdaging_voortgang": list(punten_uitdaging_voortgang),
-        "activiteiten_niveaus_voortgang": list(activiteiten_niveaus_voortgang)
     }
 
     return JsonResponse(data)

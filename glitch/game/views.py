@@ -9,6 +9,10 @@ from django.middleware.csrf import get_token
 from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten, Domeinen
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import ConceptOpdracht
+from django.contrib.auth.models import AnonymousUser
 
 @api_view(['GET'])
 def get_domains(request):
@@ -29,7 +33,8 @@ def concept_opdracht_list(request, concept_id):
             'id': opdracht.id,
             'naam': opdracht.naam,
             'beschrijving': opdracht.beschrijving,
-            'progress' : voortgang.voortgang
+            'progress' : voortgang.voortgang,
+            'handed_in_text': voortgang.ingeleverd_tekst
         }
     ]
     return JsonResponse({"assignment_info": opdrachten_list, "module_id": opdracht.module.id}, safe=False)
@@ -140,37 +145,16 @@ def get_modules(request, course_id):
             activities = Activiteiten.objects.filter(module_id=module.id)
             i = 1
             for activity in activities:
-                module_list[modulenr]["activities"]["activity" + str(i)] = activity.naam
-                i += 1
-            module_list[modulenr]["nr_of_activities"] = i - 1
-
-            try:
-                points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
-                try:
-                    user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
-                    module_list[modulenr]["points_challenge"] = {
-                        "points_challenge_points": points_challenge.benodige_punten,
-                        "points_challenge_progress": user_progress.voortgang
-                    }
-                except VoortgangPuntenUitdaging.DoesNotExist:
-                    module_list[modulenr]["points_challenge"] = {
-                        "points_challenge_points": points_challenge.benodige_punten,
-                        "points_challenge_progress": None
-                    }
-            except PuntenUitdagingen.DoesNotExist:
-                module_list[modulenr]["points_challenge"] = None
-
-            try:
-                context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
-                module_list[modulenr]["context_challenge_name"] = context_challenge.naam
-            except ConceptOpdracht.DoesNotExist:
-                module_list[modulenr]["context_challenge_name"] = None
-
-            try:
-                core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
-                module_list[modulenr]["core_assignment_name"] = core_assignment.naam
-            except HoofdOpdrachten.DoesNotExist:
-                module_list[modulenr]["core_assignment_name"] = None
+                module_list[modulenr]["activities"]["activity"+str(i)] = activity.naam
+                module_list[modulenr]["nr_of_activities"] = i
+                i+=1
+            points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
+            user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
+            module_list[modulenr]["points_challenge"] = {"points_challenge_points": points_challenge.benodige_punten, "points_challenge_progress": user_progress.voortgang}
+            context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
+            module_list[modulenr]["context_challenge_name"] = context_challenge.naam
+            core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
+            module_list[modulenr]["core_assignment_name"] = core_assignment.naam
 
         return JsonResponse({
             "course_name": course.naam,
@@ -189,8 +173,14 @@ def get_module(request, module_id):
         module_activities = {}
         activities = Activiteiten.objects.filter(module_id=module.id)
         for activity in activities:
-            module_activities["activity"+str(i)] = {"activity_name": activity.naam, "activity_desc": activity.beschrijving, "activity_id": activity.id}
             module_info["nr_of_activities"] = i
+            niveaus = Niveaus.objects.filter(activiteit=activity)
+            progress_counter = 0
+            for niveau in niveaus:
+                niveau_voortgang = VoortgangActiviteitenNiveaus.objects.get(niveau=niveau, student=request.user.id)
+                if niveau_voortgang.voortgang == True:
+                    progress_counter +=1
+            module_activities["activity"+str(i)] = {"activity_name": activity.naam, "activity_desc": activity.beschrijving, "activity_id": activity.id, "progress": progress_counter, "max_progress": len(niveaus)}
             i+=1
         points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
         user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging=points_challenge.id, student=request.user.id)
@@ -214,3 +204,35 @@ def get_module(request, module_id):
 def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrfToken': csrf_token})
+
+
+@api_view(['POST'])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def submit_text(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        concept_id = data.get('concept_id')
+        submitted_text = data.get('submitted_text')
+
+        try:
+            concept_opdracht = ConceptOpdracht.objects.get(id=concept_id)
+            student = request.user
+
+            voortgang = VoortgangConceptOpdrachten.objects.get_or_create(
+                student=student,
+                concept_opdracht=concept_opdracht,
+                defaults={'voortgang': 0}
+            )[0]
+
+            voortgang.ingeleverd_tekst = submitted_text
+            voortgang.voortgang = 1
+            voortgang.save()
+
+            return JsonResponse({'message': 'Tekst succesvol ingeleverd'})
+        except ConceptOpdracht.DoesNotExist:
+            return JsonResponse({'error': 'ConceptOpdracht niet gevonden'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Alleen POST-verzoeken zijn toegestaan voor deze endpoint'})

@@ -23,7 +23,7 @@ import CoursePage from './components/CoursePage';
 const Tab = createBottomTabNavigator();
 
 const StudentTabs = () => (
-  <Tab.Navigator>
+  <Tab.Navigator backBehavior='history'>
     <Tab.Screen name="Home" component={HomePage} />
     <Tab.Screen name="Profile" component={ProfilePage} />
     <Tab.Screen name="Course" component={CoursePage} options={{ tabBarButton: () => null }} />

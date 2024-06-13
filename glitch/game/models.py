@@ -138,6 +138,11 @@ class VoortgangConceptOpdrachten(models.Model):
         null=True
     )
     voortgang = models.IntegerField(default=0)
+    ingeleverd_tekst = models.TextField(blank=True, null=True)
+
+    def set_ingeleverd_tekst(self, tekst):
+        self.ingeleverd_tekst = tekst
+        self.save()
 
 class VoortgangPuntenUitdaging(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)

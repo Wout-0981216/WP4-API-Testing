@@ -29,13 +29,6 @@ const LoginForm = () => {
         await AsyncStorage.setItem('refresh_token', response.data.refresh);
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
         setAuthenticated(true);
-        if (response.data.teacher === "True") {
-          console.log('Is leraar');
-          navigation.navigate('TeacherHome'); 
-        } else {
-          console.log('Is geen leraar');
-          navigation.navigate('Home');
-        }
       } else {
         throw new Error('Network response was not ok');
       }
