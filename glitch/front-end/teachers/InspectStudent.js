@@ -50,7 +50,6 @@ const InspectStudent = ({ route }) => {
       const data = await response.json();
       console.log(data);
       fetchProgressData();
-      navigation.navigate('Leerlingen');
     } catch (error) {
       console.error('Error approving assignment', error);
     }
@@ -73,7 +72,6 @@ const InspectStudent = ({ route }) => {
       const data = await response.json();
       console.log(data);
       fetchProgressData(); 
-      navigation.navigate('Leerlingen'); 
     } catch (error) {
       console.error('Error rejecting assignment', error);
     }
@@ -115,7 +113,7 @@ const InspectStudent = ({ route }) => {
                   <Button
                     title="Keur goed"
                     onPress={() => approveAssignment(item.id, 'concept_opdracht')}
-                  />
+                  /><br/>
                   <Button
                     title="Keur af"
                     onPress={() => rejectAssignment(item.id, 'concept_opdracht')}
