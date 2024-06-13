@@ -10,7 +10,6 @@ const Assignment = ({ route, navigation }) => {
     const [assignment, setAssignment] = useState([]);
 
     useEffect(() => {
-        // uit database halen
         const get_concept_info = async () => {
           try{
             const token = await AsyncStorage.getItem('access_token');

@@ -93,7 +93,6 @@ def course_list(request):
             'naam': cursus.naam,
             'beschrijving': cursus.beschrijving
         })
-    print("daya is",courses_data)
     return JsonResponse(courses_data, safe=False)
 
 

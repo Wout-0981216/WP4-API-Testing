@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 from game.models import ConceptOpdracht, Activiteiten, User, Cursussen
 from . import models
@@ -20,6 +19,7 @@ def get_domains(request):
     return JsonResponse({'domain_list':domain_list})
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def concept_opdracht_list(request, concept_id):
     opdracht = ConceptOpdracht.objects.get(id=concept_id)
     voortgang = VoortgangConceptOpdrachten.objects.get(concept_opdracht_id=opdracht.id, student_id=request.user.id)
@@ -189,6 +189,7 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': csrf_token})
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def core_assignment_list(request, module_id):
 
     core_assignment = HoofdOpdrachten.objects.get(module_id=module_id)

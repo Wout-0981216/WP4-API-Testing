@@ -23,7 +23,7 @@ const HomePage = () => {
         if (authenticated) {
           setMessage('Welkom bij de glitch startpagina!');
           const token = await AsyncStorage.getItem('access_token');
-          const response = await fetch('http://127.0.0.1:8000/game/HomeCourses', {
+          const response = await fetch('http://192.168.56.1:8000/game/HomeCourses', {
             headers: {
               'Authorization': `Bearer ${token}`
             }
