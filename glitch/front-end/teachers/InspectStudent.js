@@ -1,32 +1,83 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import LayoutTeacher from './LayoutTeacher';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
-const InspectStudent = () => {
+const InspectStudent = ({ route }) => {
+  const { student_id } = route.params;
   const [voortgangData, setVoortgangData] = useState({
     hoofd_opdrachten_voortgang: [],
     concept_opdrachten_voortgang: [],
   });
 
+  const navigation = useNavigation();
+
   useEffect(() => {
-    const getVoortgangData = async () => {
-      try {
-        const token = await AsyncStorage.getItem('access_token');
-        const response = await fetch('http://192.168.56.1:8000/teachers/api/students_open/2/', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-        });
-        const data = await response.json();
-        setVoortgangData(data);
-      } catch (error) {
-        console.error('Er is een fout opgetreden bij het ophalen van de voortgangsgegevens', error);
-      }
-    };
-    getVoortgangData();
-  }, []);
+    fetchProgressData();
+  }, [student_id]);
+
+  const fetchProgressData = async () => {
+    try {
+      const token = await AsyncStorage.getItem('access_token');
+      const response = await fetch(`http://192.168.56.1:8000/teachers/api/students_open/${student_id}/`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      const data = await response.json();
+      setVoortgangData(data);
+    } catch (error) {
+      console.error('Error fetching progress data', error);
+    }
+  };
+
+  const approveAssignment = async (assignmentId, assignmentType) => {
+    try {
+      const token = await AsyncStorage.getItem('access_token');
+      const response = await fetch('http://192.168.56.1:8000/teachers/api/approve_assignment/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          assignment_id: assignmentId,
+          assignment_type: assignmentType,
+        }),
+      });
+      const data = await response.json();
+      console.log(data);
+      fetchProgressData();
+      navigation.navigate('Leerlingen');
+    } catch (error) {
+      console.error('Error approving assignment', error);
+    }
+  };
+
+  const rejectAssignment = async (assignmentId, assignmentType) => {
+    try {
+      const token = await AsyncStorage.getItem('access_token');
+      const response = await fetch('http://192.168.56.1:8000/teachers/api/reject_assignment/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          assignment_id: assignmentId,
+          assignment_type: assignmentType,
+        }),
+      });
+      const data = await response.json();
+      console.log(data);
+      fetchProgressData(); 
+      navigation.navigate('Leerlingen'); 
+    } catch (error) {
+      console.error('Error rejecting assignment', error);
+    }
+  };
 
   return (
     <LayoutTeacher>
@@ -37,7 +88,19 @@ const InspectStudent = () => {
             <>
               <Text style={styles.text}>Hoofdopdrachten:</Text>
               {voortgangData.hoofd_opdrachten_voortgang.map((item, index) => (
-                <Text key={index} style={styles.text}>{item.hoofd_opdracht__naam}: {item.hoofd_opdracht__beschrijving}</Text>
+                <View key={index}>
+                  <Text style={styles.text}>
+                    {item.hoofd_opdracht__naam}: {item.hoofd_opdracht__beschrijving}
+                  </Text>
+                  <Button
+                    title="Keur goed"
+                    onPress={() => approveAssignment(item.id, 'hoofd_opdracht')}
+                  />
+                  <Button
+                    title="Keur af"
+                    onPress={() => rejectAssignment(item.id, 'hoofd_opdracht')}
+                  />
+                </View>
               ))}
             </>
           )}
@@ -45,20 +108,31 @@ const InspectStudent = () => {
             <>
               <Text style={styles.text}>Conceptopdrachten:</Text>
               {voortgangData.concept_opdrachten_voortgang.map((item, index) => (
-                <Text key={index} style={styles.text}>{item.concept_opdracht__naam}: {item.concept_opdracht__beschrijving}</Text>
+                <View key={index}>
+                  <Text style={styles.text}>
+                    {item.concept_opdracht__naam}: {item.concept_opdracht__beschrijving}
+                  </Text>
+                  <Button
+                    title="Keur goed"
+                    onPress={() => approveAssignment(item.id, 'concept_opdracht')}
+                  />
+                  <Button
+                    title="Keur af"
+                    onPress={() => rejectAssignment(item.id, 'concept_opdracht')}
+                  />
+                </View>
               ))}
             </>
           )}
-          {(voortgangData.hoofd_opdrachten_voortgang.length === 0 && voortgangData.concept_opdrachten_voortgang.length === 0) && (
-            <Text style={styles.text}>Geen openstaande opdrachten gevonden</Text>
-          )}
+          {(voortgangData.hoofd_opdrachten_voortgang.length === 0 &&
+            voortgangData.concept_opdrachten_voortgang.length === 0) && (
+              <Text style={styles.text}>Geen openstaande opdrachten gevonden</Text>
+            )}
         </View>
       </View>
     </LayoutTeacher>
   );
 };
-
-export default InspectStudent;
 
 const styles = StyleSheet.create({
   text1: {
@@ -78,3 +152,5 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
 });
+
+export default InspectStudent;
