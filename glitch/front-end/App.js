@@ -27,9 +27,9 @@ const StudentTabs = () => (
     <Tab.Screen name="Profile" component={ProfilePage} />
     <Tab.Screen name="Course" component={CoursePage} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="Module" component={ModulePage} options={{ tabBarButton: ()=> null }} />
-    <Tab.Screen name="ConceptAssignment" component={Assignment} options={{ tabBarLabel: 'Concept', tabBarButton: () => null }}/>
+    <Tab.Screen name="ConceptAssignment" component={Assignment} options={{ tabBarButton: () => null }}/>
     <Tab.Screen name="ActivitiesModule" component={ActivitiesPage} options={{ tabBarButton: () => null }}/>
-    <Tab.Screen name="CoreAssignment" component={CoreAssignment} options={{ tabBarLabel: 'Core', tabBarButton: () => null }}/>
+    <Tab.Screen name="CoreAssignment" component={CoreAssignment} options={{ tabBarButton: () => null }}/>
   </Tab.Navigator>
 );
 

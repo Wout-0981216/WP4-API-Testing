@@ -32,7 +32,7 @@ const Assignment = ({ route, navigation }) => {
 
     return (
         <View>
-            <Button onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module_id, styles: styles})} title='Terug'/>
+            <Button onPress={() => navigation.goBack()} title='Terug'/>
                 <View style={styles.coursesContainer}>
                     <View style={styles.courseBlock}>
                         <View style={styles.courseHeader}>

@@ -78,9 +78,7 @@ const ModulePage = ({ route, navigation}) => {
           <View style={{flexDirection: 'row'}}>
             <Text>{`\nContext Challenge: `}
               <Text style={{ fontWeight: 'bold'}}> {context_challenge.challenge_name} </Text>
-          </Text>
-          <Text>
-              <Button onPress={() => navigation.navigate("ConceptAssignment", {screen: "ConceptAssignment", concept_id: context_challenge.challenge_id, styles: styles})} title='naar Context Challenge'/>
+                <Button onPress={() => navigation.navigate("ConceptAssignment", {screen: "ConceptAssignment", concept_id: context_challenge.challenge_id, styles: styles})} title='naar Context Challenge'/>
             </Text>
           </View>
           <View style={{flexDirection: 'row'}}>

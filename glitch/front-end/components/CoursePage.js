@@ -51,10 +51,10 @@ const CoursePage = ({ route, navigation }) => {
         module_array.push(
           <View key={moduledict[modulenr]["module_id"]} 
           style={{
-            height: 180,
             backgroundColor: 'white',
             borderRadius: 16,
             padding: 20,
+            margin: 20,
             shadowOpacity: 0.2,
             justifyContent: 'center',
             alignItems: 'center',
@@ -73,13 +73,14 @@ const CoursePage = ({ route, navigation }) => {
     return (
       <ScrollView>
         <View style={{
+          flex: 1,
           flexDirection: 'row',
           flexWrap: 'wrap',
           justifyContent: 'center',
         }}>
           {module_array.map((module) => {
             return (
-              <Pressable key={module.key} onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.key, styles: styles})}>
+              <Pressable key={module.key} onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.key, styles: styles})} style={{flex: 1}}>
                 {module}
               </Pressable>
             );
