@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from game.models import ConceptOpdracht, Activiteiten
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
-from game.models import Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten
+from game.models import Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, Niveaus
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from game.models import Cursussen, User, TeacherCursus
@@ -23,14 +23,13 @@ def register_module(request):
         activity3_des = request.data.get('activity3_des', '')
         concept_title = request.data.get('concept_title', '')
         concept_des = request.data.get('concept_des', '')
-        points_challange_points = request.data.get('points_challange_points', '')
         course_id = request.data.get('course_id', '')
 
         #  check
         if not (module_name and module_des and main_assignment_title and main_assignment_des and
                 activity1_title and activity2_title and activity3_title and
                 activity1_des and activity2_des and activity3_des and
-                concept_title and concept_des and points_challange_points and course_id):
+                concept_title and concept_des and course_id):
             return JsonResponse({'error': 'Missing required fields'}, status=400)
 
         new_module = Modules.objects.create(
@@ -48,8 +47,6 @@ def register_module(request):
             beschrijving=concept_des,
             module_id = new_module.id
         )
-
-
         Activiteiten.objects.create(
             naam=activity1_title,
             beschrijving=activity1_des,
@@ -65,8 +62,17 @@ def register_module(request):
             beschrijving=activity3_des,
             module_id = new_module.id
         )
+        activiteiten = Activiteiten.objects.filter(module=new_module)
+        points = 0
+        for activiteit in activiteiten:
+            for i in range(1,6):
+                Niveaus.objects.create(
+                    beschrijving="Niveau "+str(i),
+                    activiteit=activiteit
+                )
+                points+=1
         PuntenUitdagingen.objects.create(
-            benodige_punten=points_challange_points,
+            benodige_punten=points,
             module_id = new_module.id
         )
 
