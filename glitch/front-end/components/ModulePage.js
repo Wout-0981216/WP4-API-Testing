@@ -45,18 +45,11 @@ const ModulePage = ({ route, navigation}) => {
     for (let i = 1; i <= module_info.nr_of_activities; i++) {
       const activitynr = "activity" + i;
       activities_array.push(
-        <Pressable
-          onPress={() => navigation.navigate("ActivitiesModule", {
-            screen: "ActivitiesModule",
-            activity_id: activities[activitynr]["activity_id"],
-            styles: styles
-          })}
-          key={i}
-        >
-          <Text style={{ fontWeight: 'bold'}}>
-          {activities[activitynr]["activity_name"]} 
+        <View key={i} style={{flexDirection: 'row'}}>
+          <Text style={{ fontWeight: 'bold'}}>{`\n  -${activities[activitynr]["activity_name"]}   -  voortgang: ${activities[activitynr]["progress"]}/${activities[activitynr]["max_progress"]}  `}
+            <Button onPress={() => navigation.navigate("ActivitiesModule", {screen: "ActivitiesModule",activity_id: activities[activitynr]["activity_id"],styles: styles})} title='naar activiteit'/>
           </Text>
-        </Pressable>
+        </View>
       );
     }
     return activities_array;
@@ -73,20 +66,25 @@ const ModulePage = ({ route, navigation}) => {
           <Text style={styles.courseTitleLeft}>{module_name}</Text>
           </View>
           <Text>Beschrijving module: {module_info.module_desc}</Text>
-          <Text>Activiteiten:</Text>
+          <Text>{`\nActiviteiten:`}</Text>
           <Activities/>
-          <Text>Points Challenge benodigede punten: {points_challenge.points_challenge_points}</Text>
-          <LinearProgress value={(points_challenge["points_challenge_progress"]/points_challenge["points_challenge_points"])*100} style={styles.progressBar}/>
-          <Text>Context Challenge: 
-            <Pressable onPress={() => navigation.navigate("ConceptAssignment", {screen: "ConceptAssignment", concept_id: context_challenge.challenge_id, styles: styles})}> 
+          <View style={{flexDirection: 'row'}}>
+            <Text>{`\nPoints Challenge behaalde punten: ${points_challenge.points_challenge_progress}/${points_challenge.points_challenge_points}    `}
+              <LinearProgress value={(points_challenge["points_challenge_progress"]/points_challenge["points_challenge_points"])} style={styles.progressBarSmall}/>
+            </Text>
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <Text>{`\nContext Challenge: `}
               <Text style={{ fontWeight: 'bold'}}> {context_challenge.challenge_name} </Text>
-            </Pressable>
-          </Text>
-          <Text>Core Assignment: 
-            <Pressable onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.id, styles: styles})}>
+              <Button onPress={() => navigation.navigate("ConceptAssignment", {screen: "ConceptAssignment", concept_id: context_challenge.challenge_id, styles: styles})} title='naar Context Challenge'/>
+            </Text>
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <Text >{`\nCore Assignment: `}
               <Text style={{ fontWeight: 'bold'}}> {core_assignment.challenge_name} </Text>
-            </Pressable>
-          </Text>
+              <Button onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module_id, styles: styles})} title='naar Core Assignment'/>
+            </Text>
+          </View>
         </View>
       </View>
     </View>
