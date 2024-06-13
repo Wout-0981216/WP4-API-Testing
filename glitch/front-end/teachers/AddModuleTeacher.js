@@ -24,7 +24,6 @@ const AddModuleTeacher = () => {
   const [activity3_des, setActivity3_des] = useState('');
   const [concept_title, setConcept_title] = useState('');
   const [concept_des, setConcept_des] = useState('');
-  const [points_challange_points, setPoints_challange_points] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
@@ -51,7 +50,6 @@ const AddModuleTeacher = () => {
         activity3_des, 
         concept_title, 
         concept_des, 
-        points_challange_points,
         course_id 
       };
       const response = await axiosInstance.post('/teachers/register_module/', module);
@@ -84,116 +82,97 @@ const AddModuleTeacher = () => {
 
   return (
     <LayoutTeacher>
-      <View style={styles.formContainer}>
-        <Input
-          label="Module naam"
-          onChangeText={setModule_name}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de modulenaam"
-        />
-        <Input
-          label="Module beschrijving"
-          onChangeText={setModule_des}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de modulebeschrijving"
-        />
-        <Input
-          label="Hoofd opdracht titel"
-          onChangeText={setMain_assignment_title}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de titel van de hoofdopdracht"
-        />
-        <Input
-          label="Hoofd opdracht beschrijving"
-          onChangeText={setMain_assignment_des}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de beschrijving van de hoofdopdracht"
-        />
-        <Input
-          label="Concept opdracht titel"
-          onChangeText={setConcept_title}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de beschrijving van de conceptopdracht"
-        />
-        <Input
-          label="Concept opdracht beschrijving"
-          onChangeText={setConcept_des}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de beschrijving van de conceptopdracht"
-        />
-        <Input
-          label="Titel activiteit 1 *"
-          onChangeText={setActivity1_title}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de titel van activiteit 1"
-        />
-        <Input
-          label="Beschrijving activiteit 1 *"
-          onChangeText={setActivity1_des}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de beschrijving van activiteit 1"
-        />
-        <Input
-          label="Titel activiteit 2"
-          onChangeText={setActivity2_title}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de titel van activiteit 2"
-        />
-        <Input
-          label="Beschrijving activiteit 2"
-          onChangeText={setActivity2_des}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de beschrijving van activiteit 2"
-        />
-        <Input
-          label="Titel activiteit 3"
-          onChangeText={setActivity3_title}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de titel van activiteit 3"
-        />
-        <Input
-          label="Beschrijving activiteit 3"
-          onChangeText={setActivity3_des}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier de beschrijving van activiteit 3"
-        />
-        <Input
-          label="Punten challange punten"
-          onChangeText={setPoints_challange_points}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Typ hier het aantal punten voor de points challange"
-        />
-
-        <Button
-          title="Voeg module toe"
-          onPress={handleSubmit}
-          buttonStyle={styles.button_orange}
-          titleStyle={{ fontSize: 30 }}
-        />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        {showNotification && (
-          <View style={styles.notificationContainer}>
-            <Notification
-              message="Module succesvol toegevoegd!"
-              visible={showNotification}
-              onClose={() => setShowNotification(false)}
-            />
-          </View>
-        )}
-      </View>
+            <Input
+            label="Module naam"
+            onChangeText={setModule_name}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de modulenaam"
+          />
+          <Input
+            label="Module beschrijving"
+            onChangeText={setModule_des}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de modulebeschrijving"
+          />
+          <Input
+            label="Hoofd opdracht titel"
+            onChangeText={setMain_assignment_title}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de titel van de hoofdopdracht"
+          />
+          <Input
+            label="Hoofd opdracht beschrijving"
+            onChangeText={setMain_assignment_des}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de beschrijving van de hoofdopdracht"
+          />
+          <Input
+            label="Concept opdracht titel"
+            onChangeText={setConcept_title}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de beschrijving van de conceptopdracht"
+          />
+          <Input
+            label="Concept opdracht beschrijving"
+            onChangeText={setConcept_des}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de beschrijving van de conceptopdracht"
+          />
+          <Input
+            label="Titel activiteit 1 *"
+            onChangeText={setActivity1_title}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de titel van activiteit 1"
+          />
+          <Input
+            label="Beschrijving activiteit 1 *"
+            onChangeText={setActivity1_des}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de beschrijving van activiteit 1"
+          />
+          <Input
+            label="Titel activiteit 2"
+            onChangeText={setActivity2_title}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de titel van activiteit 2"
+          />
+          <Input
+            label="Beschrijving activiteit 2"
+            onChangeText={setActivity2_des}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de beschrijving van activiteit 2"
+          />
+          <Input
+            label="Titel activiteit 3"
+            onChangeText={setActivity3_title}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de titel van activiteit 3"
+          />
+          <Input
+            label="Beschrijving activiteit 3"
+            onChangeText={setActivity3_des}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Typ hier de beschrijving van activiteit 3"
+          />
+          <Button
+            title="Voeg module toe"
+            onPress={handleSubmit}
+            buttonStyle={styles.button_orange}
+            titleStyle={{ fontSize: 30 }}
+          />
+          {error ? <Text style={styles.error}>{error}</Text> : null}
     </LayoutTeacher>
   );
 };

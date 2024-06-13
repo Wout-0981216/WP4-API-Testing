@@ -32,12 +32,10 @@ def concept_opdracht_list(request, concept_id):
         }
     ]
     return JsonResponse({"assignment_info": opdrachten_list, "module_id": opdracht.module.id}, safe=False)
-    
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def activities_module(request, activity_id):
-    print(activity_id)
     activity = Activiteiten.objects.get(id=activity_id)
     activity_info = [{
             'id': activity.id,
@@ -55,6 +53,27 @@ def activities_module(request, activity_id):
                          "niveau_info": niveau_info,
                          "module_id": activity.module.id
                          }, safe=False)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def sign_off_niveau(request, niveau_id):
+    if request.method == 'POST':
+        try:
+            niveau_voortgang = VoortgangActiviteitenNiveaus.objects.get(niveau_id=niveau_id, student_id=request.user.id)
+            if niveau_voortgang.voortgang == 0:
+                niveau_voortgang.voortgang = 1
+                niveau_voortgang.save()
+                module = Modules.objects.get(id=(Activiteiten.objects.get(id=(Niveaus.objects.get(id=niveau_voortgang.niveau_id).activiteit_id)).module_id))
+                points_challenge = PuntenUitdagingen.objects.get(module=module)
+                points_challenge_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging = points_challenge, student_id = request.user.id)
+                if points_challenge_progress.voortgang < points_challenge.benodige_punten:
+                    points_challenge_progress.voortgang +=1
+                    points_challenge_progress.save()
+
+            return JsonResponse({'message': 'Niveau afgerond'}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'message': f'error {e}'}, status=400)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -107,8 +126,9 @@ def user_profile(request):
             user.last_name = request.data.get('last_name', '')
             user.username = request.data.get('username', '')
             user.email = request.data.get('email', '')
-            hashed_password = make_password(request.data.get('password', ''))
-            user.password = hashed_password
+            if request.data.get('password', '') != user.password:
+                hashed_password = make_password(request.data.get('password', ''))
+                user.password = hashed_password
             user.save()
             return JsonResponse({'message': 'Profiel succesvol aangepast'}, status=200)
 
@@ -162,7 +182,6 @@ def get_modules(request, course_id):
 def get_module(request, module_id):
     if request.method == 'GET':
         module = Modules.objects.get(id=module_id)
-        print(module)
         module_info = {"module_name": module.naam, "module_id": module.id, "module_desc": module.beschrijving}
         i = 1
         module_activities = {}
@@ -185,7 +204,6 @@ def get_module(request, module_id):
         core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
         core_assignment_info = {"challenge_name": core_assignment.naam, "challenge_desc": core_assignment.beschrijving, "challenge_id": core_assignment.id}
 
-        print(module_activities)
         return JsonResponse({
                                 "course_id": module.cursus.id,
                                 "module_name" : module.naam,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Button} from 'react-native';
+import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearProgress } from '@rneui/themed';
 
@@ -8,6 +9,7 @@ const CoursePage = ({ route, navigation }) => {
   const [course_name, setCourse_name] = useState('');
   const [moduledict, setModule_dict] = useState({});
   const [nr_of_modules, setNr_of_modules] = useState('');
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     const get_course_module_info = async () => {
@@ -28,7 +30,7 @@ const CoursePage = ({ route, navigation }) => {
       }
     };
     get_course_module_info();
-  }, [course_id]); 
+  }, [course_id, isFocused]); 
 
   function Activities(module) {
     const activities_array = [];
@@ -52,6 +54,7 @@ const CoursePage = ({ route, navigation }) => {
             height: 180,
             backgroundColor: 'white',
             borderRadius: 16,
+            padding: 20,
             shadowOpacity: 0.2,
             justifyContent: 'center',
             alignItems: 'center',
