@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, Button } from 'react-native';
+import { useIsFocused } from "@react-navigation/native";
 import { green, red } from '@mui/material/colors';
 
 const ActivitiesPage = ({ route, navigation }) => {
@@ -9,6 +10,8 @@ const ActivitiesPage = ({ route, navigation }) => {
     const [module_id, setModule_id] = useState('');
     const [activiteiten, setActiviteiten] = useState([]);
     const [niveaus, setNiveaus] = useState([]);
+    const [update_page, setUpdate] = useState(true);
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         const get_activity_info = async () => {
@@ -30,11 +33,23 @@ const ActivitiesPage = ({ route, navigation }) => {
         }
       };
       get_activity_info()
-    }, [activity_id]);
+    }, [activity_id, update_page, isFocused]);
 
-    const handleSubmit = (activiteitId) => {
-    // inlever knop
-    }
+    const handleSubmit = async (niveau_id) => {
+      try{
+        const token = await AsyncStorage.getItem('access_token');
+        const response = await fetch(`http://192.168.56.1:8000/game/api/post_niveau_progress/${niveau_id}/`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                },
+            });
+            setUpdate(!update_page)
+          }
+      catch(error) {
+      console.error('Er is een fout opgetreden bij het updaten van de niveau voortgang', error);
+      }
+    };
 
     return (
     <View>
@@ -53,7 +68,9 @@ const ActivitiesPage = ({ route, navigation }) => {
                   </>
                 ) : (
                   <>
-                  <Text style={{color: "red"}}>{niveau.beschrijving}</Text>
+                  <Text style={{color: "red", flexDirection: 'row'}}>{`\n${niveau.beschrijving}  `}
+                    <Button onPress={() => handleSubmit(niveau.id)} title='Afronden'/>
+                  </Text>
                   </>
                 )
               }

@@ -23,7 +23,6 @@ const AddModuleTeacher = () => {
   const [activity3_des, setActivity3_des] = useState('');
   const [concept_title, setConcept_title] = useState('');
   const [concept_des, setConcept_des] = useState('');
-  const [points_challange_points, setPoints_challange_points] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
@@ -49,7 +48,6 @@ const AddModuleTeacher = () => {
         activity3_des, 
         concept_title, 
         concept_des, 
-        points_challange_points,
         course_id 
       };
       const response = await axiosInstance.post('/teachers/register_module/', module);
@@ -165,20 +163,12 @@ const AddModuleTeacher = () => {
             autoCorrect={false}
             placeholder="Typ hier de beschrijving van activiteit 3"
           />
-          <Input
-            label="Punten challange punten"
-            onChangeText={setPoints_challange_points}
-            autoCapitalize="none"
-            autoCorrect={false}
-            placeholder="Typ hier het aantal punten voor de points challange"
+          <Button
+            title="Voeg module toe"
+            onPress={handleSubmit}
+            buttonStyle={styles.button_orange}
+            titleStyle={{ fontSize: 30 }}
           />
-
-            <Button
-              title="Voeg module toe"
-              onPress={handleSubmit}
-              buttonStyle={styles.button_orange}
-              titleStyle={{ fontSize: 30 }}
-            />
           {error ? <Text style={styles.error}>{error}</Text> : null}
     </LayoutTeacher>
   );
