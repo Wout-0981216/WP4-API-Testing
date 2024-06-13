@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, ActivityIndicator, Button } from 'react-native'
 import axiosInstance from '../axiosInstance';
 import { AuthContext } from '../AuthProvider';
 
-const CoreAssignment = ({ route }) => {
+const CoreAssignment = ({ route, navigation }) => {
     const { module_id } = route.params;
     const [assignment, setAssignment] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -37,23 +37,19 @@ const CoreAssignment = ({ route }) => {
     }
 
     return (
-      <View style={styles.container}>
+    <View>
         <Button onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module_id, styles: styles})} title='Terug'/>
-        <View style={styles.assignmentContainer}>
-          <Text style={styles.title}>{assignment.naam}</Text>
-          <Text style={styles.description}>{assignment.beschrijving}</Text>
-        </View>
+        <View style={styles.coursesContainer}>
+            <View style={styles.courseBlock}>
+                <Text style={styles.title}>{assignment.naam}</Text>
+                <Text style={styles.description}>{assignment.beschrijving}</Text>
+            </View>
       </View>
+    </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#E6E6E8',
-    },
     assignmentContainer: {
       padding: 20,
       marginVertical: 10,
@@ -68,11 +64,6 @@ const styles = StyleSheet.create({
     description: {
       fontSize: 16,
       marginTop: 10,
-    },
-    error: {
-      color: 'red',
-      fontSize: 18,
-      textAlign: 'center',
     },
   });
   

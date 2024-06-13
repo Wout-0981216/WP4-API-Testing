@@ -134,8 +134,14 @@ def get_modules(request, course_id):
             module_list[modulenr]["activities"] = {}
 
             for activity in activities:
-                module_list[modulenr]["activities"]["activity"+str(i)] = activity.naam
                 module_list[modulenr]["nr_of_activities"] = i
+                niveaus = Niveaus.objects.filter(activiteit=activity)
+                progress_counter = 0
+                for niveau in niveaus:
+                    niveau_voortgang = VoortgangActiviteitenNiveaus.objects.get(niveau=niveau, student=request.user.id)
+                    if niveau_voortgang.voortgang == True:
+                        progress_counter +=1
+                module_list[modulenr]["activities"]["activity"+str(i)] = {"activity_name": activity.naam, "progress": progress_counter, "max_progress": len(niveaus)}
                 i+=1
             points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
             user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
@@ -162,8 +168,14 @@ def get_module(request, module_id):
         module_activities = {}
         activities = Activiteiten.objects.filter(module_id=module.id)
         for activity in activities:
-            module_activities["activity"+str(i)] = {"activity_name": activity.naam, "activity_desc": activity.beschrijving, "activity_id": activity.id}
             module_info["nr_of_activities"] = i
+            niveaus = Niveaus.objects.filter(activiteit=activity)
+            progress_counter = 0
+            for niveau in niveaus:
+                niveau_voortgang = VoortgangActiviteitenNiveaus.objects.get(niveau=niveau, student=request.user.id)
+                if niveau_voortgang.voortgang == True:
+                    progress_counter +=1
+            module_activities["activity"+str(i)] = {"activity_name": activity.naam, "activity_desc": activity.beschrijving, "activity_id": activity.id, "progress": progress_counter, "max_progress": len(niveaus)}
             i+=1
         points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
         user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging=points_challenge.id, student=request.user.id)
@@ -189,6 +201,7 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': csrf_token})
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def core_assignment_list(request, module_id):
 
     core_assignment = HoofdOpdrachten.objects.get(module_id=module_id)

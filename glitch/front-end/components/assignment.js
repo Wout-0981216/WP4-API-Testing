@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import { green, red } from '@mui/material/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Assignment = ({ route, navigation }) => {
-    const { concept_id, styles } = route.params;
+    const { concept_id } = route.params;
     const [module_id, setModule_id] = useState('');
     const [assignment, setAssignment] = useState([]);
 
@@ -36,7 +36,7 @@ const Assignment = ({ route, navigation }) => {
                 <View style={styles.coursesContainer}>
                     <View style={styles.courseBlock}>
                         <View style={styles.courseHeader}>
-                        <Text style={styles.courseTitleLeft}>{assignment.naam}</Text>
+                        <Text style={styles.title}>{assignment.naam}</Text>
                         </View>
                             {assignment.progress === true ? (
                             <>
@@ -52,5 +52,23 @@ const Assignment = ({ route, navigation }) => {
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    assignmentContainer: {
+      padding: 20,
+      marginVertical: 10,
+      backgroundColor: '#fff',
+      borderRadius: 10,
+      width: '90%',
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    description: {
+      fontSize: 16,
+      marginTop: 10,
+    },
+  });
 
 export default Assignment;
