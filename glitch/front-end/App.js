@@ -7,7 +7,6 @@ import LoginForm from './LoginForm';
 import HomePage from './Home';
 import RegistrationForm from './Registration';
 import Assignment from './components/assignment';
-
 import ActivitiesPage from './components/activities-module';
 import ProfilePage from './components/ProfilePage';
 import ModulePage from './components/ModulePage';
@@ -17,6 +16,7 @@ import ModulePageTeacher from './teachers/ModulePageTeacher';
 import AddModuleTeacher from './teachers/AddModuleTeacher';
 import CoursesScreen from './teachers/CoursesScreen';
 import CoursePage from './components/CoursePage';
+import CoreAssignment from './components/CoreAssignment';
 
 
 const Tab = createBottomTabNavigator();
