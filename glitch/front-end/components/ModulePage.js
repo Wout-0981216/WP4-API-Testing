@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, Pressable, Button} from 'react-native';
+import { useIsFocused } from "@react-navigation/native";
 import { Input, Icon, Card } from '@rneui/themed';
 import Layout from '../Layout';
 import { LinearProgress } from '@rneui/themed';
@@ -14,6 +15,7 @@ const ModulePage = ({ route, navigation}) => {
   const [points_challenge, setPoints_challenge] = useState({});
   const [context_challenge, setContext_challenge] = useState({});
   const [core_assignment, setCore_assignment] = useState({});
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     const get_module_info = async () => {
@@ -38,7 +40,7 @@ const ModulePage = ({ route, navigation}) => {
         }
     };
     get_module_info();
-  },[module_id]);
+  },[module_id, isFocused]);
 
   function Activities() {
     const activities_array = [];
