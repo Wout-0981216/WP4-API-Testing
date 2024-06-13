@@ -69,6 +69,15 @@ def sign_off_niveau(request, niveau_id):
                 if points_challenge_progress.voortgang < points_challenge.benodige_punten:
                     points_challenge_progress.voortgang +=1
                     points_challenge_progress.save()
+            ingschr_cursussen = IngschrCursus.objects.filter(student=request.user.id)
+            for cursus in ingschr_cursussen:
+                voortgang = 0
+                modules = Modules.objects.filter(cursus_id=cursus.cursus)
+                for module in modules:
+                    punten = VoortgangPuntenUitdaging.objects.get(student_id = request.user.id, punten_uitdaging=PuntenUitdagingen.objects.get(module=module)).voortgang
+                    voortgang += punten
+                cursus.voortgang=voortgang
+                cursus.save()
 
             return JsonResponse({'message': 'Niveau afgerond'}, status=200)
 

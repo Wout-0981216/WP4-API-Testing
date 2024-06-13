@@ -71,7 +71,8 @@ const ModulePage = ({ route, navigation}) => {
           <Text>{`\nActiviteiten:`}</Text>
           <Activities/>
           <View style={{flexDirection: 'row'}}>
-            <Text>{`\nPoints Challenge behaalde punten: ${points_challenge.points_challenge_progress}/${points_challenge.points_challenge_points}    `}
+            <Text>{`\nPoints Challenge behaalde punten: `}
+              <Text style={{ fontWeight: 'bold'}}>{`${points_challenge.points_challenge_progress}/${points_challenge.points_challenge_points}  `}</Text>
               <LinearProgress value={(points_challenge["points_challenge_progress"]/points_challenge["points_challenge_points"])} style={styles.progressBarSmall}/>
             </Text>
           </View>

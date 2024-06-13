@@ -111,7 +111,7 @@ const HomePage = () => {
             </View>
             <Text>Beschrijving cursus: {courseDescriptions[index]}</Text>
             <Text>Voortgang:</Text>
-            <LinearProgress style={styles.progressBar} value={progress[index]} />
+            <LinearProgress style={styles.progressBar} value={progress[index]/45} />
             <Button
             onPress={() => {
                 navigation.navigate("Course", { 
