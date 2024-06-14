@@ -75,6 +75,7 @@ const ModulePageTeacher = () => {
                     <Text style={styles.tableHeaderCell}>Voornaam</Text>
                     <Text style={styles.tableHeaderCell}>Achternaam</Text>
                     <Text style={styles.tableHeaderCell}>Email</Text>
+                    <Text style={styles.tableHeaderCell}>Acties</Text> {/* Voeg een nieuwe kolom toe */}
                   </View>
                   {Array.isArray(expandedCourses[item.id]) && expandedCourses[item.id].length > 0 ? (
                     expandedCourses[item.id].map(student => (
@@ -82,11 +83,19 @@ const ModulePageTeacher = () => {
                         <Text style={styles.tableCell}>{student.first_name}</Text>
                         <Text style={styles.tableCell}>{student.last_name}</Text>
                         <Text style={styles.tableCell}>{student.email}</Text>
-                        <TouchableOpacity
-                          onPress={() => navigation.navigate('InspectStudent', { student_id: student.id })}
-                        >
-                          <Text style={styles.linkText}>Opdrachten in afwachting</Text>
-                        </TouchableOpacity>
+                        <View style={styles.actionsContainer}>
+                          <TouchableOpacity
+                            onPress={() => navigation.navigate('InspectStudent', { student_id: student.id })}
+                          >
+                            <Text style={styles.linkText}>Opdrachten in afwachting</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={styles.progressButton}
+                            onPress={() => navigation.navigate('ShowStudent', { student_id: student.id })} // Verander de navigatie naar ShowStudent
+                          >
+                            <Text style={styles.buttonText}>Bekijk voortgang</Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
                     ))
                   ) : (
@@ -147,6 +156,19 @@ const styles = StyleSheet.create({
     color: 'blue',
     textDecorationLine: 'underline',
     marginTop: 5,
+  },
+  actionsContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  progressButton: {
+    backgroundColor: '#28a745',
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 5,
+  },
+  buttonText: {
+    color: 'white',
   },
 });
 
