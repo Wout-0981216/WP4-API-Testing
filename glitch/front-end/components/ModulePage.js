@@ -19,29 +19,28 @@ const ModulePage = ({ route, navigation}) => {
 
   useEffect(() => {
     const get_module_info = async () => {
-      try {
+      try{
         const token = await AsyncStorage.getItem('access_token');
         const response = await fetch(`http://192.168.56.1:8000/game/api/module/${module_id}/`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-        });
-        const data = await response.json();
-        console.log('Ontvangen gegevens:', data);
-        setCourse_id(data.course_id);
-        setModule_name(data.module_name);
-        setModule_info(data.module_info);
-        setActivities(data.activities);
-        setPoints_challenge(data.points_challenge);
-        setContext_challenge(data.context_challenge);
-        setCore_assignment(data.core_assignment);
-      } catch (error) {
-        console.error('Er is een fout opgetreden bij het ophalen van de modulegegevens', error);
-      }
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                },
+            });
+            const data = await response.json();
+            setCourse_id(data.course_id);
+            setModule_name(data.module_name);
+            setModule_info(data.module_info);
+            setActivities(data.activities);
+            setPoints_challenge(data.points_challenge);
+            setContext_challenge(data.context_challenge);
+            setCore_assignment(data.core_assignment);
+        } catch (error) {
+          console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
+        }
     };
     get_module_info();
-  }, [module_id, isFocused]);
+  },[module_id, isFocused]);
 
   function Activities() {
     const activities_array = [];
