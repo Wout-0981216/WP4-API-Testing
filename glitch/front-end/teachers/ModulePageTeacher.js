@@ -111,9 +111,8 @@ const ModulePageTeacher = ({ route, navigation }) => {
     <View>
       <View style={styles.backButtonSize}>
         <Button onPress={() => navigation.goBack()} title='Terug'/>
-        <br/>
       </View>
-      <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{`${course_name} Modules  `}<br/>
+      <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{`${course_name} Modules  `}
         <Button onPress={() => navigation.navigate('AddModuleTeacher', { course_id })} title={"Voeg module toe"}/>
       </Text>
       <ModuleCards />

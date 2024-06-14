@@ -111,7 +111,7 @@ const HomePageTeacher = () => {
                   </>
                 )}
               </View>
-              <Text>Beschrijving cursus: {courseDescriptions[index]}</Text><br/>
+              <Text>Beschrijving cursus: {courseDescriptions[index]}</Text>
               <Button
                 onPress={() => navigation.navigate("TeacherModule", { screen: "TeacherModule", course_id: courseIDs[index], styles: styles })}
                 title={"Bekijk cursus"}

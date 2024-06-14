@@ -123,10 +123,6 @@ const HomePage = () => {
           </View>
         ))}
       </View>
-      <View style={styles.greyblock}>
-        <Text style={styles.header}>Deadlines</Text>
-        <Text>Hier komen de aankomende deadlines...</Text>
-      </View>
     </ScrollView>
   );
 };
@@ -134,7 +130,6 @@ const HomePage = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 75,
   },
