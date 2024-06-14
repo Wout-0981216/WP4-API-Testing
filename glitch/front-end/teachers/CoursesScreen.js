@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import ModulePage from '../components/ModulePage';
+import { useNavigation } from '@react-navigation/native';
 
 const ModulePageTeacher = () => {
   const [courses, setCourses] = useState([]);
   const [expandedCourses, setExpandedCourses] = useState({});
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchCourses();
@@ -62,7 +63,7 @@ const ModulePageTeacher = () => {
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => toggleCourse(item.id)}>
-            <View style={styles.item}>  
+            <View style={styles.item}>
               <Text style={styles.title}>Cursus: {item.naam}</Text>
               <Text>Beschrijving: {item.beschrijving}</Text>
               {expandedCourses[item.id] && (
@@ -78,6 +79,11 @@ const ModulePageTeacher = () => {
                         <Text style={styles.tableCell}>{student.first_name}</Text>
                         <Text style={styles.tableCell}>{student.last_name}</Text>
                         <Text style={styles.tableCell}>{student.email}</Text>
+                        <TouchableOpacity
+                          onPress={() => navigation.navigate('InspectStudent', { student_id: student.id })}
+                        >
+                          <Text style={styles.linkText}>Opdrachten in afwachting</Text>
+                        </TouchableOpacity>
                       </View>
                     ))
                   ) : (
@@ -94,47 +100,51 @@ const ModulePageTeacher = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 20,
-      backgroundColor: '#fff',
-    },
-    item: {
-      padding: 20,
-      marginVertical: 8,
-      backgroundColor: '#f9f9f9',
-      borderRadius: 5,
-    },
-    title: {
-      fontSize: 18,
-    },
-    table: {
-      marginTop: 10,
-    },
-    tableHeader: {
-      flexDirection: 'row',
-      borderBottomWidth: 1,
-      borderBottomColor: '#000',
-      paddingBottom: 5,
-    },
-    tableHeaderCell: {
-      flex: 1,
-      fontWeight: 'bold',
-    },
-    tableRow: {
-      flexDirection: 'row',
-      borderBottomWidth: 1,
-      borderBottomColor: '#ddd',
-      paddingVertical: 5,
-    },
-    tableCell: {
-      flex: 1,
-    },
-    student: {
-      fontSize: 14,
-      marginTop: 5,
-    },
-  });
-  
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  item: {
+    padding: 20,
+    marginVertical: 8,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 5,
+  },
+  title: {
+    fontSize: 18,
+  },
+  table: {
+    marginTop: 10,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
+    paddingBottom: 5,
+  },
+  tableHeaderCell: {
+    flex: 1,
+    fontWeight: 'bold',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    paddingVertical: 5,
+  },
+  tableCell: {
+    flex: 1,
+  },
+  student: {
+    fontSize: 14,
+    marginTop: 5,
+  },
+  linkText: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+    marginTop: 5,
+  },
+});
 
 export default ModulePageTeacher;

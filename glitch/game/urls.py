@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from game.views import concept_opdracht_list, activities_module, concept_opdracht_list, activities_module, HomepageStudent, get_modules, get_module, user_profile, get_csrf_token, get_domains, core_assignment_list, sign_off_niveau
+from game.views import concept_opdracht_list, activities_module, concept_opdracht_list, activities_module, HomepageStudent, get_modules, get_module, user_profile, get_csrf_token, get_domains, core_assignment_list, sign_off_niveau, submit_text
 
 urlpatterns = [
     path('api/concept-opdracht/<int:concept_id>/', concept_opdracht_list, name='concept-opdracht-list'),
@@ -13,4 +13,5 @@ urlpatterns = [
     path('api/post_niveau_progress/<int:niveau_id>/', sign_off_niveau, name='post_niveau_progress'),
     path('api/csrf/', get_csrf_token, name='get_csrf'),
     path('api/core-assignment/<uuid:module_id>/', core_assignment_list, name='core-assignment-list'),
+    path('api/submit_text/', submit_text, name='submit_text'),
 ]

@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthProvider, AuthContext } from './AuthProvider';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import LoginForm from './LoginForm';
 import HomePage from './Home';
 import RegistrationForm from './Registration';
@@ -14,10 +14,10 @@ import TeacherHome from './teachers/HomeTeacher';
 import ProfilePageTeacher from './teachers/ProfilePageTeacher';
 import ModulePageTeacher from './teachers/ModulePageTeacher';
 import AddModuleTeacher from './teachers/AddModuleTeacher';
+import InspectStudent from './teachers/InspectStudent';
 import CoursesScreen from './teachers/CoursesScreen';
 import CoursePage from './components/CoursePage';
 import CoreAssignment from './components/CoreAssignment';
-
 
 const Tab = createBottomTabNavigator();
 
@@ -40,7 +40,7 @@ const TeacherTabs = () => (
     <Tab.Screen name="TeacherProfile" component={ProfilePageTeacher} />
     <Tab.Screen name="TeacherModule" component={ModulePageTeacher} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="AddModuleTeacher" component={AddModuleTeacher} options={{ tabBarButton: () => null }} />
-
+    <Tab.Screen name="InspectStudent" component={InspectStudent} options={{ tabBarButton: () => null }} />
   </Tab.Navigator>
 );
 
@@ -68,7 +68,11 @@ const App = () => {
   }, [authenticated, isTeacher]);
 
   if (loading) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (

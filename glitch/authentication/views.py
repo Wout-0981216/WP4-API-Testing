@@ -21,7 +21,7 @@ from add_user_to_module import add_user_to_module
 
 logger = logging.getLogger(__name__)
 
-@csrf_exempt
+
 @api_view(['POST'])
 def register_user(request):
         if request.method == 'POST':

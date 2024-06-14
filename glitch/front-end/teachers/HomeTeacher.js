@@ -75,8 +75,6 @@ const HomePageTeacher = () => {
           <Text style={styles.header}>Welkom leraartje {userName}!</Text>
           <Text style={styles.message}>{message}</Text>
         </View>
-        <View style={styles.greyblock}>
-        </View>
         <View style={styles.coursesContainer}>
           {Array.isArray(courseNames) && courseNames.map((courseName, index) => (
             <View

@@ -8,6 +8,10 @@ from django.middleware.csrf import get_token
 from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten, Domeinen
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import ConceptOpdracht
+from django.contrib.auth.models import AnonymousUser
 
 @api_view(['GET'])
 def get_domains(request):
@@ -28,7 +32,8 @@ def concept_opdracht_list(request, concept_id):
             'id': opdracht.id,
             'naam': opdracht.naam,
             'beschrijving': opdracht.beschrijving,
-            'progress' : voortgang.voortgang
+            'progress' : voortgang.voortgang,
+            'handed_in_text': voortgang.ingeleverd_tekst
         }
     ]
     return JsonResponse({"assignment_info": opdrachten_list, "module_id": opdracht.module.id}, safe=False)
@@ -149,28 +154,27 @@ def user_profile(request):
 @permission_classes([IsAuthenticated])
 def get_modules(request, course_id):
     if request.method == 'GET':
-        course = Cursussen.objects.get(id=course_id)
+        try:
+            course = Cursussen.objects.get(id=course_id)
+        except Cursussen.DoesNotExist:
+            return JsonResponse({"error": "Course not found"}, status=404)
+
         modules = Modules.objects.filter(cursus_id=course_id)
         module_list = {}
         j = 0
         for module in modules:
-            j+=1
-            modulenr = "module"+str(j)
-            module_list[modulenr] = {"module_name" : module.naam}
-            module_list[modulenr]["module_id"] = module.id
+            j += 1
+            modulenr = "module" + str(j)
+            module_list[modulenr] = {
+                "module_name": module.naam,
+                "module_id": module.id,
+                "activities": {}
+            }
             activities = Activiteiten.objects.filter(module_id=module.id)
             i = 1
-            module_list[modulenr]["activities"] = {}
-
             for activity in activities:
+                module_list[modulenr]["activities"]["activity"+str(i)] = activity.naam
                 module_list[modulenr]["nr_of_activities"] = i
-                niveaus = Niveaus.objects.filter(activiteit=activity)
-                progress_counter = 0
-                for niveau in niveaus:
-                    niveau_voortgang = VoortgangActiviteitenNiveaus.objects.get(niveau=niveau, student=request.user.id)
-                    if niveau_voortgang.voortgang == True:
-                        progress_counter +=1
-                module_list[modulenr]["activities"]["activity"+str(i)] = {"activity_name": activity.naam, "progress": progress_counter, "max_progress": len(niveaus)}
                 i+=1
             points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
             user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
@@ -181,10 +185,10 @@ def get_modules(request, course_id):
             module_list[modulenr]["core_assignment_name"] = core_assignment.naam
 
         return JsonResponse({
-                                "course_name" : course.naam,
-                                "nr_of_modules" : j,
-                                "module_list" : module_list
-                            }, status=200, safe=False)
+            "course_name": course.naam,
+            "nr_of_modules": j,
+            "module_list": module_list
+        }, status=200, safe=False)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -240,3 +244,34 @@ def core_assignment_list(request, module_id):
     }
     
     return JsonResponse({'core_assignment': assignment_data}, status=200, safe=False)
+
+@api_view(['POST'])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def submit_text(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        concept_id = data.get('concept_id')
+        submitted_text = data.get('submitted_text')
+
+        try:
+            concept_opdracht = ConceptOpdracht.objects.get(id=concept_id)
+            student = request.user
+
+            voortgang = VoortgangConceptOpdrachten.objects.get_or_create(
+                student=student,
+                concept_opdracht=concept_opdracht,
+                defaults={'voortgang': 0}
+            )[0]
+
+            voortgang.ingeleverd_tekst = submitted_text
+            voortgang.voortgang = 1
+            voortgang.save()
+
+            return JsonResponse({'message': 'Tekst succesvol ingeleverd'})
+        except ConceptOpdracht.DoesNotExist:
+            return JsonResponse({'error': 'ConceptOpdracht niet gevonden'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Alleen POST-verzoeken zijn toegestaan voor deze endpoint'})
