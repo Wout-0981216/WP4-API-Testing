@@ -25,7 +25,7 @@ const AddCourse = () => {
     setLoading(true);
     try {
       const course = { 
-        course_name, 
+        course_name,
         course_desc,
         domain_id
       };

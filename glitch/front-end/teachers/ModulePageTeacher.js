@@ -39,7 +39,7 @@ const ModulePageTeacher = ({ route, navigation }) => {
       const activitynr = "activity" + i;
       const activity = module.module["activities"][activitynr];
       activities_array.push(
-        <View key={i}>
+        <View key={i} style={{justifyContent: 'center', alignItems: 'center',}}>
           <Text style={{ fontWeight: 'bold' }}>Activiteit</Text>
           <Text >{activity.activity_name}</Text>
           {/* <Text>{`Voortgang: ${activity.progress}/${activity.max_progress}`}</Text> */}

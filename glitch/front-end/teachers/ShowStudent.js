@@ -73,27 +73,28 @@ const ShowStudent = ({ route, navigation }) => {
           </View>
           <Activities index={i}/>
           <View style={{ flexDirection: 'row' }}>
-          <Text>{`\nPoints Challenge behaalde punten: `}
-            <Text style={{ fontWeight: 'bold' }}>{`${points_challenge[i]?.progress ?? 0}/15  `}</Text>
-            <LinearProgress value={(points_challenge[i]?.progress ?? 0) / 15} style={styles.progressBarSmall} />
-          </Text>
-
-          <Text>{`\nContext Challenge: `}
-            <Text style={{ fontWeight: 'bold' }}> {context_challenge[i]?.naam ?? ''}
-              {context_challenge[i]?.progress === 0 ? " - nog niet ingeleverd" :
-                context_challenge[i]?.progress === 1 ? " - ingeleverd" :
-                context_challenge[i]?.progress === 2 ? " - goedgekeurd" : " - afgekeurd"}
+            <Text>{`\nPoints Challenge behaalde punten: `}
+              <Text style={{ fontWeight: 'bold' }}>{`${points_challenge[i]?.progress ?? 0}/15  `}</Text>
+              <LinearProgress value={(points_challenge[i]?.progress ?? 0) / 15} style={styles.progressBarSmall} />
             </Text>
-          </Text>
-
-          <Text>{`\nCore Assignment: `}
-            <Text style={{ fontWeight: 'bold' }}> {core_assignment[i]?.naam ?? ''}
-              {core_assignment[i]?.progress === 0 ? " - nog niet ingeleverd" :
-                core_assignment[i]?.progress === 1 ? " - ingeleverd" :
-                core_assignment[i]?.progress === 2 ? " - goedgekeurd" : " - afgekeurd"}
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Text>{`\nContext Challenge: `}
+              <Text style={{ fontWeight: 'bold' }}> {context_challenge[i]?.naam ?? ''}
+                {context_challenge[i]?.progress === 0 ? " - nog niet ingeleverd" :
+                  context_challenge[i]?.progress === 1 ? " - ingeleverd" :
+                  context_challenge[i]?.progress === 2 ? " - goedgekeurd" : " - afgekeurd"}
+              </Text>
             </Text>
-          </Text>
-
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Text>{`\nCore Assignment: `}
+              <Text style={{ fontWeight: 'bold' }}> {core_assignment[i]?.naam ?? ''}
+                {core_assignment[i]?.progress === 0 ? " - nog niet ingeleverd" :
+                  core_assignment[i]?.progress === 1 ? " - ingeleverd" :
+                  core_assignment[i]?.progress === 2 ? " - goedgekeurd" : " - afgekeurd"}
+              </Text>
+            </Text>
           </View>
         </View>
       );
