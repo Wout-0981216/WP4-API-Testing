@@ -58,7 +58,6 @@ def core_assignment_list(request, core_id):
             "assignment_info": opdrachten_list,
             "module_id": opdracht.module.id
         }
-        print(response)  # Debugging
         return JsonResponse(response, safe=False)
     except HoofdOpdrachten.DoesNotExist:
         return JsonResponse({'error': 'HoofdOpdracht niet gevonden'}, status=404)
@@ -124,22 +123,37 @@ def HomepageStudent(request):
         user_id = request.user.id
         teacher = request.user.is_teacher
         user_name = request.user.first_name
-        ingschr_domein = IngschrDomein.objects.get(student_id=user_id)
-        ingschr_cursussen = IngschrCursus.objects.filter(student_id=user_id)
-        courses_data = []
+        if teacher:
+            teacher_domains_data = []
+            domains = Domeinen.objects.all()
+            for domain in domains:
+                teacher_domain_data = {'naam': domain.naam, 'beschrijving': domain.beschrijving, 'id': domain.id, 'courses_data': []}
+                courses = Cursussen.objects.filter(domein=domain)
+                for course in courses:
+                    teacher_course_data = {
+                        'naam': course.naam,
+                        'beschrijving': course.beschrijving,
+                        'course_id': course.id
+                    }
+                    teacher_domain_data['courses_data'].append(teacher_course_data)
+                teacher_domains_data.append(teacher_domain_data)
 
-        for ingschr_cursus in ingschr_cursussen:
-            course = ingschr_cursus.cursus
-            course_data = {
-                'naam': course.naam,
-                'beschrijving': course.beschrijving,
-                'course_id': course.id,
-                'voortgang': ingschr_cursus.voortgang
-            }
-            courses_data.append(course_data)
+        else:
+            ingschr_cursussen = IngschrCursus.objects.filter(student_id=user_id)
+            courses_data = []
+
+            for ingschr_cursus in ingschr_cursussen:
+                course = ingschr_cursus.cursus
+                course_data = {
+                    'naam': course.naam,
+                    'beschrijving': course.beschrijving,
+                    'course_id': course.id,
+                    'voortgang': ingschr_cursus.voortgang
+                }
+                courses_data.append(course_data)
 
         if teacher:
-            return JsonResponse({'teacher': "true", 'domain_id': ingschr_domein.domein.id, 'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
+            return JsonResponse({'teacher': "true", 'domains': teacher_domains_data, 'name': user_name, 'message': 'Domeinen gevonden'})
         if courses_data:    
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
@@ -194,24 +208,40 @@ def get_modules(request, course_id):
             activities = Activiteiten.objects.filter(module_id=module.id)
             i = 1
             module_list[modulenr]["activities"] = {}
+            is_teacher = request.user.is_teacher
 
-            for activity in activities:
-                module_list[modulenr]["nr_of_activities"] = i
-                niveaus = Niveaus.objects.filter(activiteit=activity)
-                progress_counter = 0
-                for niveau in niveaus:
-                    niveau_voortgang = VoortgangActiviteitenNiveaus.objects.get(niveau=niveau, student=request.user.id)
-                    if niveau_voortgang.voortgang == True:
-                        progress_counter +=1
-                module_list[modulenr]["activities"]["activity"+str(i)] = {"activity_name": activity.naam, "progress": progress_counter, "max_progress": len(niveaus)}
-                i+=1
-            points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
-            user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
-            module_list[modulenr]["points_challenge"] = {"points_challenge_points": points_challenge.benodige_punten, "points_challenge_progress": user_progress.voortgang}
-            context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
-            module_list[modulenr]["context_challenge_name"] = context_challenge.naam
-            core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
-            module_list[modulenr]["core_assignment_name"] = core_assignment.naam
+            #if requesting user is a teacher; don't retrieve progress, teachers don't have progress on assignments
+            if is_teacher:
+                for activity in activities:
+                    module_list[modulenr]["nr_of_activities"] = i
+                    module_list[modulenr]["activities"]["activity"+str(i)] = {"activity_name": activity.naam, }
+                    i+=1
+                points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
+                module_list[modulenr]["points_challenge"] = {"points_challenge_points": points_challenge.benodige_punten}
+                context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
+                module_list[modulenr]["context_challenge_name"] = context_challenge.naam
+                core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
+                module_list[modulenr]["core_assignment_name"] = core_assignment.naam
+
+            #if user is a student: also retrieve progress
+            else:
+                for activity in activities:
+                    module_list[modulenr]["nr_of_activities"] = i
+                    niveaus = Niveaus.objects.filter(activiteit=activity)
+                    progress_counter = 0
+                    for niveau in niveaus:
+                        niveau_voortgang = VoortgangActiviteitenNiveaus.objects.get(niveau=niveau, student=request.user.id)
+                        if niveau_voortgang.voortgang == True:
+                            progress_counter +=1
+                    module_list[modulenr]["activities"]["activity"+str(i)] = {"activity_name": activity.naam, "progress": progress_counter, "max_progress": len(niveaus)}
+                    i+=1
+                points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
+                user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
+                module_list[modulenr]["points_challenge"] = {"points_challenge_points": points_challenge.benodige_punten, "points_challenge_progress": user_progress.voortgang}
+                context_challenge = ConceptOpdracht.objects.get(module_id=module.id)
+                module_list[modulenr]["context_challenge_name"] = context_challenge.naam
+                core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
+                module_list[modulenr]["core_assignment_name"] = core_assignment.naam
 
         return JsonResponse({
                                 "course_name" : course.naam,
@@ -224,7 +254,6 @@ def get_modules(request, course_id):
 def get_module(request, module_id):
     if request.method == 'GET':
         module = Modules.objects.get(id=module_id)
-        print(module)
         module_info = {"module_name": module.naam, "module_id": module.id, "module_desc": module.beschrijving}
         i = 1
         module_activities = {}
@@ -247,7 +276,6 @@ def get_module(request, module_id):
         core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
         core_assignment_info = {"challenge_name": core_assignment.naam, "challenge_desc": core_assignment.beschrijving, "challenge_id": core_assignment.id}
 
-        print(core_assignment_info)
         return JsonResponse({
                                 "course_id": module.cursus.id,
                                 "module_name" : module.naam,
