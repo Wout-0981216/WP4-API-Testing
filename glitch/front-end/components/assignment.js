@@ -140,6 +140,10 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         borderRadius: 5,
     },
+    backButtonSize: {
+        width: 200,
+
+    },
 });
 
 export default Assignment;
