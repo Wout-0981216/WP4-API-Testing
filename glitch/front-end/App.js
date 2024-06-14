@@ -19,6 +19,7 @@ import CoursesScreen from './teachers/CoursesScreen';
 import CoursePage from './components/CoursePage';
 import CoreAssignment from './components/CoreAssignment';
 import AddDomain from './teachers/AddDomain';
+import AddCourse from './teachers/AddCourse';
 
 const Tab = createBottomTabNavigator();
 
@@ -43,6 +44,7 @@ const TeacherTabs = () => (
     <Tab.Screen name="AddModuleTeacher" component={AddModuleTeacher} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="InspectStudent" component={InspectStudent} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="AddDomain" component={AddDomain} options={{ tabBarButton: () => null }} />
+    <Tab.Screen name="AddCourse" component={AddCourse} options={{ tabBarButton: () => null }} />
   </Tab.Navigator>
 );
 

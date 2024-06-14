@@ -107,6 +107,35 @@ def register_domain(request):
     return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 
+@csrf_exempt
+@api_view(['POST'])
+def register_course(request):
+    if request.method == 'POST':
+        course_name = request.data.get('course_name', '')
+        course_desc = request.data.get('course_desc', '')
+        domain_id = request.data.get('domain_id', '')
+
+        if not (course_name and course_desc and domain_id):
+            return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+        new_course = Cursussen.objects.create(
+            naam = course_name,
+            beschrijving = course_desc,
+            domein_id = domain_id
+        )
+        ingschr_at_domain = IngschrDomein.objects.filter(domein_id=domain_id) #adds every student that is registered to this domain to the new course!
+        for ingschr_student in ingschr_at_domain:
+            IngschrCursus.objects.create(
+                student = ingschr_student.student,
+                cursus = new_course
+            )
+        return JsonResponse({
+            'message': 'Succesvol geregistreerd',
+        }, status=200)
+
+    return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+
 @api_view(['GET'])
 def course_list(request):
     print("User ID:", request.user.id)

@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
-from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten, Domeinen
+from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten, Domeinen, IngschrDomein
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.csrf import csrf_exempt
@@ -97,6 +97,7 @@ def HomepageStudent(request):
         user_id = request.user.id
         teacher = request.user.is_teacher
         user_name = request.user.username
+        ingschr_domein = IngschrDomein.objects.get(student_id=user_id)
         ingschr_cursussen = IngschrCursus.objects.filter(student_id=user_id)
         courses_data = []
 
@@ -111,7 +112,7 @@ def HomepageStudent(request):
             courses_data.append(course_data)
 
         if teacher:
-            return JsonResponse({'teacher': "true", 'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
+            return JsonResponse({'teacher': "true", 'domain_id': ingschr_domein.domein.id, 'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         if courses_data:    
             return JsonResponse({'courses': courses_data, 'name': user_name, 'message': 'Cursussen gevonden'})
         else:
