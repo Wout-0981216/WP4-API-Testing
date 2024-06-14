@@ -36,9 +36,6 @@ const HomePage = () => {
         const data = await response.json();
 
         setTeacher(data.teacher);
-        // if (data.teacher === "true") {
-        //   navigation.navigate('TeacherHome');
-        // }
 
         setCourseNames(data.courses?.map(course => course.naam) || []);
         setCourseDescriptions(data.courses?.map(course => course.beschrijving) || []);
