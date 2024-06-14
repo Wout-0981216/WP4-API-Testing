@@ -75,6 +75,9 @@ const HomePageTeacher = () => {
           <Text style={styles.header}>Welkom leraartje {userName}!</Text>
           <Text style={styles.message}>{message}</Text>
         </View>
+        <View style={styles.backButtonSize}>
+          <Button onPress={() => navigation.navigate('AddDomain')} title={"Nieuw domein toevoegen"}/>
+        </View>
         <View style={styles.coursesContainer}>
           {Array.isArray(courseNames) && courseNames.map((courseName, index) => (
             <View

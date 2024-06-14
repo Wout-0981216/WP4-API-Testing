@@ -86,6 +86,25 @@ def register_module(request):
 
     return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
+@csrf_exempt
+@api_view(['POST'])
+def register_domain(request):
+    if request.method == 'POST':
+        domain_name = request.data.get('domain_name', '')
+        domain_desc = request.data.get('domain_desc', '')
+
+        if not (domain_name and domain_desc):
+            return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+        Domeinen.objects.create(
+            naam = domain_name,
+            beschrijving = domain_desc
+        )
+        return JsonResponse({
+            'message': 'Succesvol geregistreerd',
+        }, status=200)
+
+    return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 
 @api_view(['GET'])
