@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { useIsFocused } from "@react-navigation/native";
 import { LinearProgress } from '@rneui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ShowStudent = ({ route, navigation }) => {
   const { student_id, course_id } = route.params;
-  const [module_id, setModule_id] = useState('');
-  const [module_name, setModule_name] = useState('');
-  const [module_info, setModule_info] = useState({});
+  const [modules, setModules] = useState({});
   const [activities, setActivities] = useState({});
   const [points_challenge, setPoints_challenge] = useState({});
   const [context_challenge, setContext_challenge] = useState({});
@@ -26,9 +24,7 @@ const ShowStudent = ({ route, navigation }) => {
           },
         });
         const data = await response.json();
-        setModule_id(data.module_id);
-        setModule_name(data.module_name);
-        setModule_info(data.module_description);
+        setModules(data.modules)
         setActivities(data.activiteiten);
         setPoints_challenge(data.punten_uitdagingen);
         setContext_challenge(data.concept_opdrachten);
@@ -40,55 +36,79 @@ const ShowStudent = ({ route, navigation }) => {
     get_module_info();
   }, [student_id, course_id, isFocused]);
 
-  function Activities() {
+  function Activities(index) {
     const activities_array = [];
-    for (let i = 1; i <= module_info.nr_of_activities; i++) {
-      const activitynr = "activity" + i;
+    for (const j in activities[index.index]) {
       activities_array.push(
-        <View key={i} style={{ flexDirection: 'row' }}>
-          <Text style={{ fontWeight: 'bold' }}>{`\n  -${activities[activitynr]["activity_name"]}   -  voortgang: ${activities[activitynr]["progress"]}/${activities[activitynr]["max_progress"]}  `}
-            <Button onPress={() => navigation.navigate("ActivitiesModule", { screen: "ActivitiesModule", activity_id: activities[activitynr]["activity_id"], styles: styles })} title='naar activiteit' />
-          </Text>
+        <View key={j}>
+          <Text style={{ fontWeight: 'bold' }}>{`\n  -${activities[index.index][j]["naam"]}:`}</Text>
+          <Niveaus niveaus={activities[index.index][j]["niveaus"]}/>
         </View>
       );
     }
     return activities_array;
   }
-
-  return (
-    <View>
-      <View style={styles.backButtonSize}>
-        <Button onPress={() => navigation.goBack()} title='Terug' />
-      </View>
-      <View style={styles.coursesContainer}>
-        <View style={styles.courseBlock}>
+  function Niveaus(niveaus) {
+    const niveau_array = [];
+    for (i in niveaus.niveaus) {
+      niveau_array.push(
+        <View key={i}>
+          <Text>{`\n      -${niveaus.niveaus[i]["beschrijving"]}  -  ${niveaus.niveaus[i]["progress"] == 1 ? 'afgerond' : 'nog niet afgerond'}`}</Text>
+        </View>
+      );
+    }
+    return niveau_array;
+  }
+  function Modules() {
+    const module_array = [];
+    for (const i in modules) {
+      module_array.push(
+        <View key={i} style={styles.courseBlock}>
           <View style={styles.courseHeader}>
-            <Text style={styles.courseTitleLeft}>{module_name}</Text>
+            <Text style={styles.courseTitleLeft}>{modules[i]["naam"]}</Text>
           </View>
-          <Text>Beschrijving module: {module_info.module_description}</Text>
-          <Text>{`\nActiviteiten:`}</Text>
-          <Activities />
+          <View>
+            <Text>Beschrijving module: {modules[i]['beschrijving']}</Text>
+            <Text>{`\nActiviteiten:`}</Text>
+          </View>
+          <Activities index={i}/>
           <View style={{ flexDirection: 'row' }}>
             <Text>{`\nPoints Challenge behaalde punten: `}
-              <Text style={{ fontWeight: 'bold' }}>{`${points_challenge.punten_uitdagingen}/${points_challenge.punten_uitdagingen}  `}</Text>
-              <LinearProgress value={(points_challenge["points_challenge_progress"] / points_challenge["points_challenge_points"])} style={styles.progressBarSmall} />
+              <Text style={{ fontWeight: 'bold' }}>{`${points_challenge[i]["progress"]}/15  `}</Text>
+              <LinearProgress value={(points_challenge[i]["progress"] / 15)} style={styles.progressBarSmall} />
             </Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
             <Text>{`\nContext Challenge: `}
-              <Text style={{ fontWeight: 'bold' }}> {context_challenge.naam} </Text>
-              <Button onPress={() => navigation.navigate("ConceptAssignment", { screen: "ConceptAssignment", concept_id: context_challenge.challenge_id, styles: styles })} title='naar Context Challenge' />
+              <Text style={{ fontWeight: 'bold' }}> {context_challenge[i]["naam"]}  
+               {context_challenge[i]['progress'] == 0 ? " - nog niet ingeleverd" :
+                 context_challenge[i]['progress'] == 1 ? " - ingeleverd" :
+                 context_challenge[i]['progress'] == 2 ? " - goedgekeurd" : " - afgekeurd"}</Text>
             </Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
             <Text>{`\nCore Assignment: `}
-              <Text style={{ fontWeight: 'bold' }}> {core_assignment.naam} </Text>
-              <Button onPress={() => navigation.navigate("CoreAssignment", { screen: "CoreAssignment", module_id: module_id, styles: styles })} title='naar Core Assignment' />
+              <Text style={{ fontWeight: 'bold' }}> {core_assignment[i]['naam']}  
+                {core_assignment[i]['progress'] == 0 ? " - nog niet ingeleverd" :
+                 core_assignment[i]['progress'] == 1 ? " - ingeleverd" :
+                 core_assignment[i]['progress'] == 2 ? " - goedgekeurd" : " - afgekeurd"}</Text>
             </Text>
           </View>
         </View>
+      );
+    }
+    return module_array;
+  }
+
+  return (
+    <ScrollView>
+      <View style={{width: 200}}>
+        <Button onPress={() => navigation.goBack()} title='Terug'/>
       </View>
-    </View>
+      <View style={styles.coursesContainer}>
+        <Modules />
+      </View>
+    </ScrollView>
   );
 };
 

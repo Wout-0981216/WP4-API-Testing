@@ -107,7 +107,7 @@ def course_list(request):
 def student_list(request, course_id):
     course = get_object_or_404(Cursussen, id=course_id)
     
-    students = User.objects.filter(ingschr_cursus=course)
+    students = User.objects.filter(ingschr_cursus=course, is_teacher=False)
     students_data = [{
         'id': student.id,
         'username': student.username,
@@ -203,44 +203,51 @@ def reject_assignment(request):
 def get_student_module_info(request, student_id, course_id):
     try:
         # Fetching module related information
-        module = Modules.objects.filter(cursus_id=course_id).first()
-        if not module:
+        modules = Modules.objects.filter(cursus_id=course_id)
+        if not modules:
             return JsonResponse({'error': 'Module not found for this course'}, status=404)
+        modules_data = []
+        hoofd_opdrachten_data = []
+        concept_opdrachten_data = []
+        punten_uitdagingen_data = []
+        activiteiten_module_data = []
+        for module in modules:
 
-        # Fetching main assignments (HoofdOpdrachten)
-        hoofd_opdrachten = HoofdOpdrachten.objects.filter(module=module)
-        hoofd_opdrachten_data = [{'id': opdracht.id, 'naam': opdracht.naam, 'beschrijving': opdracht.beschrijving} for opdracht in hoofd_opdrachten]
+            modules_data.append({'id': module.id, 'naam': module.naam, 'beschrijving': module.beschrijving})
 
-        # Fetching concept assignments (ConceptOpdracht)
-        concept_opdrachten = ConceptOpdracht.objects.filter(module=module)
-        concept_opdrachten_data = [{'id': opdracht.id, 'naam': opdracht.naam, 'beschrijving': opdracht.beschrijving} for opdracht in concept_opdrachten]
+            # Fetching main assignments (HoofdOpdrachten)
+            hoofd_opdracht = HoofdOpdrachten.objects.get(module=module)
+            voortgang = VoortgangHoofdOpdrachten.objects.get(student_id=student_id, hoofd_opdracht=hoofd_opdracht)
+            hoofd_opdrachten_data.append({'id': hoofd_opdracht.id, 'naam': hoofd_opdracht.naam, 'beschrijving': hoofd_opdracht.beschrijving, 'progress': voortgang.voortgang})
 
-        # Fetching points challenges (PuntenUitdagingen)
-        punten_uitdagingen = PuntenUitdagingen.objects.filter(module=module)
-        punten_uitdagingen_data = [{'id': uitdaging.id, 'benodige_punten': uitdaging.benodige_punten} for uitdaging in punten_uitdagingen]
+            # Fetching concept assignments (ConceptOpdracht)
+            concept_opdracht = ConceptOpdracht.objects.get(module=module)
+            voortgang = VoortgangConceptOpdrachten.objects.get(student_id=student_id, concept_opdracht=concept_opdracht)
+            concept_opdrachten_data.append({'id': concept_opdracht.id, 'naam': concept_opdracht.naam, 'beschrijving': concept_opdracht.beschrijving, 'progress': voortgang.voortgang})
 
-        # Fetching activities (Activiteiten)
-        activiteiten = Activiteiten.objects.filter(module=module)
-        activiteiten_data = [{'id': activiteit.id, 'naam': activiteit.naam, 'beschrijving': activiteit.beschrijving} for activiteit in activiteiten]
+            # Fetching points challenges (PuntenUitdagingen)
+            punten_uitdaging = PuntenUitdagingen.objects.get(module=module)
+            voortgang = VoortgangPuntenUitdaging.objects.get(student_id=student_id, punten_uitdaging=punten_uitdaging)
+            punten_uitdagingen_data.append({'id': punten_uitdaging.id, 'progress': voortgang.voortgang})
 
-        # Fetching progress for each assignment type
-        voortgang_hoofd_opdrachten = VoortgangHoofdOpdrachten.objects.filter(student_id=student_id, hoofd_opdracht__module=module)
-        voortgang_concept_opdrachten = VoortgangConceptOpdrachten.objects.filter(student_id=student_id, concept_opdracht__module=module)
-        voortgang_punten_uitdaging = VoortgangPuntenUitdaging.objects.filter(student_id=student_id, punten_uitdaging__module=module)
-        voortgang_activiteiten_niveaus = VoortgangActiviteitenNiveaus.objects.filter(student_id=student_id, niveau__activiteit__module=module)
+            # Fetching activities (Activiteiten)
+            activiteiten = Activiteiten.objects.filter(module=module)
+            activiteiten_data = []
+            for activiteit in activiteiten:
+                niveau_data = []
+                niveaus = Niveaus.objects.filter(activiteit=activiteit)
+                for niveau in niveaus:
+                    niveau_data.append({'beschrijving': niveau.beschrijving, 'id': niveau.id, 'progress': VoortgangActiviteitenNiveaus.objects.get(student_id=student_id, niveau=niveau).voortgang})
+                activiteiten_data.append({'id': activiteit.id, 'naam': activiteit.naam, 'beschrijving': activiteit.beschrijving, 'niveaus': niveau_data})
+            activiteiten_module_data.append(activiteiten_data)
+
 
         data = {
-            'module_id': module.id,
-            'module_name': module.naam,
-            'module_description': module.beschrijving,
+            'modules': modules_data,
             'hoofd_opdrachten': hoofd_opdrachten_data,
             'concept_opdrachten': concept_opdrachten_data,
             'punten_uitdagingen': punten_uitdagingen_data,
-            'activiteiten': activiteiten_data,
-            'voortgang_hoofd_opdrachten': list(voortgang_hoofd_opdrachten.values('hoofd_opdracht_id', 'voortgang')),
-            'voortgang_concept_opdrachten': list(voortgang_concept_opdrachten.values('concept_opdracht_id', 'voortgang')),
-            'voortgang_punten_uitdaging': list(voortgang_punten_uitdaging.values('punten_uitdaging_id', 'voortgang')),
-            'voortgang_activiteiten_niveaus': list(voortgang_activiteiten_niveaus.values('niveau_id', 'voortgang')),
+            'activiteiten': activiteiten_module_data,
         }
 
         return JsonResponse(data)
