@@ -40,6 +40,33 @@ def concept_opdracht_list(request, concept_id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def core_assignment_list(request, core_id):
+    try:
+        opdracht = HoofdOpdrachten.objects.get(id=core_id)
+        voortgang = VoortgangHoofdOpdrachten.objects.get(hoofd_opdracht=opdracht, student=request.user)
+        
+        opdrachten_list = [
+            {
+                'id': opdracht.id,
+                'naam': opdracht.naam,
+                'beschrijving': opdracht.beschrijving,
+                'progress' : voortgang.voortgang,
+                'handed_in_text': voortgang.ingeleverd_tekst
+            }
+        ]
+        response = {
+            "assignment_info": opdrachten_list,
+            "module_id": opdracht.module.id
+        }
+        print(response)  # Debugging
+        return JsonResponse(response, safe=False)
+    except HoofdOpdrachten.DoesNotExist:
+        return JsonResponse({'error': 'HoofdOpdracht niet gevonden'}, status=404)
+    except VoortgangHoofdOpdrachten.DoesNotExist:
+        return JsonResponse({'error': 'VoortgangHoofdOpdrachten niet gevonden'}, status=404)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def activities_module(request, activity_id):
     activity = Activiteiten.objects.get(id=activity_id)
     activity_info = [{
@@ -96,7 +123,7 @@ def HomepageStudent(request):
         # for the courses
         user_id = request.user.id
         teacher = request.user.is_teacher
-        user_name = request.user.username
+        user_name = request.user.first_name
         ingschr_cursussen = IngschrCursus.objects.filter(student_id=user_id)
         courses_data = []
 
@@ -219,7 +246,7 @@ def get_module(request, module_id):
         core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
         core_assignment_info = {"challenge_name": core_assignment.naam, "challenge_desc": core_assignment.beschrijving, "challenge_id": core_assignment.id}
 
-        print(module_activities)
+        print(core_assignment_info)
         return JsonResponse({
                                 "course_id": module.cursus.id,
                                 "module_name" : module.naam,
@@ -235,19 +262,6 @@ def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrfToken': csrf_token})
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def core_assignment_list(request, module_id):
-
-    core_assignment = HoofdOpdrachten.objects.get(module_id=module_id)
-    assignment_data = {
-        'id': core_assignment.id,
-        'naam': core_assignment.naam,
-        'beschrijving': core_assignment.beschrijving,
-        'module_id': core_assignment.module_id
-    }
-    
-    return JsonResponse({'core_assignment': assignment_data}, status=200, safe=False)
 
 @api_view(['POST'])
 @csrf_exempt
@@ -255,26 +269,44 @@ def core_assignment_list(request, module_id):
 def submit_text(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        concept_id = data.get('concept_id')
+        assignment_type = data.get('assignment_type')
+        assignment_id = data.get('assignment_id')
         submitted_text = data.get('submitted_text')
 
         try:
-            concept_opdracht = ConceptOpdracht.objects.get(id=concept_id)
             student = request.user
 
-            voortgang = VoortgangConceptOpdrachten.objects.get_or_create(
-                student=student,
-                concept_opdracht=concept_opdracht,
-                defaults={'voortgang': 0}
-            )[0]
+            if assignment_type == 'concept':
+                concept_opdracht = ConceptOpdracht.objects.get(id=assignment_id)
+                voortgang, created = VoortgangConceptOpdrachten.objects.get_or_create(
+                    student=student,
+                    concept_opdracht=concept_opdracht,
+                    defaults={'voortgang': 0}
+                )
+                voortgang.ingeleverd_tekst = submitted_text
+                voortgang.voortgang = 1
+                voortgang.save()
 
-            voortgang.ingeleverd_tekst = submitted_text
-            voortgang.voortgang = 1
-            voortgang.save()
+            elif assignment_type == 'core':
+                hoofd_opdracht = HoofdOpdrachten.objects.get(id=assignment_id)
+                voortgang, created = VoortgangHoofdOpdrachten.objects.get_or_create(
+                    student=student,
+                    hoofd_opdracht=hoofd_opdracht,
+                    defaults={'voortgang': 0}
+                )
+                voortgang.ingeleverd_tekst = submitted_text
+                voortgang.voortgang = 1
+                voortgang.save()
+
+            else:
+                return JsonResponse({'error': 'Ongeldig assignment_type'}, status=400)
 
             return JsonResponse({'message': 'Tekst succesvol ingeleverd'})
+
         except ConceptOpdracht.DoesNotExist:
             return JsonResponse({'error': 'ConceptOpdracht niet gevonden'}, status=404)
+        except HoofdOpdrachten.DoesNotExist:
+            return JsonResponse({'error': 'HoofdOpdracht niet gevonden'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     else:

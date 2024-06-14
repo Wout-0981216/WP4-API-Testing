@@ -72,7 +72,7 @@ const HomePageTeacher = () => {
     <LayoutTeacher>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.orangeblock}>
-          <Text style={styles.header}>Welkom leraartje {userName}!</Text>
+          <Text style={styles.header}>Welkom leraar {userName}!</Text>
           <Text style={styles.message}>{message}</Text>
         </View>
         <View style={styles.coursesContainer}>
@@ -101,9 +101,7 @@ const HomePageTeacher = () => {
                   </>
                 )}
               </View>
-              <Text>Beschrijving cursus: {courseDescriptions[index]}</Text>
-              <Text>Voortgang:</Text>
-              <LinearProgress style={styles.progressBar} value={progress[index]} />
+              <Text>Beschrijving cursus: {courseDescriptions[index]}</Text><br/>
               <Button
                 onPress={() => navigation.navigate("TeacherModule", { screen: "TeacherModule", course_id: courseIDs[index], styles: styles })}
                 title={"Bekijk cursus"}

@@ -12,6 +12,6 @@ urlpatterns = [
     path('api/module/<uuid:module_id>/', get_module, name='get_module'),
     path('api/post_niveau_progress/<int:niveau_id>/', sign_off_niveau, name='post_niveau_progress'),
     path('api/csrf/', get_csrf_token, name='get_csrf'),
-    path('api/core-assignment/<uuid:module_id>/', core_assignment_list, name='core-assignment-list'),
+    path('api/get_core_assignment/<int:core_id>/', core_assignment_list, name='core-assignment-list'),
     path('api/submit_text/', submit_text, name='submit_text'),
 ]

@@ -96,7 +96,7 @@ const InspectStudent = ({ route }) => {
                   <Button
                     title="Keur goed"
                     onPress={() => approveAssignment(item.id, 'hoofd_opdracht')}
-                  />
+                  /><br/>
                   <Button
                     title="Keur af"
                     onPress={() => rejectAssignment(item.id, 'hoofd_opdracht')}

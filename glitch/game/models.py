@@ -129,6 +129,11 @@ class VoortgangHoofdOpdrachten(models.Model):
         on_delete=models.DO_NOTHING
     )
     voortgang = models.IntegerField(default=0)
+    ingeleverd_tekst = models.TextField(blank=True, null=True)
+
+    def set_ingeleverd_tekst(self, tekst):
+        self.ingeleverd_tekst = tekst
+        self.save()
 
 class VoortgangConceptOpdrachten(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)

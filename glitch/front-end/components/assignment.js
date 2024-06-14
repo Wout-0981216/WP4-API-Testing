@@ -43,7 +43,8 @@ const Assignment = ({ route, navigation }) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    concept_id: concept_id,
+                    assignment_id: concept_id,
+                    assignment_type: 'concept',  
                     submitted_text: submittedText,
                 }),
             });
@@ -91,21 +92,23 @@ const Assignment = ({ route, navigation }) => {
                     <Text>{assignment.beschrijving}</Text>
                     <Text style={{color: getStatusColor()}}>Status: {assignment.progress === 0 ? 'Niet ingeleverd' : assignment.progress === 1 ? 'Ingeleverd' : assignment.progress === 2 ? 'Goedgekeurd' : 'Afgekeurd'}</Text>
                     
-                    <TextInput
+                    {(assignment.progress === 0 || assignment.progress === 1 || assignment.progress === 3) && <TextInput
                         style={styles.textInput}
                         placeholder={
                             assignment.progress === 0
                                 ? 'Vul hier je tekst in'
                                 : assignment.progress === 1
-                                ? assignment.handed_in_text
+                                ? assignment.handed_in_text || 'Je hebt nog geen tekst ingeleverd'
                                 : ''
                         }
                         onChangeText={text => setSubmittedText(text)}
                         value={submittedText}
                         multiline={true}
                         numberOfLines={4}
-                    />
-                    <Button onPress={handleTextSubmit} title="Tekst Inleveren" />
+                    />}
+                    {(assignment.progress === 0 || assignment.progress === 1 || assignment.progress === 3) && <Button onPress={handleTextSubmit} title="Core Assignment Inleveren" />}
+
+
                 </View>
             </View>
         </View>

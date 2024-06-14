@@ -57,7 +57,6 @@ const ModulePage = ({ route, navigation}) => {
     return activities_array;
   }
   
-  
 
   return(
     <View>
@@ -87,7 +86,7 @@ const ModulePage = ({ route, navigation}) => {
           <View style={{flexDirection: 'row'}}>
             <Text >{`\nCore Assignment: `}
               <Text style={{ fontWeight: 'bold'}}> {core_assignment.challenge_name} </Text>
-              <Button onPress={() => navigation.navigate("CoreAssignment", {screen: "CoreAssignment", module_id: module_id, styles: styles})} title='naar Core Assignment'/>
+              <Button onPress={() => navigation.navigate("CoreAssignment", {screen: "CoreAssignment", core_id: core_assignment.challenge_id, styles: styles})} title='naar Core Assignment'/>
             </Text>
           </View>
         </View>
