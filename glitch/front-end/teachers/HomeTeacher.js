@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { View, StyleSheet, ActivityIndicator, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Button, Icon, LinearProgress } from '@rneui/themed';
+import { Button, Icon } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import LayoutTeacher from './LayoutTeacher';
 import Notification from '../PushNotification';
@@ -20,39 +20,76 @@ const HomePageTeacher = () => {
   const [progress, setProgress] = useState([]);
   const [showNotification, setShowNotification] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (authenticated) {
-          setMessage('Welkom bij de glitch startpagina!');
-          const token = await AsyncStorage.getItem('access_token');
-          const response = await fetch('http://192.168.56.1:8000/game/HomeCourses', {
+  const fetchData = useCallback(async () => {
+    try {
+      if (authenticated) {
+        setMessage('Welkom bij de glitch startpagina!');
+        let token = await AsyncStorage.getItem('access_token');
+        let response = await fetch('http://192.168.56.1:8000/game/HomeCourses', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.status === 401) {
+
+          const refreshToken = await AsyncStorage.getItem('refresh_token');
+          const refreshResponse = await fetch('http://192.168.56.1:8000/login/refresh-token/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ refresh_token: refreshToken })
+          });
+
+          if (!refreshResponse.ok) {
+            throw new Error('Failed to refresh token');
+          }
+
+          const refreshData = await refreshResponse.json();
+          token = refreshData.access_token;
+          await AsyncStorage.setItem('access_token', token);
+
+
+          response = await fetch('http://192.168.56.1:8000/game/HomeCourses', {
             headers: {
               'Authorization': `Bearer ${token}`
             }
           });
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          setDomainId(data.domain_id || []);
-          setCourseNames(data.courses.map(course => course.naam) || []);
-          setCourseDescriptions(data.courses.map(course => course.beschrijving) || []);
-          setCourseIds(data.courses.map(course => course.course_id) || []);
-          setProgress(data.courses.map(course => course.voortgang) || []);
-          setUserName(data.name || '');
-          setShowNotification(true);
         }
-      } catch (error) {
-        console.log('Error fetching data:', error);
-        logout();
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        setDomainId(data.domain_id || '');
+        setCourseNames(data.courses.map(course => course.naam) || []);
+        setCourseDescriptions(data.courses.map(course => course.beschrijving) || []);
+        setCourseIds(data.courses.map(course => course.course_id) || []);
+        setProgress(data.courses.map(course => course.voortgang) || []);
+        setUserName(data.name || '');
+        setShowNotification(true);
       }
-    };
-  
-    if (authenticated) {
-      fetchData();
+    } catch (error) {
+      console.log('Error fetching data:', error);
+      logout();
     }
   }, [authenticated, logout]);
+
+  const refreshData = () => {
+    fetchData();
+  };
+
+  useEffect(() => {
+    if (authenticated) {
+      const interval = setInterval(() => {
+        refreshData();
+      }, 500);
+  
+      return () => clearInterval(interval);
+    }
+  }, [authenticated, refreshData]);
 
   const handleCloseNotification = () => {
     setShowNotification(false);
@@ -119,22 +156,23 @@ const HomePageTeacher = () => {
             </View>
           ))}
         </View>
-        <View style={styles.notificationContainer}>
-        {/* showNotification && (
-          <TouchableOpacity style={styles.closeButton} onPress={handleCloseNotification}>
-            <Icon name="close" size={24} color="#000" />
-          </TouchableOpacity>
-        ) */ }
-        {/* showNotification && (
-          <Notification
-            message="Cursussen geladen!"
-            visible={showNotification}
-            onClose={handleCloseNotification}
-          />
-        )*/}
-      </View>
+        {/* Notification component, uncomment if needed */}
+        {/* <View style={styles.notificationContainer}>
+          {showNotification && (
+            <TouchableOpacity style={styles.closeButton} onPress={handleCloseNotification}>
+              <Icon name="close" size={24} color="#000" />
+            </TouchableOpacity>
+          )}
+          {showNotification && (
+            <Notification
+              message="Cursussen geladen!"
+              visible={showNotification}
+              onClose={handleCloseNotification}
+            />
+          )}
+        </View> */}
       </ScrollView>
-   </LayoutTeacher>
+    </LayoutTeacher>
   );
 };
 
@@ -192,23 +230,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  progressBar: {
-    marginTop: 10,
-    height: 10,
-  },
   iconWrapper: {
     backgroundColor: '#D9D9D9',
     borderRadius: 50,
     padding: 10,
     margin: 20,
-  },
-  greyblock: {
-    backgroundColor: 'white',
-    padding: 20,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: 'lightgrey',
-    boxSizing: 'border-box',
   },
   leftAlign: {
     alignSelf: 'flex-start',
@@ -228,22 +254,6 @@ const styles = StyleSheet.create({
   backButtonSize: {
     width: 200,
     padding: 10,
-  },
-  '@media (maxWidth: 600px)': {
-    coursesContainer: {
-      flexDirection: 'column',
-    },
-    courseBlock: {
-      alignSelf: 'center',
-    },
-    greyblock: {
-      marginTop: 20,
-      marginBottom: 20,
-      height: 100,
-    },
-  },
-  FlatList: {
-    flexWrap: 'wrap',
   },
 });
 
