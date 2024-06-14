@@ -86,7 +86,9 @@ const HomePageTeacher = () => {
           <Text style={styles.header}>Welkom leraar {userName}!</Text>
           <Text style={styles.message}>{message}</Text>
         </View>
-        <Button onPress={() => navigation.navigate('AddDomain')} title={"Nieuw domein toevoegen"}/>
+        <View style={styles.addCourseButton}>
+          <Button onPress={() => navigation.navigate('AddDomain')} title={"Nieuw domein toevoegen"}/>
+        </View>
         {Array.isArray(domainNames) && domainNames.map((domainName, domain_index) => (
           <View 
             key={domain_index}
@@ -171,8 +173,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   addCourseButton: {
-    fontSize: 8,
-    height: 50,
     padding: 10, 
   },
   orangeblock: {
