@@ -38,4 +38,17 @@ Overige websites:
 - https://www.w3schools.com/django/index.php
 
 
+Login gegevens:
+- Docent:
+  - gebruikersnaam: teacher
+  - wachtwoord: teacher
 
+- Studenten:
+  - gebrukersnaam: student1
+  - wachtwoord: student1
+
+  - gebrukersnaam: student2
+  - wachtwoord: student2
+
+  - gebrukersnaam: student3
+  - wachtwoord: student3
