@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Input } from '@rneui/themed';
 import LayoutTeacher from './LayoutTeacher';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../AuthProvider';
 
 const ProfilePageTeacher = () => {
   const [first_name, setFirst_name] = useState('');
@@ -12,9 +13,10 @@ const ProfilePageTeacher = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [date_joined, setDate_joined] = useState('');
-  const [update_page, setUpdate] = useState(true);
-  const [isEditing, setIsEditing] = useState(false); // State for edit mode
+  const [isEditing, setIsEditing] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const navigation = useNavigation();
+  const { logout } = useContext(AuthContext);
 
   useEffect(() => {
     const getUserInfo = async () => {
@@ -39,7 +41,7 @@ const ProfilePageTeacher = () => {
       }
     };
     getUserInfo();
-  }, [update_page]);
+  }, [refreshKey]);
 
   const submitForm = async () => {
     try {
@@ -55,7 +57,6 @@ const ProfilePageTeacher = () => {
       const data = await response.json();
       console.log(data.message);
       alert(data.message);
-      setUpdate(!update_page);
       setIsEditing(false);
     } catch (error) {
       console.error('Er is een fout opgetreden bij het aanpassen van het profiel:', error);
@@ -63,7 +64,12 @@ const ProfilePageTeacher = () => {
   };
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('access_token');
+    await logout();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
+    setRefreshKey(prevKey => prevKey + 1);
   };
 
   return (

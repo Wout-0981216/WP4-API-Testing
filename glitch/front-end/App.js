@@ -2,12 +2,11 @@ import React, { useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthProvider, AuthContext } from './AuthProvider';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import LoginForm from './LoginForm';
 import HomePage from './Home';
 import RegistrationForm from './Registration';
 import Assignment from './components/assignment';
-
 import ActivitiesPage from './components/activities-module';
 import ProfilePage from './components/ProfilePage';
 import ModulePage from './components/ModulePage';
@@ -19,7 +18,6 @@ import InspectStudent from './teachers/InspectStudent';
 import CoursesScreen from './teachers/CoursesScreen';
 import CoursePage from './components/CoursePage';
 
-
 const Tab = createBottomTabNavigator();
 
 const StudentTabs = () => (
@@ -27,9 +25,9 @@ const StudentTabs = () => (
     <Tab.Screen name="Home" component={HomePage} />
     <Tab.Screen name="Profile" component={ProfilePage} />
     <Tab.Screen name="Course" component={CoursePage} options={{ tabBarButton: () => null }} />
-    <Tab.Screen name="Module" component={ModulePage} options={{ tabBarButton: ()=> null }} />
-    <Tab.Screen name="ConceptAssignment" component={Assignment} options={{ tabBarLabel: 'Concept', tabBarButton: () => null }}/>
-    <Tab.Screen name="ActivitiesModule" component={ActivitiesPage} options={{ tabBarButton: () => null }}/>
+    <Tab.Screen name="Module" component={ModulePage} options={{ tabBarButton: () => null }} />
+    <Tab.Screen name="ConceptAssignment" component={Assignment} options={{ tabBarLabel: 'Concept', tabBarButton: () => null }} />
+    <Tab.Screen name="ActivitiesModule" component={ActivitiesPage} options={{ tabBarButton: () => null }} />
   </Tab.Navigator>
 );
 
@@ -41,7 +39,6 @@ const TeacherTabs = () => (
     <Tab.Screen name="TeacherModule" component={ModulePageTeacher} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="AddModuleTeacher" component={AddModuleTeacher} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="InspectStudent" component={InspectStudent} options={{ tabBarButton: () => null }} />
-
   </Tab.Navigator>
 );
 
@@ -69,7 +66,11 @@ const App = () => {
   }, [authenticated, isTeacher]);
 
   if (loading) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (
