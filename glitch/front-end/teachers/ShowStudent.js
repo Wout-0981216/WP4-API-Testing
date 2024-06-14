@@ -28,11 +28,11 @@ const ShowStudent = ({ route, navigation }) => {
         const data = await response.json();
         setModule_id(data.module_id);
         setModule_name(data.module_name);
-        setModule_info(data.module_info);
-        setActivities(data.activities);
-        setPoints_challenge(data.points_challenge);
-        setContext_challenge(data.context_challenge);
-        setCore_assignment(data.core_assignment);
+        setModule_info(data.module_description);
+        setActivities(data.activiteiten);
+        setPoints_challenge(data.punten_uitdagingen);
+        setContext_challenge(data.concept_opdrachten);
+        setCore_assignment(data.hoofd_opdrachten);
       } catch (error) {
         console.error('Er is een fout opgetreden bij het ophalen van de gebruikers informatie', error);
       }
@@ -65,24 +65,24 @@ const ShowStudent = ({ route, navigation }) => {
           <View style={styles.courseHeader}>
             <Text style={styles.courseTitleLeft}>{module_name}</Text>
           </View>
-          <Text>Beschrijving module: {module_info.module_info}</Text>
+          <Text>Beschrijving module: {module_info.module_description}</Text>
           <Text>{`\nActiviteiten:`}</Text>
           <Activities />
           <View style={{ flexDirection: 'row' }}>
             <Text>{`\nPoints Challenge behaalde punten: `}
-              <Text style={{ fontWeight: 'bold' }}>{`${points_challenge.points_challenge_progress}/${points_challenge.points_challenge_points}  `}</Text>
+              <Text style={{ fontWeight: 'bold' }}>{`${points_challenge.punten_uitdagingen}/${points_challenge.punten_uitdagingen}  `}</Text>
               <LinearProgress value={(points_challenge["points_challenge_progress"] / points_challenge["points_challenge_points"])} style={styles.progressBarSmall} />
             </Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
             <Text>{`\nContext Challenge: `}
-              <Text style={{ fontWeight: 'bold' }}> {context_challenge.challenge_name} </Text>
+              <Text style={{ fontWeight: 'bold' }}> {context_challenge.naam} </Text>
               <Button onPress={() => navigation.navigate("ConceptAssignment", { screen: "ConceptAssignment", concept_id: context_challenge.challenge_id, styles: styles })} title='naar Context Challenge' />
             </Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
             <Text>{`\nCore Assignment: `}
-              <Text style={{ fontWeight: 'bold' }}> {core_assignment.challenge_name} </Text>
+              <Text style={{ fontWeight: 'bold' }}> {core_assignment.naam} </Text>
               <Button onPress={() => navigation.navigate("CoreAssignment", { screen: "CoreAssignment", module_id: module_id, styles: styles })} title='naar Core Assignment' />
             </Text>
           </View>

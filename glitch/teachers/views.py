@@ -198,45 +198,51 @@ def reject_assignment(request):
             return JsonResponse({'message': 'Assignment rejected successfully'}, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-        
-
+    
 @api_view(['GET'])
-def get_student_module_info(request, student_id, cursus_id):
-    student = get_object_or_404(User, id=student_id)
-    module = get_object_or_404(Modules, id=cursus_id)
+def get_student_module_info(request, student_id, course_id):
+    try:
+        # Fetching module related information
+        module = Modules.objects.filter(cursus_id=course_id).first()
+        if not module:
+            return JsonResponse({'error': 'Module not found for this course'}, status=404)
 
-    activities = Activiteiten.objects.filter(module=module)
-    points_challenge = PuntenUitdagingen.objects.filter(module=module).first()
-    context_challenge = ConceptOpdracht.objects.filter(module=module).first()
-    core_assignment = HoofdOpdrachten.objects.filter(module=module).first()
+        # Fetching main assignments (HoofdOpdrachten)
+        hoofd_opdrachten = HoofdOpdrachten.objects.filter(module=module)
+        hoofd_opdrachten_data = [{'id': opdracht.id, 'naam': opdracht.naam, 'beschrijving': opdracht.beschrijving} for opdracht in hoofd_opdrachten]
 
-    activities_data = [{
-        'activity_id': activity.id,
-        'activity_name': activity.naam,
-        'progress': VoortgangActiviteitenNiveaus.objects.filter(activity=activity, student=student).count(),
-        'max_progress': Niveaus.objects.filter(activiteit=activity).count()
-    } for activity in activities]
+        # Fetching concept assignments (ConceptOpdracht)
+        concept_opdrachten = ConceptOpdracht.objects.filter(module=module)
+        concept_opdrachten_data = [{'id': opdracht.id, 'naam': opdracht.naam, 'beschrijving': opdracht.beschrijving} for opdracht in concept_opdrachten]
 
-    response_data = {
-        'module_id': module.id,
-        'module_name': module.naam,
-        'module_info': {
-            'module_desc': module.beschrijving,
-            'nr_of_activities': activities.count()
-        },
-        'activities': activities_data,
-        'points_challenge': {
-            'points_challenge_progress': VoortgangPuntenUitdaging.objects.filter(puntenuitdaging=points_challenge, student=student).count(),
-            'points_challenge_points': points_challenge.benodige_punten if points_challenge else None,
-        },
-        'context_challenge': {
-            'challenge_name': context_challenge.naam if context_challenge else None,
-            'challenge_id': context_challenge.id if context_challenge else None,
-        },
-        'core_assignment': {
-            'challenge_name': core_assignment.naam if core_assignment else None,
-            'challenge_id': core_assignment.id if core_assignment else None,
+        # Fetching points challenges (PuntenUitdagingen)
+        punten_uitdagingen = PuntenUitdagingen.objects.filter(module=module)
+        punten_uitdagingen_data = [{'id': uitdaging.id, 'benodige_punten': uitdaging.benodige_punten} for uitdaging in punten_uitdagingen]
+
+        # Fetching activities (Activiteiten)
+        activiteiten = Activiteiten.objects.filter(module=module)
+        activiteiten_data = [{'id': activiteit.id, 'naam': activiteit.naam, 'beschrijving': activiteit.beschrijving} for activiteit in activiteiten]
+
+        # Fetching progress for each assignment type
+        voortgang_hoofd_opdrachten = VoortgangHoofdOpdrachten.objects.filter(student_id=student_id, hoofd_opdracht__module=module)
+        voortgang_concept_opdrachten = VoortgangConceptOpdrachten.objects.filter(student_id=student_id, concept_opdracht__module=module)
+        voortgang_punten_uitdaging = VoortgangPuntenUitdaging.objects.filter(student_id=student_id, punten_uitdaging__module=module)
+        voortgang_activiteiten_niveaus = VoortgangActiviteitenNiveaus.objects.filter(student_id=student_id, niveau__activiteit__module=module)
+
+        data = {
+            'module_id': module.id,
+            'module_name': module.naam,
+            'module_description': module.beschrijving,
+            'hoofd_opdrachten': hoofd_opdrachten_data,
+            'concept_opdrachten': concept_opdrachten_data,
+            'punten_uitdagingen': punten_uitdagingen_data,
+            'activiteiten': activiteiten_data,
+            'voortgang_hoofd_opdrachten': list(voortgang_hoofd_opdrachten.values('hoofd_opdracht_id', 'voortgang')),
+            'voortgang_concept_opdrachten': list(voortgang_concept_opdrachten.values('concept_opdracht_id', 'voortgang')),
+            'voortgang_punten_uitdaging': list(voortgang_punten_uitdaging.values('punten_uitdaging_id', 'voortgang')),
+            'voortgang_activiteiten_niveaus': list(voortgang_activiteiten_niveaus.values('niveau_id', 'voortgang')),
         }
-    }
 
-    return JsonResponse(response_data)
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
