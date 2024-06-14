@@ -154,27 +154,28 @@ def user_profile(request):
 @permission_classes([IsAuthenticated])
 def get_modules(request, course_id):
     if request.method == 'GET':
-        try:
-            course = Cursussen.objects.get(id=course_id)
-        except Cursussen.DoesNotExist:
-            return JsonResponse({"error": "Course not found"}, status=404)
-
+        course = Cursussen.objects.get(id=course_id)
         modules = Modules.objects.filter(cursus_id=course_id)
         module_list = {}
         j = 0
         for module in modules:
-            j += 1
-            modulenr = "module" + str(j)
-            module_list[modulenr] = {
-                "module_name": module.naam,
-                "module_id": module.id,
-                "activities": {}
-            }
+            j+=1
+            modulenr = "module"+str(j)
+            module_list[modulenr] = {"module_name" : module.naam}
+            module_list[modulenr]["module_id"] = module.id
             activities = Activiteiten.objects.filter(module_id=module.id)
             i = 1
+            module_list[modulenr]["activities"] = {}
+
             for activity in activities:
-                module_list[modulenr]["activities"]["activity"+str(i)] = activity.naam
                 module_list[modulenr]["nr_of_activities"] = i
+                niveaus = Niveaus.objects.filter(activiteit=activity)
+                progress_counter = 0
+                for niveau in niveaus:
+                    niveau_voortgang = VoortgangActiviteitenNiveaus.objects.get(niveau=niveau, student=request.user.id)
+                    if niveau_voortgang.voortgang == True:
+                        progress_counter +=1
+                module_list[modulenr]["activities"]["activity"+str(i)] = {"activity_name": activity.naam, "progress": progress_counter, "max_progress": len(niveaus)}
                 i+=1
             points_challenge = PuntenUitdagingen.objects.get(module_id=module.id)
             user_progress = VoortgangPuntenUitdaging.objects.get(punten_uitdaging_id=points_challenge.id, student_id=request.user.id)
@@ -185,10 +186,10 @@ def get_modules(request, course_id):
             module_list[modulenr]["core_assignment_name"] = core_assignment.naam
 
         return JsonResponse({
-            "course_name": course.naam,
-            "nr_of_modules": j,
-            "module_list": module_list
-        }, status=200, safe=False)
+                                "course_name" : course.naam,
+                                "nr_of_modules" : j,
+                                "module_list" : module_list
+                            }, status=200, safe=False)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
