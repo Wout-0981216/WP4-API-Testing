@@ -1,7 +1,5 @@
 from django.http import JsonResponse
-from game.models import ConceptOpdracht, Activiteiten
 from rest_framework.decorators import api_view
-from django.http import JsonResponse
 from game.models import *
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
@@ -200,3 +198,45 @@ def reject_assignment(request):
             return JsonResponse({'message': 'Assignment rejected successfully'}, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+        
+
+@api_view(['GET'])
+def get_student_module_info(request, student_id, cursus_id):
+    student = get_object_or_404(User, id=student_id)
+    module = get_object_or_404(Modules, id=cursus_id)
+
+    activities = Activiteiten.objects.filter(module=module)
+    points_challenge = PuntenUitdagingen.objects.filter(module=module).first()
+    context_challenge = ConceptOpdracht.objects.filter(module=module).first()
+    core_assignment = HoofdOpdrachten.objects.filter(module=module).first()
+
+    activities_data = [{
+        'activity_id': activity.id,
+        'activity_name': activity.naam,
+        'progress': VoortgangActiviteitenNiveaus.objects.filter(activity=activity, student=student).count(),
+        'max_progress': Niveaus.objects.filter(activiteit=activity).count()
+    } for activity in activities]
+
+    response_data = {
+        'module_id': module.id,
+        'module_name': module.naam,
+        'module_info': {
+            'module_desc': module.beschrijving,
+            'nr_of_activities': activities.count()
+        },
+        'activities': activities_data,
+        'points_challenge': {
+            'points_challenge_progress': VoortgangPuntenUitdaging.objects.filter(puntenuitdaging=points_challenge, student=student).count(),
+            'points_challenge_points': points_challenge.benodige_punten if points_challenge else None,
+        },
+        'context_challenge': {
+            'challenge_name': context_challenge.naam if context_challenge else None,
+            'challenge_id': context_challenge.id if context_challenge else None,
+        },
+        'core_assignment': {
+            'challenge_name': core_assignment.naam if core_assignment else None,
+            'challenge_id': core_assignment.id if core_assignment else None,
+        }
+    }
+
+    return JsonResponse(response_data)

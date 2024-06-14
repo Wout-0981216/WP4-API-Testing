@@ -75,7 +75,7 @@ const ModulePageTeacher = () => {
                     <Text style={styles.tableHeaderCell}>Voornaam</Text>
                     <Text style={styles.tableHeaderCell}>Achternaam</Text>
                     <Text style={styles.tableHeaderCell}>Email</Text>
-                    <Text style={styles.tableHeaderCell}>Acties</Text> {/* Voeg een nieuwe kolom toe */}
+                    <Text style={styles.tableHeaderCell}>Acties</Text>
                   </View>
                   {Array.isArray(expandedCourses[item.id]) && expandedCourses[item.id].length > 0 ? (
                     expandedCourses[item.id].map(student => (
@@ -91,7 +91,7 @@ const ModulePageTeacher = () => {
                           </TouchableOpacity>
                           <TouchableOpacity
                             style={styles.progressButton}
-                            onPress={() => navigation.navigate('ShowStudent', { student_id: student.id })} // Verander de navigatie naar ShowStudent
+                            onPress={() => navigation.navigate('ShowStudent', { student_id: student.id, course_id: item.id })}
                           >
                             <Text style={styles.buttonText}>Bekijk voortgang</Text>
                           </TouchableOpacity>
