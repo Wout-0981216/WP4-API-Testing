@@ -80,7 +80,7 @@ const CoursePage = ({ route, navigation }) => {
         }}>
           {module_array.map((module) => {
             return (
-              <Pressable key={module.key} onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.key, styles: styles})} style={{flex: 1, minWidth: 250}}>
+              <Pressable key={module.key} onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.key, styles: styles})} style={{flex: 1, minWidth: 250, maxWidth: 400}}>
                 {module}
               </Pressable>
             );

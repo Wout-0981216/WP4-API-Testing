@@ -62,7 +62,7 @@ const ActivitiesPage = ({ route, navigation }) => {
                     <Text>Beschrijving: {activiteiten.beschrijving}</Text>
                     {niveaus.map(niveau => (
                         <View key={niveau.id}>
-                            {niveau.progress === true ? (
+                            {niveau.progress === 1 ? (
                                 <Text style={{ color: "green" }}>{niveau.beschrijving}</Text>
                             ) : (
                                 <View style={{ flexDirection: 'row' }}>

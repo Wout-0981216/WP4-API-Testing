@@ -141,9 +141,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     backButtonSize: {
-        width: '90%',
-        alignSelf: 'flex-start',
-        margin: 10,
+        width: 200,
+
     },
 });
 

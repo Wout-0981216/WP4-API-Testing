@@ -41,7 +41,7 @@ const ModulePageTeacher = ({ route, navigation }) => {
       activities_array.push(
         <View key={i}>
           <Text style={{ fontWeight: 'bold' }}>Activiteit</Text>
-          <Text s>{activity.activity_name}</Text>
+          <Text >{activity.activity_name}</Text>
           {/* <Text>{`Voortgang: ${activity.progress}/${activity.max_progress}`}</Text> */}
           {/* <Button
             onPress={() => navigation.navigate("ActivitiesModule", { screen: "ActivitiesModule", activity_id: activity.activity_id, styles: styles })}
@@ -94,7 +94,7 @@ const ModulePageTeacher = ({ route, navigation }) => {
           }}>
           {module_array.map((module) => {
             return (
-              <View key={module.key}>
+              <View key={module.key} style={{flex: 1, minWidth: 250, maxWidth: 400}}>
                 {/* <Pressable onPress={() => navigation.navigate("Module", {screen: "Module", module_id: module.id, styles: styles})}> */}
                   {module}
                 {/* // </Pressable> */}
@@ -112,7 +112,7 @@ const ModulePageTeacher = ({ route, navigation }) => {
       <View style={styles.backButtonSize}>
         <Button onPress={() => navigation.goBack()} title='Terug'/>
       </View>
-      <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{`${course_name} Modules  `}
+      <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{`${course_name} Modules  \n`}
         <Button onPress={() => navigation.navigate('AddModuleTeacher', { course_id })} title={"Voeg module toe"}/>
       </Text>
       <ModuleCards />

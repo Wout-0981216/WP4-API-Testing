@@ -12,12 +12,11 @@ const HomePageTeacher = () => {
   const authContext = useContext(AuthContext);
   const { authenticated, loading, logout } = authContext;
   const [message, setMessage] = useState('');
-  const [domain_id, setDomainId] = useState('');
-  const [courseNames, setCourseNames] = useState([]);
-  const [courseDescriptions, setCourseDescriptions] = useState([]);
-  const [courseIDs, setCourseIds] = useState([]);
+  const [domainNames, setDomainNames] = useState([]);
+  const [domainDescriptions, setDomainDescriptions] = useState([]);
+  const [domainIDs, setDomainIds] = useState([]);
+  const [coursesInfo, setCoursesInfo] = useState([]);
   const [userName, setUserName] = useState('');
-  const [progress, setProgress] = useState([]);
   const [showNotification, setShowNotification] = useState(false);
 
   const fetchData = useCallback(async () => {
@@ -56,25 +55,34 @@ const HomePageTeacher = () => {
               'Authorization': `Bearer ${token}`
             }
           });
-        }
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        setDomainId(data.domain_id || '');
-        setCourseNames(data.courses.map(course => course.naam) || []);
-        setCourseDescriptions(data.courses.map(course => course.beschrijving) || []);
-        setCourseIds(data.courses.map(course => course.course_id) || []);
-        setProgress(data.courses.map(course => course.voortgang) || []);
-        setUserName(data.name || '');
-        setShowNotification(true);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          setDomainNames(data.domains.map(domain => domain.naam) || []);
+          setDomainDescriptions(data.domains.map(domain => domain.beschrijving) || []);
+          setDomainIds(data.domains.map(domain => domain.id) || []);
+          const courses_list = [];
+          for (const domain of data.domains) {
+            const course_list = [[],[],[]];
+            for (const course_data of domain.courses_data) {
+              const course = course_data;
+              course_list[0].push(course.naam);
+              course_list[1].push(course.beschrijving);
+              course_list[2].push(course.course_id);
+            }
+            courses_list.push(course_list);
+          };
+          setCoursesInfo(courses_list);
+          setUserName(data.name || '');
+          setShowNotification(true);
+        }}
+      } catch (error) {
+        console.log('Error fetching data:', error);
+        logout();
       }
-    } catch (error) {
-      console.log('Error fetching data:', error);
-      logout();
-    }
+
+
   }, [authenticated, logout]);
 
   const refreshData = () => {
@@ -84,8 +92,9 @@ const HomePageTeacher = () => {
   useEffect(() => {
     if (authenticated) {
       const interval = setInterval(() => {
+
         refreshData();
-      }, 500);
+      }, 200);
   
       return () => clearInterval(interval);
     }
@@ -114,63 +123,69 @@ const HomePageTeacher = () => {
           <Text style={styles.header}>Welkom leraar {userName}!</Text>
           <Text style={styles.message}>{message}</Text>
         </View>
-        <View style={{flex: 1, flexDirection: 'row'}}>
-          <View style={styles.backButtonSize}>
-            <Button onPress={() => navigation.navigate('AddDomain')} title={"Nieuw domein toevoegen"}/>
-          </View>
-          <View  style={styles.backButtonSize}>
-            <Button onPress={() => navigation.navigate('AddCourse', { domain_id })} title={"Nieuwe cursus toevoegen"}/>
-          </View>
+        <View style={styles.addCourseButton}>
+          <Button onPress={() => navigation.navigate('AddDomain')} title={"Nieuw domein toevoegen"}/>
         </View>
-        <View style={styles.coursesContainer}>
-          {Array.isArray(courseNames) && courseNames.map((courseName, index) => (
-            <View
-              key={index}
-              style={[
-                styles.courseBlock,
-                index % 2 === 0 ? styles.leftAlign : styles.rightAlign
-              ]}
-            >
-              <View style={styles.courseHeader}>
-                {index % 2 === 0 ? (
-                  <>
-                    <View style={styles.iconWrapper}>
-                      <Icon name="school" size={50} color="white" />
-                    </View>
-                    <Text style={styles.courseTitleLeft}>{courseName}</Text>
-                  </>
-                ) : (
-                  <>
-                    <Text style={styles.courseTitleRight}>{courseName}</Text>
-                    <View style={styles.iconWrapper}>
-                      <Icon name="school" size={50} color="white" />
-                    </View>
-                  </>
-                )}
+        {Array.isArray(domainNames) && domainNames.map((domainName, domain_index) => (
+          <View 
+            key={domain_index}
+            style={styles.domainsContainer}>
+            <Text style={styles.courseTitleLeft}>Domein: {domainName}
+              <View  style={styles.addCourseButton}>
+                <Button onPress={() => navigation.navigate('AddCourse', {domain_id: domainIDs[domain_index]})} title={"Nieuwe cursus toevoegen"}/>
               </View>
-              <Text>Beschrijving cursus: {courseDescriptions[index]}</Text>
-              <Button
-                onPress={() => navigation.navigate("TeacherModule", { screen: "TeacherModule", course_id: courseIDs[index], styles: styles })}
-                title={"Bekijk cursus"}
-              />
+            </Text>
+            <Text>Beschrijving Domein: {domainDescriptions[domain_index]}</Text>
+
+            <View style={styles.coursesContainer}> 
+            {coursesInfo && coursesInfo[domain_index] && coursesInfo[domain_index][0]?.map((courseName, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.courseBlock,
+                  index % 2 === 0 ? styles.leftAlign : styles.rightAlign
+                ]}
+              >
+                <View style={styles.courseHeader}>
+                  {index % 2 === 0 ? (
+                    <>
+                      <View style={styles.iconWrapper}>
+                        <Icon name="school" size={20} color="white" />
+                      </View>
+                      <Text style={styles.courseTitleLeft}>{courseName}</Text>
+                      <Button onPress={() => navigation.navigate("TeacherModule", { screen: "TeacherModule", course_id: coursesInfo[domain_index][2][index], styles: styles })} title={"Bekijk cursus"}/>
+                    </>
+                  ) : (
+                    <>
+                      <Button onPress={() => navigation.navigate("TeacherModule", { screen: "TeacherModule", course_id: coursesInfo[domain_index][2][index], styles: styles })} title={"Bekijk cursus"}/>
+                      <Text style={styles.courseTitleRight}>{courseName}</Text>
+                      <View style={styles.iconWrapper}>
+                        <Icon name="school" size={20} color="white" />
+                      </View>
+                    </>
+                  )}
+                </View>
+                <Text>Beschrijving cursus: {coursesInfo[domain_index][1][index]}</Text>
+              </View>
+            ))}
             </View>
-          ))}
-        </View>
-        {/* Notification component, uncomment if needed */}
-        {/* <View style={styles.notificationContainer}>
-          {showNotification && (
-            <TouchableOpacity style={styles.closeButton} onPress={handleCloseNotification}>
-              <Icon name="close" size={24} color="#000" />
-            </TouchableOpacity>
-          )}
-          {showNotification && (
-            <Notification
-              message="Cursussen geladen!"
-              visible={showNotification}
-              onClose={handleCloseNotification}
-            />
-          )}
-        </View> */}
+
+          </View>
+        ))}
+        <View style={styles.notificationContainer}>
+        {/* showNotification && (
+          <TouchableOpacity style={styles.closeButton} onPress={handleCloseNotification}>
+            <Icon name="close" size={24} color="#000" />
+          </TouchableOpacity>
+        ) */ }
+        {/* showNotification && (
+          <Notification
+            message="Cursussen geladen!"
+            visible={showNotification}
+            onClose={handleCloseNotification}
+          />
+        )*/}
+      </View>
       </ScrollView>
     </LayoutTeacher>
   );
@@ -194,6 +209,9 @@ const styles = StyleSheet.create({
     zIndex: 1,
     padding: 10,
   },
+  addCourseButton: {
+    padding: 10, 
+  },
   orangeblock: {
     backgroundColor: '#CA591A',
     padding: 20,
@@ -202,9 +220,17 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 20,
   },
+  domainsContainer: {
+    padding: 10,
+    marginBottom: 20,
+    borderRadius: 8,
+    width: '100%',
+    backgroundColor: 'pink'
+  },
   coursesContainer: {
     width: '100%',
     padding: 10,
+    backgroundColor: 'grey',
   },
   courseBlock: {
     padding: 10,
