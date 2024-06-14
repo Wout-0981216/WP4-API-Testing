@@ -2,10 +2,10 @@ from django.http import JsonResponse
 from game.models import ConceptOpdracht, Activiteiten
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
-from game.models import Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, Niveaus
+from game.models import *
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
-from game.models import Cursussen, User, TeacherCursus
+from add_user_to_module import add_user_to_module
 
 @csrf_exempt
 @api_view(['POST'])
@@ -75,6 +75,9 @@ def register_module(request):
             benodige_punten=points,
             module_id = new_module.id
         )
+        course_student = IngschrCursus.objects.filter(cursus=course_id)
+        for student in course_student:
+            add_user_to_module(student.student, new_module)
 
 
         return JsonResponse({
@@ -117,3 +120,83 @@ def student_list(request, course_id):
     print(students_data)
     
     return JsonResponse(students_data, safe=False)
+
+
+def get_student_voortgang(request, student_id):
+    hoofd_opdrachten_voortgang = VoortgangHoofdOpdrachten.objects.filter(
+        student_id=student_id, voortgang=1
+    ).select_related('hoofd_opdracht').values(
+        'id',
+        'hoofd_opdracht__naam',
+        'hoofd_opdracht__beschrijving'
+    )
+
+    concept_opdrachten_voortgang = VoortgangConceptOpdrachten.objects.filter(
+        student_id=student_id, voortgang=1
+    ).select_related('concept_opdracht').values(
+        'id',
+        'concept_opdracht__naam',
+        'concept_opdracht__beschrijving',
+        'ingeleverd_tekst'
+    )
+
+    data = {
+        "hoofd_opdrachten_voortgang": list(hoofd_opdrachten_voortgang),
+        "concept_opdrachten_voortgang": list(concept_opdrachten_voortgang),
+    }
+
+    return JsonResponse(data)
+
+
+
+@csrf_exempt
+@api_view(['POST'])
+def approve_assignment(request):
+    if request.method == 'POST':
+        assignment_id = request.data.get('assignment_id')
+        assignment_type = request.data.get('assignment_type')
+
+        if not (assignment_id and assignment_type):
+            return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+        try:
+            if assignment_type == 'hoofd_opdracht':
+                assignment = VoortgangHoofdOpdrachten.objects.get(id=assignment_id)
+            elif assignment_type == 'concept_opdracht':
+                assignment = VoortgangConceptOpdrachten.objects.get(id=assignment_id)
+            else:
+                return JsonResponse({'error': 'Invalid assignment type'}, status=400)
+
+            assignment.voortgang = 2  
+            assignment.save()
+
+            return JsonResponse({'message': 'Assignment approved successfully'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@api_view(['POST'])
+def reject_assignment(request):
+    if request.method == 'POST':
+        assignment_id = request.data.get('assignment_id')
+        assignment_type = request.data.get('assignment_type')  
+        print(assignment_id)
+        print(assignment_type)
+
+        if not (assignment_id and assignment_type):
+            return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+        try:
+            if assignment_type == 'hoofd_opdracht':
+                assignment = VoortgangHoofdOpdrachten.objects.get(id=assignment_id)
+            elif assignment_type == 'concept_opdracht':
+                assignment = VoortgangConceptOpdrachten.objects.get(id=assignment_id)
+            else:
+                return JsonResponse({'error': 'Invalid assignment type'}, status=400)
+
+            assignment.voortgang = 3
+            assignment.save()
+
+            return JsonResponse({'message': 'Assignment rejected successfully'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

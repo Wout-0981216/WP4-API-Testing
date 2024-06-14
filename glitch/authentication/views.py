@@ -17,10 +17,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.hashers import make_password
 import logging
+from add_user_to_module import add_user_to_module
 
 logger = logging.getLogger(__name__)
 
-@csrf_exempt
+
 @api_view(['POST'])
 def register_user(request):
         if request.method == 'POST':
@@ -59,27 +60,8 @@ def register_user(request):
                 )
                 modules = Modules.objects.filter(cursus=cursus)
                 for module in modules:
-                    VoortgangConceptOpdrachten.objects.create(
-                        student = student,
-                        concept_opdracht = ConceptOpdracht.objects.get(module=module)
-                    )
-                    VoortgangHoofdOpdrachten.objects.create(
-                        student = student,
-                        hoofd_opdracht = HoofdOpdrachten.objects.get(module=module)
-                    )
-                    VoortgangPuntenUitdaging.objects.create(
-                        student = student,
-                        punten_uitdaging = PuntenUitdagingen.objects.get(module=module)
-                    )
-                    activiteiten = Activiteiten.objects.filter(module=module)
-                    for activiteit in activiteiten:
-                        niveaus = Niveaus.objects.filter(activiteit=activiteit)
-                        for niveau in niveaus:
-                            VoortgangActiviteitenNiveaus.objects.create(
-                                student = student,
-                                niveau = niveau
-                            )
-            
+                    add_user_to_module(student, module)
+
 
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)

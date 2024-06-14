@@ -61,7 +61,9 @@ const ModulePage = ({ route, navigation}) => {
 
   return(
     <View>
-      <Button onPress={() => navigation.goBack()} title='Terug'/>
+      <View style={styles.backButtonSize}>
+        <Button onPress={() => navigation.goBack()} title='Terug'/>
+      </View>
       <View style={styles.coursesContainer}>
         <View style={styles.courseBlock}>
           <View style={styles.courseHeader}>
@@ -71,16 +73,15 @@ const ModulePage = ({ route, navigation}) => {
           <Text>{`\nActiviteiten:`}</Text>
           <Activities/>
           <View style={{flexDirection: 'row'}}>
-            <Text>{`\nPoints Challenge behaalde punten: ${points_challenge.points_challenge_progress}/${points_challenge.points_challenge_points}    `}
+            <Text>{`\nPoints Challenge behaalde punten: `}
+              <Text style={{ fontWeight: 'bold'}}>{`${points_challenge.points_challenge_progress}/${points_challenge.points_challenge_points}  `}</Text>
               <LinearProgress value={(points_challenge["points_challenge_progress"]/points_challenge["points_challenge_points"])} style={styles.progressBarSmall}/>
             </Text>
           </View>
           <View style={{flexDirection: 'row'}}>
             <Text>{`\nContext Challenge: `}
               <Text style={{ fontWeight: 'bold'}}> {context_challenge.challenge_name} </Text>
-          </Text>
-          <Text>
-              <Button onPress={() => navigation.navigate("ConceptAssignment", {screen: "ConceptAssignment", concept_id: context_challenge.challenge_id, styles: styles})} title='naar Context Challenge'/>
+                <Button onPress={() => navigation.navigate("ConceptAssignment", {screen: "ConceptAssignment", concept_id: context_challenge.challenge_id, styles: styles})} title='naar Context Challenge'/>
             </Text>
           </View>
           <View style={{flexDirection: 'row'}}>

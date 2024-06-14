@@ -115,14 +115,20 @@ class TeacherCursus(models.Model):
     class Meta:
         unique_together = ('user', 'cursus')
 
+
+# Voortgang codes:
+# 0 nog niet gedaan
+# 1 ingeleverd
+# 2 goedgekeurd
+# 3 afgekeurd       
+
 class VoortgangHoofdOpdrachten(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     hoofd_opdracht = models.ForeignKey(
         HoofdOpdrachten,
         on_delete=models.DO_NOTHING
     )
-    voortgang = models.BooleanField(default=False)
-
+    voortgang = models.IntegerField(default=0)
 
 class VoortgangConceptOpdrachten(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -131,8 +137,12 @@ class VoortgangConceptOpdrachten(models.Model):
         on_delete=models.DO_NOTHING,
         null=True
     )
-    voortgang = models.BooleanField(default=False)
+    voortgang = models.IntegerField(default=0)
+    ingeleverd_tekst = models.TextField(blank=True, null=True)
 
+    def set_ingeleverd_tekst(self, tekst):
+        self.ingeleverd_tekst = tekst
+        self.save()
 
 class VoortgangPuntenUitdaging(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -143,11 +153,10 @@ class VoortgangPuntenUitdaging(models.Model):
     )
     voortgang = models.IntegerField(default=0)
 
-
 class VoortgangActiviteitenNiveaus(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     niveau = models.ForeignKey(Niveaus, on_delete=models.DO_NOTHING, null=True)
-    voortgang = models.BooleanField(default=False)
+    voortgang = models.IntegerField(default=0)
 
 
 class IngschrCursus(models.Model):

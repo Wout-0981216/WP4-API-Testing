@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Input } from '@rneui/themed';
 import LayoutTeacher from './LayoutTeacher';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Notification from '../PushNotification';
+import { AuthContext } from '../AuthProvider';
 
 const ProfilePageTeacher = () => {
   const [first_name, setFirst_name] = useState('');
@@ -16,7 +17,9 @@ const ProfilePageTeacher = () => {
   const [update_page, setUpdate] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const navigation = useNavigation();
+  const { logout } = useContext(AuthContext);
 
   useEffect(() => {
     const getUserInfo = async () => {
@@ -41,7 +44,7 @@ const ProfilePageTeacher = () => {
       }
     };
     getUserInfo();
-  }, [update_page]);
+  }, [refreshKey]);
 
   const submitForm = async () => {
     try {
@@ -59,6 +62,8 @@ const ProfilePageTeacher = () => {
       setShowNotification(true);
     }
       setUpdate(!update_page);
+      console.log(data.message);
+      alert(data.message);
       setIsEditing(false);
       setShowNotification(true);
     } catch (error) {
@@ -67,16 +72,12 @@ const ProfilePageTeacher = () => {
   };
 
   const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem('access_token');
-
-      setTimeout(() => {
-        setShowNotification(false);
-        navigation.navigate('Login');
-      }, 3000);
-    } catch (error) {
-      console.error('Er is een fout opgetreden bij het uitloggen:', error);
-    }
+    await logout();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
+    setRefreshKey(prevKey => prevKey + 1);
   };
 
   return (

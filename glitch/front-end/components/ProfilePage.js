@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Input } from '@rneui/themed';
-import Layout from '../Layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
@@ -13,7 +12,7 @@ const ProfilePageTeacher = () => {
   const [password, setPassword] = useState('');
   const [date_joined, setDate_joined] = useState('');
   const [update_page, setUpdate] = useState(true);
-  const [isEditing, setIsEditing] = useState(false); // State for edit mode
+  const [isEditing, setIsEditing] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -31,7 +30,7 @@ const ProfilePageTeacher = () => {
         setLast_name(data.last_name);
         setUsername(data.username);
         setEmail(data.email);
-        setPassword(data.password);
+        setPassword(data.password); 
         setDate_joined(data.date_joined);
         console.log(data.message);
       } catch (error) {
@@ -64,6 +63,11 @@ const ProfilePageTeacher = () => {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('access_token');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
+    window.location.reload();
   };
 
   return (

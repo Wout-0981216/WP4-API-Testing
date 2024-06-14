@@ -8,6 +8,10 @@ from django.middleware.csrf import get_token
 from .models import User, Cursussen, Modules, HoofdOpdrachten, PuntenUitdagingen, ConceptOpdracht, Activiteiten, IngschrCursus, VoortgangPuntenUitdaging, Niveaus, VoortgangActiviteitenNiveaus, VoortgangConceptOpdrachten, VoortgangHoofdOpdrachten, Domeinen
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import ConceptOpdracht
+from django.contrib.auth.models import AnonymousUser
 
 @api_view(['GET'])
 def get_domains(request):
@@ -28,7 +32,8 @@ def concept_opdracht_list(request, concept_id):
             'id': opdracht.id,
             'naam': opdracht.naam,
             'beschrijving': opdracht.beschrijving,
-            'progress' : voortgang.voortgang
+            'progress' : voortgang.voortgang,
+            'handed_in_text': voortgang.ingeleverd_tekst
         }
     ]
     return JsonResponse({"assignment_info": opdrachten_list, "module_id": opdracht.module.id}, safe=False)
@@ -69,6 +74,15 @@ def sign_off_niveau(request, niveau_id):
                 if points_challenge_progress.voortgang < points_challenge.benodige_punten:
                     points_challenge_progress.voortgang +=1
                     points_challenge_progress.save()
+            ingschr_cursussen = IngschrCursus.objects.filter(student=request.user.id)
+            for cursus in ingschr_cursussen:
+                voortgang = 0
+                modules = Modules.objects.filter(cursus_id=cursus.cursus)
+                for module in modules:
+                    punten = VoortgangPuntenUitdaging.objects.get(student_id = request.user.id, punten_uitdaging=PuntenUitdagingen.objects.get(module=module)).voortgang
+                    voortgang += punten
+                cursus.voortgang=voortgang
+                cursus.save()
 
             return JsonResponse({'message': 'Niveau afgerond'}, status=200)
 
@@ -182,6 +196,7 @@ def get_modules(request, course_id):
 def get_module(request, module_id):
     if request.method == 'GET':
         module = Modules.objects.get(id=module_id)
+        print(module)
         module_info = {"module_name": module.naam, "module_id": module.id, "module_desc": module.beschrijving}
         i = 1
         module_activities = {}
@@ -204,6 +219,7 @@ def get_module(request, module_id):
         core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
         core_assignment_info = {"challenge_name": core_assignment.naam, "challenge_desc": core_assignment.beschrijving, "challenge_id": core_assignment.id}
 
+        print(module_activities)
         return JsonResponse({
                                 "course_id": module.cursus.id,
                                 "module_name" : module.naam,
@@ -213,6 +229,7 @@ def get_module(request, module_id):
                                 "context_challenge" : context_challenge_info,
                                 "core_assignment" : core_assignment_info
                             }, status=200, safe=False)
+
 
 def get_csrf_token(request):
     csrf_token = get_token(request)
@@ -231,3 +248,34 @@ def core_assignment_list(request, module_id):
     }
     
     return JsonResponse({'core_assignment': assignment_data}, status=200, safe=False)
+
+@api_view(['POST'])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def submit_text(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        concept_id = data.get('concept_id')
+        submitted_text = data.get('submitted_text')
+
+        try:
+            concept_opdracht = ConceptOpdracht.objects.get(id=concept_id)
+            student = request.user
+
+            voortgang = VoortgangConceptOpdrachten.objects.get_or_create(
+                student=student,
+                concept_opdracht=concept_opdracht,
+                defaults={'voortgang': 0}
+            )[0]
+
+            voortgang.ingeleverd_tekst = submitted_text
+            voortgang.voortgang = 1
+            voortgang.save()
+
+            return JsonResponse({'message': 'Tekst succesvol ingeleverd'})
+        except ConceptOpdracht.DoesNotExist:
+            return JsonResponse({'error': 'ConceptOpdracht niet gevonden'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Alleen POST-verzoeken zijn toegestaan voor deze endpoint'})
