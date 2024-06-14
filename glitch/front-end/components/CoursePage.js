@@ -92,7 +92,9 @@ const CoursePage = ({ route, navigation }) => {
 
   return (
     <View>
-      <Button onPress={() => navigation.goBack()} title='Terug'/>
+      <View style={styles.backButtonSize}>
+        <Button onPress={() => navigation.goBack()} title='Terug'/>
+      </View>
       <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{course_name} Modules</Text>
       <ModuleCards />
     </View>

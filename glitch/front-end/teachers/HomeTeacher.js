@@ -217,6 +217,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
   },
+  backButtonSize: {
+    width: 200,
+  },
   '@media (maxWidth: 600px)': {
     coursesContainer: {
       flexDirection: 'column',

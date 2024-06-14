@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
@@ -58,6 +58,9 @@ const ModulePageTeacher = () => {
 
   return (
     <View style={styles.container}>
+      <View style={{width: 200}}>
+        <Button onPress={() => navigation.goBack()} title='Terug'/>
+      </View>
       <FlatList
         data={courses}
         keyExtractor={item => item.id.toString()}

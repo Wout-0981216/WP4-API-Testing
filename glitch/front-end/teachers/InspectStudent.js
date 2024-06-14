@@ -79,6 +79,9 @@ const InspectStudent = ({ route }) => {
 
   return (
     <LayoutTeacher>
+      <View style={{width: 200}}>
+        <Button onPress={() => navigation.goBack()} title='Terug'/>
+      </View>
       <View>
         <Text style={styles.text1}>Openstaande opdrachten</Text>
         <View style={styles.showProfile}>

@@ -81,6 +81,9 @@ const AddModuleTeacher = () => {
 
   return (
     <LayoutTeacher>
+      <View style={{width: 200}}>
+        <Button onPress={() => navigation.goBack()} title='Terug'/>
+      </View>
           <Input
             label="Module naam"
             onChangeText={setModule_name}
