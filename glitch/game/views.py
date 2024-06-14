@@ -196,6 +196,7 @@ def get_modules(request, course_id):
 def get_module(request, module_id):
     if request.method == 'GET':
         module = Modules.objects.get(id=module_id)
+        print(module)
         module_info = {"module_name": module.naam, "module_id": module.id, "module_desc": module.beschrijving}
         i = 1
         module_activities = {}
@@ -218,6 +219,7 @@ def get_module(request, module_id):
         core_assignment = HoofdOpdrachten.objects.get(module_id=module.id)
         core_assignment_info = {"challenge_name": core_assignment.naam, "challenge_desc": core_assignment.beschrijving, "challenge_id": core_assignment.id}
 
+        print(module_activities)
         return JsonResponse({
                                 "course_id": module.cursus.id,
                                 "module_name" : module.naam,
@@ -227,6 +229,7 @@ def get_module(request, module_id):
                                 "context_challenge" : context_challenge_info,
                                 "core_assignment" : core_assignment_info
                             }, status=200, safe=False)
+
 
 def get_csrf_token(request):
     csrf_token = get_token(request)

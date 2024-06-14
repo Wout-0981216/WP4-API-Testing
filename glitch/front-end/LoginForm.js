@@ -16,7 +16,7 @@ const LoginForm = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-  const { setAuthenticated } = useContext(AuthContext);
+  const { setAuthenticated, setIsTeacher } = useContext(AuthContext);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -28,6 +28,13 @@ const LoginForm = () => {
         await AsyncStorage.setItem('access_token', response.data.access);
         await AsyncStorage.setItem('refresh_token', response.data.refresh);
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+        
+        // Haal de isTeacher-status op en sla deze op
+        const homeResponse = await axiosInstance.get('http://192.168.56.1:8000/game/HomeCourses');
+        const teacherStatus = !!homeResponse.data.teacher;
+        await AsyncStorage.setItem('isTeacher', JSON.stringify(teacherStatus));
+        setIsTeacher(teacherStatus);
+        
         setAuthenticated(true);
       } else {
         throw new Error('Network response was not ok');
@@ -46,7 +53,6 @@ const LoginForm = () => {
       if (token) {
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         setAuthenticated(true);
-        navigation.navigate('Home');
       }
     };
 

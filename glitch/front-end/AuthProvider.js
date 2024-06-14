@@ -21,8 +21,8 @@ export const AuthProvider = ({ children }) => {
             if (response.status === 200) {
               const data = response.data;
               console.log('Server response:', data.teacher);
-              setAuthenticated(true);
               const teacherStatus = !!data.teacher;
+              setAuthenticated(true);
               setIsTeacher(teacherStatus);
               await AsyncStorage.setItem('isTeacher', JSON.stringify(teacherStatus));
             } else {
@@ -55,9 +55,9 @@ export const AuthProvider = ({ children }) => {
             if (response.status === 200) {
               const data = response.data;
               console.log('Server response after token refresh:', data.teacher);
-              setAuthenticated(true);
               const teacherStatus = !!data.teacher;
-              setIsTeacher(teacherStatus);
+              setAuthenticated(true);
+              setIsTeacher(teacherStatus); 
               await AsyncStorage.setItem('isTeacher', JSON.stringify(teacherStatus));
             } else {
               throw new Error('Token validation failed after refresh');
@@ -75,21 +75,6 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
-  }, []);
-
-  useEffect(() => {
-    const reloadApp = async () => {
-      try {
-        const storedIsTeacher = await AsyncStorage.getItem('isTeacher');
-        if (storedIsTeacher !== null) {
-          setIsTeacher(JSON.parse(storedIsTeacher));
-        }
-      } catch (error) {
-        console.error('Error loading isTeacher from AsyncStorage:', error);
-      }
-    };
-
-    reloadApp();
   }, []);
 
   const logout = async () => {
@@ -113,7 +98,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ authenticated, setAuthenticated, isTeacher, logout }}>
+    <AuthContext.Provider value={{ authenticated, setAuthenticated, isTeacher, setIsTeacher, logout }}>
       {children}
     </AuthContext.Provider>
   );
