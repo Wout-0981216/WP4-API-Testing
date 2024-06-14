@@ -23,7 +23,8 @@ const HomePageTeacher = () => {
     try {
       if (authenticated) {
         setMessage('Welkom bij de glitch startpagina!');
-        let token = await AsyncStorage.getItem('access_token');
+        let token = 'ditiseenverkeerdetoken'; 
+
         let response = await fetch('http://192.168.56.1:8000/game/HomeCourses', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -31,7 +32,6 @@ const HomePageTeacher = () => {
         });
 
         if (response.status === 401) {
-
           const refreshToken = await AsyncStorage.getItem('refresh_token');
           const refreshResponse = await fetch('http://192.168.56.1:8000/login/refresh-token/', {
             method: 'POST',
@@ -40,31 +40,33 @@ const HomePageTeacher = () => {
             },
             body: JSON.stringify({ refresh_token: refreshToken })
           });
-
+    
           if (!refreshResponse.ok) {
             throw new Error('Failed to refresh token');
           }
-
+    
           const refreshData = await refreshResponse.json();
           token = refreshData.access_token;
           await AsyncStorage.setItem('access_token', token);
-
-
+    
+          // Opnieuw fetchen met vernieuwde token
           response = await fetch('http://192.168.56.1:8000/game/HomeCourses', {
             headers: {
               'Authorization': `Bearer ${token}`
             }
           });
+    
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
+    
           const data = await response.json();
           setDomainNames(data.domains.map(domain => domain.naam) || []);
           setDomainDescriptions(data.domains.map(domain => domain.beschrijving) || []);
           setDomainIds(data.domains.map(domain => domain.id) || []);
           const courses_list = [];
           for (const domain of data.domains) {
-            const course_list = [[],[],[]];
+            const course_list = [[], [], []];
             for (const course_data of domain.courses_data) {
               const course = course_data;
               course_list[0].push(course.naam);
@@ -72,15 +74,16 @@ const HomePageTeacher = () => {
               course_list[2].push(course.course_id);
             }
             courses_list.push(course_list);
-          };
+          }
           setCoursesInfo(courses_list);
           setUserName(data.name || '');
           setShowNotification(true);
-        }}
-      } catch (error) {
-        console.log('Error fetching data:', error);
-        logout();
+        }
       }
+    } catch (error) {
+      console.log('Error fetching data:', error);
+      logout();
+    }
 
 
   }, [authenticated, logout]);
@@ -94,7 +97,7 @@ const HomePageTeacher = () => {
       const interval = setInterval(() => {
 
         refreshData();
-      }, 200);
+      }, 500);
   
       return () => clearInterval(interval);
     }

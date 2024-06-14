@@ -9,7 +9,8 @@ from .views import (
     reject_assignment,
     register_module,
     register_course,
-    register_domain
+    register_domain,
+    get_student_module_info,
 )
 
 urlpatterns = [
@@ -21,4 +22,5 @@ urlpatterns = [
     path('api/students_open/<int:student_id>/', get_student_voortgang, name='get_student_voortgang'),
     path('api/approve_assignment/', approve_assignment, name='approve_assignment'),
     path('api/reject_assignment/', reject_assignment, name='reject_assignment'),
+    path('api/student_module_info/<int:student_id>/<int:course_id>/', get_student_module_info, name='get_student_module_info'),
 ]
