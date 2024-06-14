@@ -12,6 +12,7 @@ const HomePageTeacher = () => {
   const authContext = useContext(AuthContext);
   const { authenticated, loading, logout } = authContext;
   const [message, setMessage] = useState('');
+  const [domain_id, setDomainId] = useState('');
   const [courseNames, setCourseNames] = useState([]);
   const [courseDescriptions, setCourseDescriptions] = useState([]);
   const [courseIDs, setCourseIds] = useState([]);
@@ -34,6 +35,7 @@ const HomePageTeacher = () => {
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
+          setDomainId(data.domain_id || []);
           setCourseNames(data.courses.map(course => course.naam) || []);
           setCourseDescriptions(data.courses.map(course => course.beschrijving) || []);
           setCourseIds(data.courses.map(course => course.course_id) || []);
@@ -74,6 +76,14 @@ const HomePageTeacher = () => {
         <View style={styles.orangeblock}>
           <Text style={styles.header}>Welkom leraar {userName}!</Text>
           <Text style={styles.message}>{message}</Text>
+        </View>
+        <View style={{flex: 1, flexDirection: 'row'}}>
+          <View style={styles.backButtonSize}>
+            <Button onPress={() => navigation.navigate('AddDomain')} title={"Nieuw domein toevoegen"}/>
+          </View>
+          <View  style={styles.backButtonSize}>
+            <Button onPress={() => navigation.navigate('AddCourse', { domain_id })} title={"Nieuwe cursus toevoegen"}/>
+          </View>
         </View>
         <View style={styles.coursesContainer}>
           {Array.isArray(courseNames) && courseNames.map((courseName, index) => (
@@ -217,6 +227,7 @@ const styles = StyleSheet.create({
   },
   backButtonSize: {
     width: 200,
+    padding: 10,
   },
   '@media (maxWidth: 600px)': {
     coursesContainer: {

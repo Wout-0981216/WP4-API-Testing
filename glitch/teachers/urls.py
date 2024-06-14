@@ -7,10 +7,15 @@ from .views import (
     get_student_voortgang,
     approve_assignment,
     reject_assignment,
+    register_module,
+    register_course,
+    register_domain
 )
 
 urlpatterns = [
-    path('register_module/', views.register_module, name="register_module"),
+    path('register_module/', register_module, name="register_module"),
+    path('register_course/', register_course, name="register_course"),
+    path('register_domain/', register_domain, name="register_domain"),
     path('api/courses/', course_list, name='course-list'),
     path('api/students/<int:course_id>/', student_list, name='student-list'),
     path('api/students_open/<int:student_id>/', get_student_voortgang, name='get_student_voortgang'),

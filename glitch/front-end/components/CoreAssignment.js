@@ -3,7 +3,7 @@ import { View, Text, Button, TextInput, Alert, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CoreAssignment = ({ route, navigation }) => {
-    const { core_id } = route.params; // Dit moet worden aangepast aan je specifieke route parameter voor de core assignment
+    const { core_id } = route.params; 
     const [module_id, setModuleId] = useState('');
     const [assignment, setAssignment] = useState({});
     const [submittedText, setSubmittedText] = useState('');
