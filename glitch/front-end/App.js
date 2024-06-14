@@ -25,8 +25,8 @@ const Tab = createBottomTabNavigator();
 
 const StudentTabs = () => (
   <Tab.Navigator backBehavior='history'>
-    <Tab.Screen name="Home" component={HomePage} />
-    <Tab.Screen name="Profile" component={ProfilePage} />
+    <Tab.Screen name="Home" component={HomePage} options={{ tabBarLabel: 'Home' }} />
+    <Tab.Screen name="Profile" component={ProfilePage} options={{ tabBarLabel: 'Profiel' }} />
     <Tab.Screen name="Course" component={CoursePage} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="Module" component={ModulePage} options={{ tabBarButton: ()=> null }} />
     <Tab.Screen name="ConceptAssignment" component={Assignment} options={{ tabBarButton: () => null }}/>
@@ -37,9 +37,9 @@ const StudentTabs = () => (
 
 const TeacherTabs = () => (
   <Tab.Navigator backBehavior='history'>
-    <Tab.Screen name="TeacherHome" component={TeacherHome} />
-    <Tab.Screen name="Leerlingen" component={CoursesScreen} />
-    <Tab.Screen name="TeacherProfile" component={ProfilePageTeacher} />
+    <Tab.Screen name="TeacherHome" component={TeacherHome} options={{ tabBarLabel: 'Home' }}/>
+    <Tab.Screen name="Leerlingen" component={CoursesScreen} options={{ tabBarLabel: 'Leerlingen' }}/>
+    <Tab.Screen name="TeacherProfile" component={ProfilePageTeacher} options={{ tabBarLabel: 'Profiel' }}/>
     <Tab.Screen name="TeacherModule" component={ModulePageTeacher} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="AddModuleTeacher" component={AddModuleTeacher} options={{ tabBarButton: () => null }} />
     <Tab.Screen name="InspectStudent" component={InspectStudent} options={{ tabBarButton: () => null }} />

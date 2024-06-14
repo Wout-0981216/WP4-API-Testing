@@ -126,7 +126,7 @@ const HomePageTeacher = () => {
                       </>
                     )}
                   </View>
-                  <Text>Beschrijving cursus: {coursesInfo[domain_index][1][index]}</Text><br/>
+                  <Text>Beschrijving cursus: {coursesInfo[domain_index][1][index]}</Text>
                 </View>
               ))}
             </View>
