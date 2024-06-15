@@ -51,7 +51,7 @@ const ModulePage = ({ route, navigation }) => {
         activities_array.push(
           <View key={i} style={{ flexDirection: 'row' }}>
             <Text style={{ fontWeight: 'bold' }}>
-              {`\n  - ${activity.activity_name} (${activity.activity_nr}) - voortgang: ${activity.progress}/${activity.max_progress}`}
+              {`\n  - ${activity.activity_name}  - voortgang: ${activity.progress}/${activity.max_progress}`}
               <Button onPress={() => navigation.navigate("ActivitiesModule", { screen: "ActivitiesModule", activity_id: activity.activity_id, styles: styles })} title='naar activiteit' />
             </Text>
           </View>
@@ -61,7 +61,7 @@ const ModulePage = ({ route, navigation }) => {
         activities_array.push(
           <View key={i} style={{ flexDirection: 'row' }}>
             <Text style={{ fontWeight: 'bold' }}>
-              {`\n  - ${activity?.activity_name || 'Onbekende activiteit'} (${activity?.activity_nr || 'Activiteit'}) - voortgang: ${activity?.progress ?? 'Onbekend'}/${activity?.max_progress ?? 'Onbekend'}`}
+              {`\n  - ${activity?.activity_name || 'Onbekende activiteit'} - voortgang: ${activity?.progress ?? 'Onbekend'}/${activity?.max_progress ?? 'Onbekend'}`}
               <Button onPress={() => navigation.navigate("ActivitiesModule", { screen: "ActivitiesModule", activity_id: activity?.activity_id, styles: styles })} title='naar activiteit' />
             </Text>
           </View>

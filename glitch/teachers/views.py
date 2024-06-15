@@ -121,6 +121,10 @@ def register_course(request):
             beschrijving = course_desc,
             domein_id = domain_id
         )
+        TeacherCursus.objects.create(
+            user=request.user,
+            cursus = new_course
+        )
         ingschr_at_domain = IngschrDomein.objects.filter(domein_id=domain_id) #adds every student that is registered to this domain to the new course!
         for ingschr_student in ingschr_at_domain:
             IngschrCursus.objects.create(
