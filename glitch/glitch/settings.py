@@ -37,12 +37,12 @@ INSTALLED_APPS = [
 ]
 
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8081', 'http://192.168.56.1:8081', 'http://192.168.56.1:8000', 'http://192.168.56.1']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8081', 'http://127.0.0.1:8081', 'http://192.168.56.1:8000', 'http://192.168.56.1']
 
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8081',
-    'http://192.168.56.1:8081',
+    'http://127.0.0.1:8081',
     'http://192.168.56.1:8000',
     'http://192.168.56.1',
 ]
