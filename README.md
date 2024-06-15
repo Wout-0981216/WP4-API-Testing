@@ -1,6 +1,29 @@
 # wp4-2024-starter
 Template voor WP4 opdracht 2024 "GLITCH". Vul dit document aan zoals beschreven in eisen rondom opleveren (zie GLITCH-assignment.pdf)
 
+# Installatie
+Helaas moet het op deze wijze, bij het maken van dit document hebben we uiteraard rekening gehouden met docker maar hij bleef maar niet werken na echt uren en uren werken priegelen. Heel raar want hij forwarde port 8081 wel maar 8000 terwijl het precies hetzelfde is. Dit berichtje is geschreven om 02:30 na echt uren gewerkt te hebben. Alleen al bij het opstarten van docker desktop bleven er errors komen, daarom hebben we hem heel vaak moeten installeren, er was iets fout met onze laptop. De applicatie werkt op mobiel. Daarvoor heb ik nu de links geupdate. Zie ook de docker files en yaml bestanden om te kijken hoe we het geprobeerd hebben. Daarvoor moest eigenlijk overal in het project bij 192.168.56.1:8000, 0.0.0.0:8000 staan. 
+
+
+Backup plan (helaas):
+
+Open 2 terminals:
+Terminal 1:
+- python -m venv venv
+- cd venv
+- cd Scripts
+- activate
+- cd ..
+- cd ..
+- cd glitch
+- pip install requirements.txt
+- python manage.py runserver 192.168.56.1:8000
+
+Terminal 2:
+- cd glitch
+- cd front-end
+- npm install
+- npm start
 
 
 # bronnen
