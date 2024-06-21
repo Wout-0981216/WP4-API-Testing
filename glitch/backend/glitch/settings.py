@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-ua9%q*39(&(s%t2vs4hywr@+%h)aazzl($lsq0fs4yg95(ju3c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.56.1']
+ALLOWED_HOSTS = ['192.168.56.1', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -113,7 +113,7 @@ WSGI_APPLICATION = 'glitch.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': 'database/db.sqlite3',
     }
 }
 
@@ -157,7 +157,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'front-end'),
+    os.path.join(BASE_DIR, 'frontend'),
 ]
 
 # Default primary key field type
